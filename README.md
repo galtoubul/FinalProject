@@ -1,2 +1,2 @@
 # FinalProject
- by Gal Tuboul and Omri Berkovitch
+ by Gal Toubul and Omri Berkovitch
