@@ -118,7 +118,7 @@ void printGameBoard(Game* game){
                 printf(" %2d", game->currBoard[i][j]);
 
                 if(game->fixedCellsBoard[i][j] == 1){ /*fixedCell*/
-                    printf(".",game->currBoard[i][j]);
+                    printf(".");
                 }
                 else{
                     printf(" ");
