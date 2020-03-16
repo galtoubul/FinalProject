@@ -47,6 +47,10 @@ int loadPuzzle(Command* cmd, Game* game){
                 m++;
             }
             temp = strncpy(temp,token,1);
+            if(!validateCell(atoi(temp),game)){
+                printf("Error: the value has been loaded is not valid\n");
+                return 1;
+            }
             game->currBoard[m][n] = atoi(temp);
             if(NULL != strrchr(token,'.')){
                 game->fixedCellsBoard[m][n] = 1;
@@ -64,5 +68,14 @@ int loadPuzzle(Command* cmd, Game* game){
 }
 
 void ThrowFileError(){
-    printf("Error: file doesn't exists/illegal values etc...\n");
+    printf("Error: file open failed\n");
+}
+
+bool validateCell(int num,Game* game){
+    int topRange = game->rows;
+    if(num < 0 || num > topRange){
+        return false;
+    }
+    return true;
+
 }
