@@ -9,7 +9,7 @@
 #define ARRSIZE 1024
 #define ERROR_MSG "Error: invalid command\n"
 
-int main(int argc,char* argv[]){
+int main(){
     int start = 1;
     int fixedCells;
 
