@@ -39,6 +39,8 @@ typedef struct game_t {
     int **solutionBoard;
     int **fixedCellsBoard;
     int **currBoard;
+    int **errorBoard;
+
 }Game;
 
 /**
@@ -80,7 +82,7 @@ void printGameBoard(Game* game);
 /**
  * This function used by printGameBoard to print help print the given template.(basically it prints 34 -).
  */
-void printDashes();
+void printDashes(Game* game);
 
 /**
  * This function recives a game object and a set command that the user asked for.
