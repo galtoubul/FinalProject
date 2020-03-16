@@ -23,7 +23,7 @@
  */
 typedef enum whichCMD_t{
     /*a struct that will apply type of commands to user input */
-            EXIT,
+    EXIT,
     VALIDATE,
     SET,
     RESTART,
@@ -41,6 +41,7 @@ typedef struct command_t {
     int Y;
     int Z;
     whichCMD cmd;
+    char* fileName;
 } Command;
 
 /**
