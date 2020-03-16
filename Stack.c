@@ -1,19 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "Stack.h"
+#include "Game.h"
 
-typedef struct Stack{
-    int capacity;
-    Game* arr;
-    int top;
-}Stack;
+/*TODO: Test all functions*/
 
-Stack* createStack (){
-    Stack stack=(*Stack) malloc(sizeof(Stack));
+Stack* createStack (int capacity){
+    Stack* stack=(Stack*) malloc(sizeof(Stack));
     stack->capacity=capacity;
     stack->top=-1;
-    stack->arr=(*Game)malloc(100*sizeof(Game));/*TODO: 100 is good?*/
-    retturn stack;
+    stack->arr=(Game*)malloc(capacity*sizeof(Game));
+    return stack;
 }
 
 int isFull (Stack* stack){
@@ -26,27 +23,22 @@ int isEmpty (Stack* stack){
 
 void push (Stack* stack, Game* game);
 
+/* pre: assumes isEmpty(stack)=0*/
 Game* pop(Stack* stack){
-    if(!(isEmpty(stack))){
-        Game* game=top(stack);
-        remove(stack);
-        stack->top--;
-        return game;
-    }
-    else
-        printf("error in stack pop");
+    Game* game=top(stack);
+    removeFromStack(stack);
+    stack->top--;
+    return game;
 }
 
-void remove(Stack* stack){
+void removeFromStack(Stack* stack){
     if(!(isEmpty(stack)))
-        stack->free(arr[top]);
+        free(&(stack->arr[stack->top]));
     else
         printf("error in stack remove");
 }
 
-Game top (Stack* stack){
-    if(!(isEmpty(stack)))
-        return stack->arr[stack->top];
-    else
-        printf("error in stack top");
+/* pre: assumes isEmpty(stack)=0*/
+Game* top (Stack* stack){
+    return &(stack->arr[stack->top]);
 }

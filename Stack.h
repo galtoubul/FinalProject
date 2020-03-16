@@ -1,3 +1,5 @@
+#include "Game.h"
+
 /**
  * Stack Summary:
  *
@@ -13,6 +15,13 @@
  *
  */
 
+typedef struct Stack{
+    int capacity;
+    Game* arr;
+    int top;
+}Stack;
+
+
 Stack* createStack (int capacity);
 
 int isFull (Stack* stack);
@@ -23,6 +32,7 @@ void push (Stack* stack, Game* game);
 
 Game* pop(Stack* stack);
 
-Game top (Stack* stack);
+Game* top (Stack* stack);
 
-void remove(Stack* stack);
+void removeFromStack(Stack* stack);
+
