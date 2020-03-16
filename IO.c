@@ -11,16 +11,15 @@ int loadPuzzle(Command* cmd, Game* game){
     fPointer = fopen(cmd->fileName,"r");
 
     if(fPointer == NULL){
-        ThrowFileError();
-        exit(EXIT_FAILURE);
+        printf("Error: file open failed\n");
+        return 1;
     }
 
-    //TODO when there is failure of reading, we dont need to exit and close program.
     //loads first 2 lines of the file to get size or row and col.
     int m = 0;
     int n = 0;
     if(fscanf(fPointer,"%d %d", &m,&n) != 2){
-        ThrowFileError();
+        printf("Error: invalid Sudoku size parameters\n");
         return 1;
     }
     game->boxCol = n;
@@ -46,8 +45,8 @@ int loadPuzzle(Command* cmd, Game* game){
                 n = 0;
                 m++;
             }
-            temp = strncpy(temp,token,1);
-            if(!validateCell(atoi(temp),game)){
+            temp = strncpy(temp,token,2);
+            if(!isNumber(temp) || !validateCell(atoi(temp),game)){
                 printf("Error: the value has been loaded is not valid\n");
                 return 1;
             }
@@ -64,12 +63,39 @@ int loadPuzzle(Command* cmd, Game* game){
     }
 
     fclose(fPointer);
+    return 1;
 
 }
 
-void ThrowFileError(){
-    printf("Error: file open failed\n");
+
+int savePuzzle(Command* cmd, Game* game, bool editMode){
+
+    FILE* output;
+    int i = 0;
+    int j = 0;
+    output = fopen(cmd->fileName,"wt");
+    if(output == NULL){
+        printf("Error: Can't modify or save to this file\n");
+        return 1;
+    }
+
+    fprintf(output,"%d %d\n",game->rows,game->columns);
+
+    for(i = 0; i < game->rows; i++){
+        for(j = 0; j < game->columns; j++){
+            fprintf(output,"%d",game->currBoard[i][j]);
+            if(editMode && game->currBoard[i][j] != 0){
+                fprintf(output,".");
+            }
+            fprintf(output, " ");
+        }
+        fprintf(output, "\n");
+    }
+    fflush(output);
+    fclose(output);
+
 }
+
 
 bool validateCell(int num,Game* game){
     int topRange = game->rows;
@@ -78,4 +104,24 @@ bool validateCell(int num,Game* game){
     }
     return true;
 
+}
+
+bool isNumber(char *input)
+{
+    int j;
+    int size = 2;
+
+    if(strlen(input) == 1){
+        size = 1;
+    }
+    if(strstr(input,"\n") != NULL){
+        size = 1;
+    }
+    for(j = 0; j < size; j++){
+        if((input[j] > 47 && input[j] < 58) || input[j] == '.'){
+            continue;
+        }
+        return false;
+    }
+    return true;
 }
