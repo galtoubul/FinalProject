@@ -5,13 +5,13 @@
 #include "Solve.h"
 
 
+
 #define ARRSIZE 1024
 #define ERROR_MSG "Error: invalid command\n"
 
 int main(int argc,char* argv[]){
     int start = 1;
     int fixedCells;
-    int seed;
 
     char* input = (char*) malloc(ARRSIZE * sizeof(char));
     if(input == NULL){
@@ -19,14 +19,7 @@ int main(int argc,char* argv[]){
         free(input);
         exit(EXIT_FAILURE);
     }
-    
-    if(argc == 1){
-            seed = 5;
-            }
-    else{
-        seed = atoi(argv[1]);
-        }
-    srand(seed);
+
 
     while(start){
 

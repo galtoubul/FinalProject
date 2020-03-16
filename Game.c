@@ -50,6 +50,13 @@ void createEmptyBoard(Game* game){
         exit(EXIT_FAILURE);
     }
 
+    game->errorBoard = (int**)calloc(game->rows*game->columns,sizeof(int*));
+    if(game->errorBoard == NULL){
+        printf("Error: createEmptyBoard has failed\n");
+        free(game->errorBoard);
+        exit(EXIT_FAILURE);
+    }
+
     allocateMemory(game,game->rows,game->columns);
 
 
@@ -61,6 +68,7 @@ void allocateMemory(Game* game,int rows,int columns){
         game->currBoard[i] = calloc(columns,sizeof(int*));
         game->solutionBoard[i] = calloc(columns,sizeof(int*));
         game->fixedCellsBoard[i] = calloc(columns,sizeof(int*));
+        game->errorBoard[i] = calloc(columns,sizeof(int*));
     }
 }
 
@@ -87,42 +95,49 @@ void printGameBoard(Game* game){
     int firstDash = 0;
     for(i = 0; i < game->rows; i++){
         if(numOfRowsInBox - p == 0){
-            printDashes();
+            printDashes(game);
             p = 0;
         }
         firstDash = 0;
         for(j = 0; j < game->columns; j++){
             if(numOfColumnsInBox- k == 0){
-              if(firstDash == 0){
-                printf("|");
-                firstDash = 1;
+                if(firstDash == 0){
+                    printf("|");
+                    firstDash = 1;
                 }
                 else{
-                    printf(" |");
-                    }
-                    k = 0;
+                    printf("|");
+                }
+                k = 0;
             }
             if(game->currBoard[i][j] == 0){ /*An empty Cell*/
-                printf("   ");
+                printf("    ");
             }
-            else if(game->fixedCellsBoard[i][j] == 1){ /*fixedCell*/
-                printf(" .%d",game->currBoard[i][j]);
+            else{
+
+                printf(" %2d", game->currBoard[i][j]);
+
+                if(game->fixedCellsBoard[i][j] == 1){ /*fixedCell*/
+                    printf(".",game->currBoard[i][j]);
+                }
+                else{
+                    printf(" ");
+                }
             }
-            else{ /*A digits that is not fixedCell */
-                printf(" %2d",game->currBoard[i][j]);
-            }
+
             k++;
         }
-        printf(" |"); /*Last | to close the matrix*/
+        printf("|"); /*Last | to close the matrix*/
         printf("\n");
         p++;
     }
-    printDashes();
+    printDashes(game);
 }
 
-void printDashes(){
+void printDashes(Game* game){
     int i;
-    for(i = 0; i < 34; i++){
+    int count = 4*game->rows + game->boxRow + 1;
+    for(i = 0; i < count; i++){
         printf("-");
     }
     printf("\n");
