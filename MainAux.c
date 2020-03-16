@@ -80,5 +80,4 @@ int** copyBoard(int** board,int row,int col){
 void clear(){
     int c = 0;
     while ((c = getchar()) != '\n' && c != EOF) { }
-
 }

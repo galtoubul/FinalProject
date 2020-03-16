@@ -3,6 +3,16 @@
 #include "Game.h"
 
 /**
+ * Calculates and returns the number of solutions to the given game.
+ *
+ * @param game - the target game
+ * @return number of possible solutions to the given game
+ */
+int num_solutions(Game* game);
+
+/* --------------------------------------------- EX3 --------------------------------------------------------- */
+
+/**
  * Solve Summary:
  *
  * Contains the functions for solving a board
