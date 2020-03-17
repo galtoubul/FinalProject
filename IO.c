@@ -1,14 +1,14 @@
 
 #include "IO.h"
 
-int loadPuzzle(Command* cmd, Game* game){
+int loadPuzzle(char* filePath, Game* game){
 
     FILE *fPointer;
     char* line = NULL;
     size_t len = 0;
     ssize_t read = 0;
     int counter = 0;
-    fPointer = fopen(cmd->fileName,"r");
+    fPointer = fopen(filePath,"r");
 
     if(fPointer == NULL){
         printf("Error: file open failed\n");
@@ -32,23 +32,23 @@ int loadPuzzle(Command* cmd, Game* game){
     m = 0;
     n = 0;
 
-    //read file line by line, iterate over the game board and add the values correctly.
+    //read file line by line, iterate through game board and add the values correctly.
     read = getline(&line, &len, fPointer);
     while ((read = getline(&line, &len, fPointer)) != -1 && counter < game->size ) {
         char* token = strtok(line, " \t");
         while(token != NULL && strcmp(token,"\n") != 0){
             char* temp = (char*)malloc(sizeof(char));
             if (temp == NULL) {
-                return 1;
+                return 0;
             }
             if(n == game->columns){
                 n = 0;
                 m++;
             }
             temp = strncpy(temp,token,2);
-            if(!isNumber(temp) || !validateCell(atoi(temp),game)){
+            if(!isNumber(temp) || !validateCell(atoi(temp),game->rows)){
                 printf("Error: the value has been loaded is not valid\n");
-                return 1;
+                return 0;
             }
             game->currBoard[m][n] = atoi(temp);
             if(NULL != strrchr(token,'.')){
@@ -59,21 +59,19 @@ int loadPuzzle(Command* cmd, Game* game){
             n++;
             counter++;
         }
-
     }
-
     fclose(fPointer);
     return 1;
 
 }
 
 
-int savePuzzle(Command* cmd, Game* game, bool editMode){
+int savePuzzle(char* filePath, Game* game, bool editMode){
 
     FILE* output;
     int i = 0;
     int j = 0;
-    output = fopen(cmd->fileName,"wt");
+    output = fopen(filePath,"wt");
     if(output == NULL){
         printf("Error: Can't modify or save to this file\n");
         return 1;
@@ -93,16 +91,7 @@ int savePuzzle(Command* cmd, Game* game, bool editMode){
     }
     fflush(output);
     fclose(output);
-
-}
-
-
-bool validateCell(int num,Game* game){
-    int topRange = game->rows;
-    if(num < 0 || num > topRange){
-        return false;
-    }
-    return true;
+    return 1;
 
 }
 

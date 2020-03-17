@@ -1,22 +1,17 @@
 
-#include "Game.h"
-#include "Parser.h"
-
 #ifndef SUDOKU_IO_H
 #define SUDOKU_IO_H
 
+#include "Game.h"
+#include "Parser.h"
 
-int loadPuzzle(Command* cmd, Game* game);
 
-int savePuzzle(Command* cmd, Game* game, bool editMode);
 
-/**
- * receives a number from the file and checks if it's in the range of sudokus board
- * @param num - the number to be checked
- * @param game - the game board to get range
- * @return - true iff is valid
- */
-bool validateCell(int num,Game* game);
+
+int loadPuzzle(char* filePath, Game* game);
+
+int savePuzzle(char* filePath, Game* game, bool editMode);
+
 
 /**
  * gets current token from the file and checks if it's a number
