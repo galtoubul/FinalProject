@@ -2,6 +2,10 @@
 #define EX3_GAME_H
 
 #include <stdbool.h>
+#include "MODE.h"
+
+
+
 
 /**
  *  Game Summary :
@@ -34,21 +38,23 @@ typedef struct game_t {
     int boxCol; /* number of cols in every box */
     int rows;
     int columns;
-    bool solved;
     int size;
     int **solutionBoard;
     int **fixedCellsBoard;
     int **currBoard;
     int **errorBoard;
+    int mark_errors;
+    bool solved;
+    MODE mode;
 
 }Game;
 
+
 /**
- * Creates new game object with fixedCells
- * @param fixedCells - user input
- * @return the game object that the use will play with.
+ * Creates new emptyGame of fixed size 9x9
+ * @return the new sudoku game
  */
-Game* createGame(int fixedCells);
+Game* createGame();
 
 /**
  * This function used in createGame function to create empty board(memory creatinon)
@@ -84,17 +90,6 @@ void printGameBoard(Game* game);
  */
 void printDashes(Game* game);
 
-/**
- * This function recives a game object and a set command that the user asked for.
- * @pre condition is x,y,z are valid numbers that exist in the soduko grid and in range, so they are not checked.
- * @param game
- * @param col - the index of the row
- * @param row - the index of the col
- * @param z - the num to set in (x,y) coordinate of the grid
- *            if z = 0 and the cell is not fixed then we reset the cell (x,y) "delete it's current value".
- *            in anyway if cell is fixed we are not changing it.
- */
-void setCommand(Game* game, int col, int row, int z);
 
 /**
  * This function checks if it's safe to assign value to mat[row][col] by using 3 functions UsedInBox, UsedInCol
@@ -146,16 +141,6 @@ bool UsedInRow(int** grid, int row, int num);
 bool isBoardFull(int** board,int row, int col);
 
 /**
- * This function used to handle hint commands, it return the true (x,y) value from the latest solvable board exist
- * in the game object
- * @param game
- * @param col - the index of the row
- * @param row - the index of the col
- * @return the number that exist in solvableBoard[x][y]
- */
-void hintCommand(Game* game, int col, int row);
-
-/**
  * This function destroys game object by free all it's allocated memory
  * @param game
  */
@@ -167,5 +152,7 @@ void destroyGame(Game* game);
  * @param row  - num of rows to iterate throw.
  */
 void freeBoard(int** board,int row);
+
+int** copyBoard(int** board,int row,int col);
 
 #endif

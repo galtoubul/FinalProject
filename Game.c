@@ -8,7 +8,7 @@
 #define RANGE 9
 #define EMPTY_CELL 0
 
-Game* createGame(int fixedCells){
+Game* createGame(){
     Game* game;
     game = (Game*)malloc(sizeof(Game));
     if(game == NULL){
@@ -21,8 +21,9 @@ Game* createGame(int fixedCells){
     game->boxRow = 3;
     game->boxCol = 3;
     game->size = 81;
-    game->fixedCells = fixedCells;
     game->solved = false;
+    game->mode = INITMODE;
+    game->mark_errors = 1;
     createEmptyBoard(game);
 
     return game;
@@ -120,6 +121,9 @@ void printGameBoard(Game* game){
                 if(game->fixedCellsBoard[i][j] == 1){ /*fixedCell*/
                     printf(".");
                 }
+                else if (game->errorBoard[i][j] == 1 && (game->mode == EDITMODE || game->mark_errors == 1))   {
+                    printf("*");
+                }
                 else{
                     printf(" ");
                 }
@@ -141,37 +145,6 @@ void printDashes(Game* game){
         printf("-");
     }
     printf("\n");
-}
-
-
-void setCommand(Game* game, int col, int row, int z){
-    col = col - 1; /*rows and columns are 1's based --> mat[0][0] is mat[1][1]*/
-    row = row - 1;
-    if(col >= game->columns || col < 0 || row >= game->rows || row < 0){
-        return;
-    }
-    if(game->fixedCellsBoard[row][col] == 1 ){
-        printf("Error: cell is fixed\n");
-        return;
-    }
-    else if(z == 0){
-        game->currBoard[row][col] = 0;
-    }
-    else {
-        if(isSafe(game->currBoard, row, col, z)){
-            game->currBoard[row][col] = z;
-        }
-        else{
-            printf("Error: value is invalid\n");
-            return;
-        }
-    }
-    printGameBoard(game);
-
-    if(isBoardFull(game->currBoard,game->rows,game->columns)){
-        game->solved = true;
-        printf("Puzzle solved successfully\n");
-    }
 }
 
 /* Returns a boolean which indicates whether an assigned entry
@@ -230,13 +203,6 @@ bool isBoardFull(int** board,int row, int col){
 
 }
 
-void hintCommand(Game* game, int col, int row){
-    col = col - 1;
-    row = row - 1;
-    printf("Hint: set cell to %d\n",game->solutionBoard[row][col]);
-}
-
-
 void destroyGame(Game* game){
     freeBoard(game->solutionBoard,game->rows);
     freeBoard(game->fixedCellsBoard,game->rows);
@@ -250,4 +216,24 @@ void freeBoard(int** board,int row){
         free(board[i]);
     }
     free(board);
+}
+
+int** copyBoard(int** board,int row,int col){
+    int i;
+    int j;
+    int** mat = (int**)calloc(row*col, sizeof(int*));
+    if(mat == NULL){
+        printf("The copy board function failed! \n");
+        return NULL;
+    }
+    for(i = 0; i < row; i++){
+        mat[i] = calloc(col,sizeof(int*));
+    }
+
+    for(i = 0; i < row; i++) {
+        for (j = 0; j < col; j++) {
+            mat[i][j] = board[i][j];
+        }
+    }
+    return mat;
 }
