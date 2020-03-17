@@ -3,8 +3,13 @@
 
 
 #include <stdio.h>
+#include <stdbool.h>
 #include "string.h"
 #include "stdlib.h"
+#include "ErrorsInterface.h"
+#include "MODE.h"
+
+
 
 /**
  * Parser Summary :
@@ -18,6 +23,7 @@
  */
  
 
+
 /**
  * enum struct for command types
  */
@@ -26,10 +32,24 @@ typedef enum whichCMD_t{
     EXIT,
     VALIDATE,
     SET,
-    RESTART,
     HINT,
     INVALID_INPUT_COMMAND,
-    INIT
+    SOLVE,
+    EDIT,
+    MARK_ERRORS,
+    PRINT_BOARD,
+    GUESS,
+    GENERATE,
+    UNDO,
+    REDO,
+    SAVE,
+    GUESS_HINT,
+    NUM_SOLUTIONS,
+    AUTOFILL,
+    RESET,
+    MAX_ARGS_REACHED,
+    EMPTY,
+    ERROR
 
 } whichCMD;
 
@@ -41,6 +61,7 @@ typedef struct command_t {
     int Y;
     int Z;
     whichCMD cmd;
+    int mark;
     char* fileName;
 } Command;
 
@@ -51,7 +72,7 @@ typedef struct command_t {
  * @param input  - the input string that the user entered.
  * @return command type.
  */
-Command parseCommand(char* input);
+Command parseCommand(char* input,int rangeOfGame,MODE* mode);
 
 
 /**
@@ -59,7 +80,7 @@ Command parseCommand(char* input);
  * @param str - the string to get x y z from.
  * @param command - the command we are working on.
  */
-void setFunc(char *str,Command* command);
+void setFunc(char *str,Command* command,int upperBound,MODE* mode);
 
 /**
  * if we parsed it's a hint command then we want to initiliaze the command x y.
@@ -68,6 +89,24 @@ void setFunc(char *str,Command* command);
  */
 void hintFunc(char *str, Command* command);
 
+void solveAndSaveFunc(char *str, Command* command,MODE* mode);
+
+void editFunc(char *str, Command* command);
+
+void markErrorsFunc(char* str, Command* command,MODE* mode);
+
+void printBoardFunc(char* str, Command* command,MODE* mode);
+
+
+bool is_empty(const char *s);
+
+bool isInteger(char* str);
+
+bool isLegalLengthCmd(char* str, int len);
+
+bool validateCell(int num,int upperBound);
+
+bool validateRowCol(int num, int upperBound);
 
 
 
