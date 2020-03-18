@@ -237,3 +237,27 @@ int** copyBoard(int** board,int row,int col){
     }
     return mat;
 }
+
+bool isBoardErrorneous(Game* game){
+    int i,j;
+    for(i = 0; i < game->rows; i++){
+        for(j = 0; j < game->columns; j++){
+            if(game->errorBoard[i][j] == 1){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+int numOfEmptyCells(Game* game){
+    int i,j,count = 0;
+    for(i = 0; i < game->rows; i++){
+        for(j = 0; j < game->columns; j++){
+            if(game->currBoard[i][j] == 0){
+                count++;
+            }
+        }
+    }
+    return count;
+}
