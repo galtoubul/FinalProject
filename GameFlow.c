@@ -38,7 +38,7 @@ void runGame(){
             setCommand(game,command.X,command.Y,command.Z);
         }
         else if(command.cmd == HINT){
-            hintCommand(game,command.X,command.Y);
+            hintOrGuessHintCommand(game, command.X, command.Y,false);
         }
         else if(command.cmd == VALIDATE){
             validateCommand(game);
@@ -57,19 +57,33 @@ void runGame(){
             markErrorsCommand(game,&command);
         }
 
-        else if(command.cmd == GENERATE){}
+        else if(command.cmd == GENERATE){
+            generateCommand(game,&command);
+        }
 
-        else if(command.cmd == REDO){}
+        else if(command.cmd == REDO){
+            //redoCommand(game,&command);
+        }
 
-        else if(command.cmd == UNDO){}
+        else if(command.cmd == UNDO){
+            //undoCommand(game,&command);
+        }
 
-        else if(command.cmd == NUM_SOLUTIONS){}
+        else if(command.cmd == NUM_SOLUTIONS){
+            numSolutionsCommand(game);
+        }
 
-        else if(command.cmd == AUTOFILL){}
+        else if(command.cmd == AUTOFILL){
+            autoFillCommand(game);
+        }
 
-        else if(command.cmd == RESET){}
+        else if(command.cmd == RESET){
+            //resetCommand(game);
+        }
 
-        else if(command.cmd == GUESS){}
+        else if(command.cmd == GUESS){
+            guessCommand(game,&command);
+        }
 
         else if(command.cmd == GUESS_HINT){}
 
