@@ -4,12 +4,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-
 void setCommand(Game* game, int col, int row, int z){
 
     col = col - 1; /*rows and columns are 1's based --> mat[0][0] is mat[1][1]*/
     row = row - 1;
 
+    /*In Solve mode fixed cells may not be updated at all*/
     if(game->fixedCellsBoard[row][col] == 1 && game->mode == SOLVEMODE){
         printf(setSolveModeAndFixedCell);
         return;
@@ -35,11 +35,31 @@ void setCommand(Game* game, int col, int row, int z){
 
 }
 
-void hintCommand(Game* game, int col, int row){
+void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
     col = col - 1;
     row = row - 1;
-    printf("Hint: set cell to %d\n",game->solutionBoard[row][col]);
+    if(isGuess){} /*TODO need to delete after we finish solvable and LP solvable it's here only for compilation purpose*/
+    if(isBoardErrorneous(game)){
+        printf(boardIsErrorneous);
+    }
+    else if(game->fixedCellsBoard[row][col] == 1){
+        printf(hintFixCellError);
+    }
+    else if(game->currBoard[row][col] != 0){
+        printf(hintContCellError);
+    }
+    /*else if(!isGuess && isSolvableBoard(game)){
+        printf(hintFindHintMsg,game->solutionBoard[row][col]);
+        TODO needs to run ILP to check if board is solvable
+    }*/
+    /*else if(isGuess && isSolvableBoardLP(game)){
+       TODO need to run LP to check if board solvable, need print all legal values of cell X,Y
+    }*/
+    else{
+        printf(boardNotSolvable);
+    }
 }
+
 
 void solveCommand(Game* game, char* filePath){
     game->mode = SOLVEMODE;
@@ -60,7 +80,7 @@ void editCommand(Game* game, Command* command){
     if(command->fileName != NULL){
         loadPuzzle(command->fileName,game);
     }
-    else{ //Creates an empty game if no path exists
+    else{ /*Creates an empty game if no path exists*/
         game = createGame();
     }
 }
@@ -78,24 +98,76 @@ void restartCommand(Game* game){
 }
 
 void validateCommand(Game* game){
-    int i;
-    int j;
-    int** mat = copyBoard(game->currBoard, game->rows, game->columns);
-    int isSolvable = solveBoard(game,mat,0,0);
-    if(isSolvable == 1){
-        printf("Validation passed: board is solvable\n");
-        for(i = 0; i < game->rows; i++){
-            for(j = 0; j < game->columns; j++){
-                game->solutionBoard[i][j] = mat[i][j];
-            }
-        }
+    if(isBoardErrorneous(game)){
+        printf(boardIsErrorneous);
+    }
+    /*else if(isSolvableBoard(game)){
+            printf(boardSolvable);
+            return;
+            TODO gal needs to finish solvable function using ILP, to be checked later
+    }*/
+    else{
+        printf(boardNotSolvable);
+    }
+}
 
+void guessCommand(Game* game, Command* command){
+    game->threshold = command->threshold;
+    if(isBoardErrorneous(game)){
+        printf(boardIsErrorneous);
+    }
+    /*else{
+        guessILP(game);
+        TODO need to finish ILP then function guess using it
+    }*/
+}
+
+void generateCommand(Game* game, Command* command){
+    int num = numOfEmptyCells(game);
+    if(num > command->X){
+        printf(generateBoardNotContainXEmpty,num);
+        return;
     }
     else{
-        printf("Validation failed: board is unsolvable\n");
+        /*generateILP(game,command.X,command.Y)*/
     }
-    freeBoard(mat,game->rows);
 }
+
+void numSolutionsCommand(Game* game){
+
+    if(isBoardErrorneous(game)){
+        printf(boardIsErrorneous);
+    }
+    else{
+        /*printf(numSolutionsMsg,num_solutions(game));*/
+    }
+
+}
+
+void autoFillCommand(Game* game){
+    if(isBoardErrorneous(game)){
+        printf(boardIsErrorneous);
+    }
+    else{
+        /*autoFillSolve(game);
+         * TODO need to prompt this func*/
+
+    }
+}
+
+/*void resetCommand(Game* game){
+ * TODO needs to follow instructions
+}
+ */
+
+
+//void undoCommand(Game* game, Command* command){
+//    /*TODO needs to follow instructions */
+//}
+//
+//void redoCommand(Game* game, Command* command){
+//    /*TODO needs to follow instructions*/
+//}
 
 void exitCommand(Game* game){
     destroyGame(game);
