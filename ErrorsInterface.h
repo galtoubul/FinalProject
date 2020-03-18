@@ -22,4 +22,54 @@
 
 #define saveIllegalMode      "Error: save command available only in solve or edit mode\n"
 
+#define validateIllegalMode "Error: validate command available only in solve or edit mode\n"
+#define validateTooManyArguments "Error: validate command accepts 0 arguments\n"
+
+
+#define guessIllegalMode "Error: guess command available only in solve mode\n"
+#define guessTooManyArguments "Error: guess command accepts only 1 argument\n"
+#define guessParamIsNotFloat "Error : guess accepts only float argument\n"
+
+
+#define generateIllegalMode "Error: generate command available only in error mode\n"
+#define generateTooManyArguments "Error: generate command accepts only 2 arguments\n"
+#define generateErrorArgOne "Error: argument 1 needs to be a positive number\n"
+#define generateErrorArgTwo "Error: argument 2 needs to be a non negative number\n"
+#define generateBoardNotContainXEmpty "Error: the board can fill up to %d empty cells, please insert again\n"
+
+
+#define undoIllegalMode "Error: undo command available in solve or edit mode\n"
+#define undoTooManyArguments "Error: undo command accepts 0 arguments\n"
+
+#define redoIllegalMode "Error: redo command available in solve or edit mode\n"
+#define redoTooManyArguments "Error: redo command accepts 0 arguments\n"
+
+#define hintIllegalMode "Error: hint command available only in solve mode\n"
+#define hintTooManyArguments "Error: hint command accepts 2 arguments\n"
+#define hintErrorArgOne "Error: argument 1 needs to be between 1 to %d\n"
+#define hintErrorArgTwo "Error: argument 2 needs to be between 1 to %d\n"
+#define hintFixCellError "Error: can't give hint if the cell is fixed\n"
+#define hintContCellError "Error: cell already contains value\n"
+#define hintFindHintMsg "your hint is %d\n"
+
+#define numSolutionsIllegalMode "Error: num solutions command available only in solve or edit mode\n"
+#define numSolutionsInvalidArgs "Error: num solutions accepts 0 arguments\n"
+#define numSolutionsMsg "Current board number of solutions is - %d\n"
+
+#define autoFillIllegalMode "Error: auto fill command available only in solve mode\n"
+#define autoFillInvalidArgs "Error: auto fill accepts 0 arguments\n"
+
+#define resetIllegalMode "Error: reset command available only in solve or edit mode\n"
+#define resetInvalidArgs "Error: reset accepts 0 arguments\n"
+
+
+
+
+
+
+
+/* -------------------------General Messages/Errors-------------------------------*/
+#define boardSolvable     "Board is solvable\n"
+#define boardNotSolvable   "Board is not solvable\n"
+#define boardIsErrorneous "can't prompt this command if board has errorneous cells\n"
 #endif //SUDOKU_ERRORSINTERFACE_H
