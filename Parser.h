@@ -18,7 +18,7 @@
  *
  * parseCommand         - parsing the command type of the string input(set,hint,validate,restart,exit)
  * setFunc              - parsing the rest of the input to get the (x,y) cell in game and the num to be assigned
- * hintFunc             - parsing the rest of the input to get (x,y) cell in game and return it's value in the solution game
+ * hintOrGuessHintFunc             - parsing the rest of the input to get (x,y) cell in game and return it's value in the solution game
  * 
  */
  
@@ -63,6 +63,7 @@ typedef struct command_t {
     whichCMD cmd;
     int mark;
     char* fileName;
+    float threshold;
 } Command;
 
 /**
@@ -72,7 +73,7 @@ typedef struct command_t {
  * @param input  - the input string that the user entered.
  * @return command type.
  */
-Command parseCommand(char* input,int rangeOfGame,MODE* mode);
+Command parseCommand(char* input, int upperBound, MODE* mode);
 
 
 /**
@@ -87,7 +88,7 @@ void setFunc(char *str,Command* command,int upperBound,MODE* mode);
  * @param str - the string to get x y from.
  * @param command - the command we are woking on.
  */
-void hintFunc(char *str, Command* command);
+void hintOrGuessHintFunc(char *str, Command* command, int upperBound, MODE* mode);
 
 void solveAndSaveFunc(char *str, Command* command,MODE* mode);
 
@@ -97,10 +98,28 @@ void markErrorsFunc(char* str, Command* command,MODE* mode);
 
 void printBoardFunc(char* str, Command* command,MODE* mode);
 
+void validateFunc(char* str, Command* command,MODE* mode);
+
+void guessFunc(char* str, Command* command, MODE* mode);
+
+void generateFunc(char* str, Command* command,MODE* mode);
+
+void undoFunc(char* str,Command* command,MODE* mode);
+
+void redoFunc(char* str, Command* command, MODE* mode);
+
+void numSolutionsFunc(char* str, Command* command, MODE* mode);
+
+void autoFillFunc(char* str, Command* command,MODE* mode);
+
+void resetFunc(char* str, Command* command, MODE* mode);
+
 
 bool is_empty(const char *s);
 
 bool isInteger(char* str);
+
+bool isFloat(char* str);
 
 bool isLegalLengthCmd(char* str, int len);
 
