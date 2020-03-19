@@ -159,6 +159,8 @@ int** copyBoard(int** board,int row,int col);
 
 bool isBoardErrorneous(Game* game);
 
+Game* deepCopyGame(Game* game);
+
 int numOfEmptyCells(Game* game);
 
 #endif
