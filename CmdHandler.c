@@ -76,12 +76,18 @@ void saveCommand(Game* game, char* filePath){
     }
 }
 
-void editCommand(Game* game, Command* command){
+void editCommand(Game** game, Command* command){
+    int succeed = 0;
     if(command->fileName != NULL){
-        loadPuzzle(command->fileName,game);
+        succeed = loadPuzzle(command->fileName,*game);
+        if(succeed == 0){
+            (*game)->mode = EDITMODE;
+        }
     }
-    else{ /*Creates an empty game if no path exists*/
-        game = createGame();
+    /* case no path*/
+    else if(command->fileName == NULL){
+        *game = createGame();
+        (*game)->mode = EDITMODE;
     }
 }
 

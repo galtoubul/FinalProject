@@ -36,7 +36,7 @@ void solveCommand(Game* game, char* filePath);
 
 void saveCommand(Game* game, char*filePath);
 
-void editCommand(Game* game, Command* command);
+void editCommand(Game** game, Command* command);
 
 void markErrorsCommand(Game* game, Command* command);
 
