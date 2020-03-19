@@ -14,15 +14,12 @@ void runGame(){
         exit(EXIT_FAILURE);
     }
 
-    clear();
-
     Game* game = createGame();
+    //game->mode = SOLVEMODE;
     while(1){
 
         Command command;
-
         printf("Please enter a Command\n");
-
         if(!fgets(input,ARRSIZE,stdin)){/*checks if reading user input failed or EOF*/
             exitCommand(game);
             free(input);
@@ -85,7 +82,9 @@ void runGame(){
             guessCommand(game,&command);
         }
 
-        else if(command.cmd == GUESS_HINT){}
+        else if(command.cmd == GUESS_HINT){
+            hintOrGuessHintCommand(game,command.X,command.Y,true);
+        }
 
         else if(command.cmd == SAVE){
             saveCommand(game,command.fileName);
@@ -102,7 +101,3 @@ void runGame(){
     }
 }
 
-void clear(){
-    int c = 0;
-    while ((c = getchar()) != '\n' && c != EOF) { }
-}

@@ -60,6 +60,10 @@ int loadPuzzle(char* filePath, Game* game){
             counter++;
         }
     }
+    if(counter < game->size){
+        printf(loadInvalidNumOfArgs);
+    }
+
     fclose(fPointer);
     return 1;
 

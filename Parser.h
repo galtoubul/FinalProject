@@ -127,6 +127,8 @@ bool validateCell(int num,int upperBound);
 
 bool validateRowCol(int num, int upperBound);
 
+void clear();
+
 
 
 

@@ -62,6 +62,8 @@
 #define resetIllegalMode "Error: reset command available only in solve or edit mode\n"
 #define resetInvalidArgs "Error: reset accepts 0 arguments\n"
 
+#define loadInvalidNumOfArgs "Error: Not enough variabled in the file\n"
+
 
 
 

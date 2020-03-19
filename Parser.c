@@ -18,12 +18,13 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
         free(copyInput);
         exit(EXIT_FAILURE);
     }
-    command.cmd = INVALID_INPUT_COMMAND;
+    command.cmd = ERROR;
     strcpy(copyInput,input);
     token = strtok(input,delim);
 
-    if(strlen(input) > 256){
+    if(strlen(copyInput) > 256){
         command.cmd = MAX_ARGS_REACHED;
+        clear();
     }
     else if(is_empty(input)){
         command.cmd = EMPTY;
@@ -83,8 +84,11 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
     else if(strcmp(token,"edit") == 0){
             editFunc(copyInput,&command);
     }
+    else{
+        command.cmd = INVALID_INPUT_COMMAND;
+    }
 
-    free(copyInput);
+    //free(copyInput);
     return command;
 
 }
@@ -92,14 +96,12 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
 void resetFunc(char* str, Command* command, MODE* mode){
 
     if(*mode == INITMODE){
-        command->cmd = ERROR;
         printf(resetIllegalMode);
     }
     else if(isLegalLengthCmd(str,1)){
         command->cmd = RESET;
     }
     else{
-        command->cmd = ERROR;
         printf(resetInvalidArgs);
     }
 }
@@ -107,14 +109,12 @@ void resetFunc(char* str, Command* command, MODE* mode){
 void autoFillFunc(char* str, Command* command,MODE* mode){
 
     if(*mode != SOLVEMODE){
-        command->cmd = ERROR;
         printf(autoFillIllegalMode);
     }
     else if(isLegalLengthCmd(str,1)){
         command->cmd = AUTOFILL;
     }
     else{
-        command->cmd = ERROR;
         printf(autoFillInvalidArgs);
     }
 }
@@ -123,18 +123,16 @@ void solveAndSaveFunc(char *str, Command* command,MODE* mode){
     char* token;
     if(command->cmd == SAVE && *mode == INITMODE){
         printf(saveIllegalMode);
-        command->cmd = ERROR;
-        return;
-
     }
-    if(!isLegalLengthCmd(str,2)){
-        command->cmd = ERROR;
+    else if(!isLegalLengthCmd(str,2)){
         printf(solveOrSaveIllegalArugments);
-        return;
     }
-    token = strtok(str,delim);
-    token = strtok(NULL,delim);
-    strcpy(command->fileName,token);
+    else{
+        token = strtok(str,delim);
+        token = strtok(NULL,delim);
+        command->fileName = token;
+    }
+
 }
 
 void setFunc(char *str, Command* command,int upperBound,MODE* mode){
@@ -144,48 +142,46 @@ void setFunc(char *str, Command* command,int upperBound,MODE* mode){
 
     if(*mode == INITMODE){
         printf(setIllegalMode);
-        command->cmd = ERROR;
-        return;
     }
-    if(!isLegalLengthCmd(str,4)){
-        command->cmd = ERROR;
+    else if(!isLegalLengthCmd(str,4)){
         printf(setTooManyArguments);
-        return;
+    }
+    else{
+        command->cmd = SET;
+        token = strtok(str, delim);
+        while(token != NULL && i < 4){
+            token = strtok(NULL,delim);
+            if(isInteger(token)){
+                num = atoi(token);
+                if(i == 1 && validateRowCol(num,upperBound)){
+                    command->X = num;
+                }
+                else if(i == 2 && validateRowCol(num,upperBound)){
+                    command->Y = num;
+                }
+                else if(i == 3 && validateCell(num,upperBound)){
+                    command->Z = num;
+                }
+                i++;
+            }
+            else{
+                command->cmd = ERROR;
+                switch(i)
+                {
+                    case 1:
+                        printf(setErrorArgumentOne,upperBound);
+                        break;
+                    case 2:
+                        printf(setErrorArgumentTwo,upperBound);
+                        break;
+                    case 3:
+                        printf(setErrorArgumentThree,upperBound);
+                        break;
+                }
+            }
+        }
     }
 
-    command->cmd = SET;
-    token = strtok(str, delim);
-    while(token != NULL && i < 4){
-        token = strtok(NULL,delim);
-        if(isInteger(token)){
-            num = atoi(token);
-            if(i == 1 && validateRowCol(num,upperBound)){
-                command->X = num;
-            }
-            else if(i == 2 && validateRowCol(num,upperBound)){
-                command->Y = num;
-            }
-            else if(i == 3 && validateCell(num,upperBound)){
-                command->Z = num;
-            }
-            i++;
-        }
-        else{
-            command->cmd = ERROR;
-            switch(i)
-            {
-                case 1:
-                    printf(setErrorArgumentOne,upperBound);
-                    break;
-                case 2:
-                    printf(setErrorArgumentTwo,upperBound);
-                    break;
-                case 3:
-                    printf(setErrorArgumentThree,upperBound);
-                    break;
-            }
-        }
-    }
 }
 
 void hintOrGuessHintFunc(char *str, Command* command, int upperBound, MODE* mode){
@@ -232,7 +228,6 @@ void hintOrGuessHintFunc(char *str, Command* command, int upperBound, MODE* mode
 void editFunc(char *str, Command* command){
     char* token;
     if(!isLegalLengthCmd(str,1) && !isLegalLengthCmd(str,2)){
-        command->cmd = ERROR;
         printf(editIllegal);
         return;
     }
@@ -252,67 +247,62 @@ void markErrorsFunc(char* str, Command* command,MODE* mode){
     char* token;
     int x = 0;
 
-
     if(*mode != SOLVEMODE){
         printf(markErrorsIllegalMode);
-        command->cmd = ERROR;
-        return;
     }
-    command->cmd = MARK_ERRORS;
-    if(!isLegalLengthCmd(str,2)){
-        command->cmd = ERROR;
+
+    else if(!isLegalLengthCmd(str,2)){
         printf(markErrorsTooManyArguments);
-        return;
     }
-    token = strtok(str,delim);
-    token = strtok(NULL,delim);
-    if(isInteger(token)){
-        x = atoi(token);
-        if(x == 0){
-            command->mark = 0;
-        }
-        else if(x == 1){
-            command->mark = 1;
+    else{
+        command->cmd = MARK_ERRORS;
+        token = strtok(str,delim);
+        token = strtok(NULL,delim);
+        if(isInteger(token)){
+            x = atoi(token);
+            if(x == 0){
+                command->mark = 0;
+            }
+            else if(x == 1){
+                command->mark = 1;
+            }
+            else{
+                command->cmd = ERROR;
+                printf(markErrorsIllegalVal);
+            }
         }
         else{
             command->cmd = ERROR;
             printf(markErrorsIllegalVal);
         }
     }
-    else{
-        command->cmd = ERROR;
-        printf(markErrorsIllegalVal);
-    }
+
 }
 
 void printBoardFunc(char* str, Command* command,MODE* mode){
+
     if(*mode == INITMODE){
-        command->cmd = ERROR;
         printf(printBoardIllegalMode);
     }
     else if(isLegalLengthCmd(str,1)){
         command->cmd = PRINT_BOARD;
     }
     else{
-        command->cmd = ERROR;
         printf(printBoardIllegal);
     }
 
 }
 
 void validateFunc(char* str, Command* command,MODE* mode){
+
     if(*mode == INITMODE){
-        command->cmd = ERROR;
         printf(validateIllegalMode);
-        return;
     }
     else if(isLegalLengthCmd(str,1)){
         command->cmd = VALIDATE;
     }
     else{
-        command->cmd = ERROR;
         printf(validateTooManyArguments);
-        return;
     }
 
 }
@@ -321,22 +311,16 @@ void guessFunc(char* str, Command* command, MODE* mode){
     char* token;
 
     if(*mode != SOLVEMODE){
-        command->cmd = ERROR;
         printf(guessIllegalMode);
-        return;
     }
     else if(!isLegalLengthCmd(str,2)){
-            command->cmd = ERROR;
             printf(guessTooManyArguments);
-            return;
     }
     else {
         token = strtok(str,delim);
         token = strtok(NULL,delim);
         if(!isFloat(token)){
-            command->cmd = ERROR;
             printf(guessParamIsNotFloat);
-            return;
         }
         else{
             command->cmd = GUESS;
@@ -351,11 +335,9 @@ void generateFunc(char* str, Command* command,MODE* mode){
     char* token;
     int i=1,num;
     if(*mode != EDITMODE){
-        command->cmd = ERROR;
         printf(generateIllegalMode);
     }
     else if(!isLegalLengthCmd(str,3)){
-        command->cmd = ERROR;
         printf(generateTooManyArguments);
     }
     else{
@@ -392,28 +374,24 @@ void generateFunc(char* str, Command* command,MODE* mode){
 void undoFunc(char* str,Command* command,MODE* mode){
 
     if(*mode == INITMODE){
-        command->cmd = ERROR;
         printf(undoIllegalMode);
     }
     else if(isLegalLengthCmd(str,1)){
         command->cmd = UNDO;
     }
     else{
-        command->cmd = ERROR;
         printf(undoTooManyArguments);
     }
 }
 
 void redoFunc(char* str, Command* command, MODE* mode){
     if(*mode == INITMODE){
-        command->cmd = ERROR;
         printf(redoIllegalMode);
     }
     else if(isLegalLengthCmd(str,1)){
         command->cmd = REDO;
     }
     else{
-        command->cmd = ERROR;
         printf(redoTooManyArguments);
     }
 
@@ -421,14 +399,12 @@ void redoFunc(char* str, Command* command, MODE* mode){
 
 void numSolutionsFunc(char* str, Command* command, MODE* mode){
     if(*mode == INITMODE){
-        command->cmd = ERROR;
         printf(numSolutionsIllegalMode);
     }
     else if(isLegalLengthCmd(str,1)){
         command->cmd = NUM_SOLUTIONS;
     }
     else{
-        command->cmd = ERROR;
         printf(numSolutionsInvalidArgs);
     }
 }
@@ -504,4 +480,9 @@ bool validateRowCol(int num, int upperBound){
         return false;
     }
     return true;
+}
+
+void clear(){
+    int c = 0;
+    while ((c = getchar()) != '\n' && c != EOF) { }
 }
