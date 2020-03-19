@@ -21,7 +21,6 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
     command.cmd = ERROR;
     strcpy(copyInput,input);
     token = strtok(input,delim);
-
     if(strlen(copyInput) > 256){
         command.cmd = MAX_ARGS_REACHED;
         clear();
@@ -178,6 +177,7 @@ void setFunc(char *str, Command* command,int upperBound,MODE* mode){
                         printf(setErrorArgumentThree,upperBound);
                         break;
                 }
+                break;
             }
         }
     }
@@ -219,6 +219,7 @@ void hintOrGuessHintFunc(char *str, Command* command, int upperBound, MODE* mode
                         printf(hintErrorArgTwo, upperBound);
                         break;
                 }
+                break;
             }
 
         }
@@ -235,7 +236,7 @@ void editFunc(char *str, Command* command){
     token = strtok(str,delim);
     token = strtok(NULL,delim);
     if(token != NULL){
-        strcpy(command->fileName,token);
+        command->fileName = token;
     }
     else{
         command->fileName = NULL;
@@ -343,7 +344,7 @@ void generateFunc(char* str, Command* command,MODE* mode){
     else{
         token = strtok(str,delim);
         command->cmd = GENERATE;
-        while(token != NULL){
+        while(token != NULL && i < 3){
             token = strtok(NULL,delim);
             if(isInteger(token)){
                 num = atoi(token);
@@ -365,6 +366,7 @@ void generateFunc(char* str, Command* command,MODE* mode){
                         printf(generateErrorArgTwo);
                         break;
                 }
+                break;
             }
         }
 
