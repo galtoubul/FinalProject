@@ -62,9 +62,13 @@
 #define resetIllegalMode "Error: reset command available only in solve or edit mode\n"
 #define resetInvalidArgs "Error: reset accepts 0 arguments\n"
 
-#define loadInvalidNumOfArgs "Error: Not enough variabled in the file\n"
 
 
+#define loadGameNotEnoughParams "Error: there are not enough parameters of the game board in current file\n"
+
+#define saveErrorneousBoardCantSave "Error: can't save errorneous board\n"
+#define saveErrorNotSolvable "Error: can't save unsolvable board\n"
+#define saveFileError "Error: Can't modify or save to this file\n"
 
 
 
@@ -74,4 +78,5 @@
 #define boardSolvable     "Board is solvable\n"
 #define boardNotSolvable   "Board is not solvable\n"
 #define boardIsErrorneous "can't prompt this command if board has errorneous cells\n"
+#define failedToAllocateMem "failed to allocate memmory, exiting...\n"
 #endif //SUDOKU_ERRORSINTERFACE_H
