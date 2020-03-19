@@ -1,7 +1,7 @@
 
 #include "GameFlow.h"
 
-#define ARRSIZE 256
+#define ARRSIZE 258
 
 void runGame(){
 
@@ -15,7 +15,6 @@ void runGame(){
     }
 
     Game* game = createGame();
-    //game->mode = SOLVEMODE;
     while(1){
 
         Command command;
@@ -44,7 +43,7 @@ void runGame(){
             solveCommand(game,command.fileName);
         }
         else if(command.cmd == EDIT){
-            editCommand(game,&command);
+            editCommand(&game,&command);
         }
         else if(command.cmd == PRINT_BOARD){
             printBoardCommand(game);
