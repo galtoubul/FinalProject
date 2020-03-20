@@ -3,13 +3,11 @@
 #include "Stack.h"
 #include "Game.h"
 
-/*TODO: Test all functions*/
-
 Stack* createStack (int capacity){
-    Stack* stack=(Stack*) malloc(sizeof(Stack));
+    Stack* stack=(Stack*) malloc(sizeof(Stack));/*TODO: free*/
     stack->capacity=capacity;
     stack->top=-1;
-    stack->arr=(Game*)malloc(capacity*sizeof(Game));
+    stack->arr=(Game*)malloc(capacity*sizeof(Game));/*TODO: free*/
     return stack;
 }
 
@@ -21,14 +19,20 @@ int isEmpty (Stack* stack){
     return stack->top==-1;
 }
 
-void push (Stack* stack, Game* game);
+void push (Stack* stack, Mat* mat){
+    if(isFull(stack))
+        stack->capacity+=100;
+    stack->arr[++stack->top]=*mat;
+    printf("inside push\n");/*TODO: delete*/
+    printGameBoard(mat->currBoard);/*TODO: delete*/
+}
 
 /* pre: assumes isEmpty(stack)=0*/
-Game* pop(Stack* stack){
-    Game* game=top(stack);
-    removeFromStack(stack);
+Mat* pop(Stack* stack){
+    Mat* mat=top(stack);
     stack->top--;
-    return game;
+    removeFromStack(stack);
+    return mat;
 }
 
 void removeFromStack(Stack* stack){
@@ -39,6 +43,8 @@ void removeFromStack(Stack* stack){
 }
 
 /* pre: assumes isEmpty(stack)=0*/
-Game* top (Stack* stack){
-    return &(stack->arr[stack->top]);
+Mat* top (Stack* stack){
+    printf("inside top\n");/*TODO: delete*/
+    printGameBoard(&stack->arr[stack->top]);/*TODO: delete*/
+    return &stack->arr[stack->top];
 }

@@ -1,4 +1,4 @@
-#include "Game.h"
+#include "Solve.h"
 
 /**
  * Stack Summary:
@@ -17,7 +17,8 @@
 
 typedef struct Stack{
     int capacity;
-    Game* arr;
+    Mat* arr;
+    int* legalArray;
     int top;
 }Stack;
 
@@ -28,11 +29,11 @@ int isFull (Stack* stack);
 
 int isEmpty (Stack* stack);
 
-void push (Stack* stack, Game* game);
+void push (Stack* stack, Mat* mat);
 
-Game* pop(Stack* stack);
+Mat* pop(Stack* stack);
 
-Game* top (Stack* stack);
+Mat* top (Stack* stack);
 
 void removeFromStack(Stack* stack);
 

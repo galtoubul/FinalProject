@@ -2,13 +2,33 @@
 #define EX3_SOLVE_H
 #include "Game.h"
 
+typedef struct mat{
+    int rows;
+    int columns;
+    int maxValue;
+    int **fixedCellsBoard;
+    int **currBoard;
+}Mat;
+
+
+void calcNextRowAndCol(Mat* mat, int* row, int* col);
+
+void findFirstEmptyCell (Mat* mat, int* row, int* col);
+
+void calcPrevRowAndCol(Mat* mat, int* row, int* col);
+
+void findLastEditedCell (Mat* mat, int* row, int* col);
+
+Mat* copyMat (Mat* otherMat);
+
+
 /**
  * Calculates and returns the number of solutions to the given game.
  *
  * @param game - the target game
  * @return number of possible solutions to the given game
  */
-int num_solutions(Game* game);
+int num_solutions(Mat* mat);
 
 /* --------------------------------------------- EX3 --------------------------------------------------------- */
 
