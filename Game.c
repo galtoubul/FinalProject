@@ -1,10 +1,8 @@
-
-#include "Game.h"
-#include "ErrorsInterface.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-
+#include "Game.h"
+#include "ErrorsInterface.h"
 
 #define RANGE 9
 #define EMPTY_CELL 0
@@ -150,44 +148,44 @@ void printDashes(Game* game){
 
 /* Returns a boolean which indicates whether an assigned entry
    in the specified row matches the given number. */
-bool UsedInRow(int** grid, int row, int num){
+bool UsedInRow(Game* game, int row, int num){
     int col;
 
-    for (col = 0; col < 9; col++)
-        if (grid[row][col] == num)
+    for (col = 0; col < game->columns; col++)
+        if (game->currBoard[row][col] == num)
             return true;
     return false;
 }
 
 
-bool UsedInCol(int** grid, int col, int num){
+bool UsedInCol(Game* game, int col, int num){
     int row;
 
-    for (row = 0; row < 9; row++)
-        if (grid[row][col] == num)
+    for (row = 0; row < game->rows; row++)
+        if (game->currBoard[row][col] == num)
             return true;
     return false;
 }
 
 
-bool UsedInBox(int** grid, int boxStartRow, int boxStartCol, int num){
-    int row;
-    int col;
-    for (row = 0; row < 3; row++)
-        for (col = 0; col < 3; col++)
-            if (grid[row+boxStartRow][col+boxStartCol] == num)
+bool UsedInBox(Game* game, int row, int col, int num){
+    int boxStartRow = row;
+    int boxStartCol = col;
+    for (row = 0; row < game->boxRow; row++)
+        for (col = 0; col < game->boxCol; col++)
+            if (game->currBoard[row+boxStartRow][col+boxStartCol] == num)
                 return true;
     return false;
 }
 
 
-bool isSafe(int** grid, int row, int col, int num)
+bool isSafe(Game* game, int row, int col, int num)
 {
     /* Check if 'num' is not already placed in current row,
        current column and current 3x3 box */
-    return !UsedInRow(grid, row, num) &&
-           !UsedInCol(grid, col, num) &&
-           !UsedInBox(grid, row - row%3 , col - col%3, num);
+    return !UsedInRow(game, row, num) &&
+           !UsedInCol(game, col, num) &&
+           !UsedInBox(game, row - row % game->boxRow, col % game->boxCol, num);
 }
 
 bool isBoardFull(int** board,int row, int col){
