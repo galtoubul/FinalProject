@@ -1,9 +1,7 @@
-#ifndef EX3_GAME_H
-#define EX3_GAME_H
+
 
 #include <stdbool.h>
 #include "MODE.h"
-
 
 
 
@@ -73,7 +71,6 @@ void createEmptyBoard(Game* game);
  */
 void allocateMemory(Game* game,int rows,int columns);
 
-Game* copyGame(Game* otherGame);
 
 /**
  * reveal the fixedCells of the board by randomizing the x,y of the cells we want to make sure are fixed, the rest
@@ -164,4 +161,3 @@ Game* deepCopyGame(Game* game);
 
 int numOfEmptyCells(Game* game);
 
-#endif
