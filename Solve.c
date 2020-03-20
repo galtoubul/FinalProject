@@ -93,8 +93,10 @@ int num_solutions (Game* currGame) {
                 free(currGame);
                 currGame=pop(stack);
                 findLastEditedCell(currGame, row, col);
-                if (*row == -1)
+                if (*row == -1){
+                    free(stack);
                     return solCounter;
+                }
                 futureValue = currGame->currBoard[*row][*col];
             }
             printf("inside isSafe while\n");
