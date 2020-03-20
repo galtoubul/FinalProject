@@ -4,10 +4,9 @@
 #include "Game.h"
 #include "Stack.h"
 #define RANGE 9
-#define EMPTY_CELL 0
 
-void calcNextRowAndCol(Mat* mat, int* row, int* col){
-    if (*col < mat->columns-1){
+void calcNextRowAndCol(Game* game, int* row, int* col){
+    if (*col < game->columns-1){
         *col = *col+1;
         return;
     }else{
@@ -17,247 +16,106 @@ void calcNextRowAndCol(Mat* mat, int* row, int* col){
     }
 }
 
-void findFirstEmptyCell (Mat* mat, int* row, int* col){
-    while (*row != mat->rows){
-        if (mat->fixedCellsBoard[*row][*col] == 0)
+void findFirstEmptyCell (Game* game, int* row, int* col){
+    while (*row != game->rows){
+        if (game->fixedCellsBoard[*row][*col] == 0)
             return;
         else
-            calcNextRowAndCol(mat, row, col);
+            calcNextRowAndCol(game, row, col);
     }
     /*all cells are fixed*/
     *row = -1;
     return;
 }
 
-void calcPrevRowAndCol(Mat* mat, int* row, int* col){
+void calcPrevRowAndCol(Game* game, int* row, int* col){
     if (*col > 0){
         *col = *col-1;
         return;
     }else{
         *row = *row-1;
-        *col = mat->columns-1;
+        *col = game->columns-1;
         return;
     }
 }
 
-void findLastEditedCell (Mat* mat, int* row, int* col){
-    *row = mat->rows - 1;
-    *col = mat->columns - 1;
+void findLastEditedCell (Game* game, int* row, int* col){
+    *row = game->rows - 1;
+    *col = game->columns - 2;
     while (*row != -1){
-        if (mat->fixedCellsBoard[*row][*col] == 0)
+        if (game->fixedCellsBoard[*row][*col] == 0 && game->currBoard[*row][*col] != 0)
             return;
         else
-            calcPrevRowAndCol(mat, row, col);
+            calcPrevRowAndCol(game, row, col);
     }
     return;
 }
 
-Mat* copyMat (Mat* otherMat){
-    Mat* mat = (Mat*)malloc(sizeof(Mat));
-    mat->columns = otherMat->columns;
-    mat->rows = otherMat->rows;
-    mat->fixedCellsBoard = otherMat->fixedCellsBoard;
-    mat->currBoard = otherMat->currBoard;
-    mat->maxValue = otherMat->maxValue;
-    return mat;
-}
-
-void findNextEmptyCell (Mat* mat, int* row, int* col){
-    while (*row != mat->rows){
-        if (mat->fixedCellsBoard[*row][*col] == 0)
+void findNextEmptyCell (Game* game, int* row, int* col){
+    calcNextRowAndCol(game, row, col);
+    while (*row != game->rows){
+        if (game->fixedCellsBoard[*row][*col] == 0)
             return;
         else
-            calcNextRowAndCol(mat, row, col);
+            calcNextRowAndCol(game, row, col);
     }
     return;
 }
 
-int num_solutions (Mat* mat) {
-    int i = 0, j = 0, solCounter=0;
+int num_solutions (Game* currGame) {
+    int i = 0, j = 0, solCounter=0, futureValue;
     int *row = &i;
     int *col = &j;
-    Mat* currMat;
-    Stack* stack = createStack(mat->rows * mat->columns);
-    push(stack, mat);
+    Stack* stack = createStack(currGame->rows * currGame->columns);
+    push(stack, deepCopyGame(currGame));
 
-    findFirstEmptyCell(mat, row, col);
+    printf("inside num_solutions. printing stack->arr[stack->top]:\n");
+    printGameBoard(stack->arr[stack->top]);
 
-    while(*row != -1){
+    findFirstEmptyCell(currGame, row, col);
+    printf("first empty cell: [%d,%d]\n", *row, *col);
 
-        if(*row == mat->rows){
+    while(1){
+
+        if(*row == currGame->rows){
             solCounter++;
-            findLastEditedCell(currMat, row, col);
-            currMat=pop(stack);
-        } else{
-            currMat=copyMat(currMat);
+            printf("solCounter = %d\n", solCounter);
+            pop(stack);
+            free(currGame);
+            currGame=pop(stack);
+            findLastEditedCell(currGame, row, col);
         }
 
-        currMat->currBoard[*row][*col]++;
+        futureValue=currGame->currBoard[*row][*col]+1;
 
-        while (!(isSafe(currMat->currBoard, *row, *col, currMat->currBoard[*row][*col]))){
-            if (currMat->currBoard[*row][*col]>mat->rows){
-                free(currMat);
-                currMat=pop(stack);
-                findLastEditedCell(currMat, row, col);
+        while (!(isSafe(currGame, *row, *col, futureValue)) || futureValue > currGame->rows){
+            if (futureValue > currGame->rows){
+                free(currGame);
+                currGame=pop(stack);
+                findLastEditedCell(currGame, row, col);
+                if (*row == -1){
+                    free(stack);
+                    return solCounter;
+                }
+                futureValue = currGame->currBoard[*row][*col];
             }
-            mat->currBoard[*row][*col]++;
+            printf("inside isSafe while\n");
+            printGameBoard(currGame);
+            printf("current futureValue (was not good): %d \n", futureValue);
+            futureValue++;
+            printf("next futureValue: %d \n", futureValue);
         }
 
-        push(stack, currMat);
-        findNextEmptyCell(mat, row, col);
+        printf("printing game before setting currBoard[*row][*col] to future value:\n");
+        printGameBoard(currGame);
+        currGame->currBoard[*row][*col]=futureValue;
+        printf("printing game after setting currBoard[*row][*col] to future value:\n");
+        printGameBoard(currGame);
+
+        push(stack, deepCopyGame(currGame));
+        findNextEmptyCell(currGame, row, col);
+        printf("next emptyCell: [%d,%d]\n", *row, *col);
     }
-    return solCounter;
-}
-
-/*
-int num_solutions(Game* game){
-    int *row; int *col;
-    int solCounter=0;
-    Stack* stack=createStack(game->rows * game->columns);
-    push(stack,game);
-
-    findFirstEmptyCell(game, row, col);TODO: possibly return [game->rows,0]
-    while we haven't reached [-1,0]
-    while(*row != -1){
-
-        found another solution
-        if (*row == game->rows && *col == 0) {
-            if (legalArraySize != 0) {
-                solCounter += legalArraySize;
-                removeFromLegalArrayStack(stack);
-            }
-            removeFromStack(stack);
-
-            if (isEmpty(stack))
-                return solCounter;
-
-            else {
-                game = pop(stack);
-                legalArray = popLegalArray(stack);
-                findLastEditedCell(game, row, col);
-            }
-        }
-
-        else{
-            legalArraySize=getLegalArray(game->currBoard, *row, *col, legalArray);
-            while (legalArraySize == 0){
-
-            }
-
-            pushToLegalArray(stack, legalArray);
-            game->currBoard[*row][*col]=legalArray[0];
-
-            if(legalArraySize!=0){
-                deleteIndex(legalArray, legalArraySize, 0);
-                legalArraySize--;
-            }
-            else{
-                game->currBoard[row][col]=EMPTY_CELL;
-                free(legalArray);
-                findLastEditedCell(game, x, y, row, col);
-                row=*x;
-                col=*y;
-            }
-            }
-    }
-}
-
-
-int num_solutions(Game* game){
-    int *i; int *j; int *x; int *y; int *legalArray; int solCounter=0, row, col, legalArraySize;
-    Stack* stack=createStack(game->rows * game->columns);
-    push(stack,game);
-
-    findFirstEmptyCell(game,i,j);
-row = *i;
-col = *j;
-while we haven't reached [0-1]
-while(row!=-1){
-if (row==game->rows && col==0){reached the end of the board->have found another solution
-solCounter++;
-removeFromStack(stack);
-if(isEmpty(stack))there aren't any boards
-return solCounter;
-else{do changes on the last board in the stack
-game=pop(stack);
-legalArray=(int*)calloc(RANGE, sizeof(int));
-findLastEditedCell(game, x, y, row, col);
-row=*x;
-col=*y;
-legalArraySize=getLegalArray(game->currBoard, row, col, legalArray);TODO: is game->curBoard is fine here?
-if(legalArraySize!=0){
-deleteIndex(legalArray, legalArraySize, 0);
-legalArraySize--;
-}
-else{
-game->currBoard[row][col]=EMPTY_CELL;
-free(legalArray);
-findLastEditedCell(game, x, y, row, col);
-row=*x;
-col=*y;
-}
-}
-}
-}
-}
- */
-
-int solveBoard(Game *game, int **mat, int i, int j){
-    int *legalArray;
-    int legalArraySize=0, index=0, nextI=0, nextJ=0;
-    /*reached the end of the board*/
-    if (i==game->rows && j==0) 
-        return 1;
-    if(mat[i][j]!=EMPTY_CELL){
-        nextI=calcNextI(game, i, j);
-        nextJ=calcNextJ(game, j);
-        return solveBoard(game, mat, nextI, nextJ);
-    }
-    legalArray=(int*)calloc(RANGE, sizeof(int));
-    legalArraySize=getLegalArray(mat, i, j, legalArray);
-    while(legalArraySize!=0){
-        mat[i][j]=legalArray[index];
-        nextI=calcNextI(game, i, j);
-        nextJ=calcNextJ(game, j);
-        /*try to solve the board with the current value of [i,j]*/
-        if(solveBoard(game, mat, nextI, nextJ)){ 
-            free(legalArray);
-            return 1;
-        }else{ /*didn't mange to solve the board in current state*/
-            deleteIndex(legalArray, legalArraySize, index);
-            legalArraySize--;
-        }
-    }
-    mat[i][j]=EMPTY_CELL;
-    free(legalArray);
-    return 0;
-}
-
-int generatePuzzle(Game *game, int i, int j){
-    int legalArraySize=0, index=0, nextI=0, nextJ=0;
-    int *legalArray;
-    /*reached the end of the board*/
-    if (i==game->rows && j==0) 
-        return 1;
-    legalArray=(int*)calloc(RANGE, sizeof(int));
-    legalArraySize=getLegalArray(game->solutionBoard, i, j, legalArray);
-    while(legalArraySize!=0){
-        index=getRand(legalArraySize);
-        game->solutionBoard[i][j]=legalArray[index];
-        nextI=calcNextI(game, i, j);
-        nextJ=calcNextJ(game, j);
-        /*try to solve the board with the current value of [i,j]*/
-        if(generatePuzzle(game, nextI, nextJ)){ 
-            free(legalArray);
-            return 1;
-        }else{ /*didn't mange to solve the board in current state*/
-            deleteIndex(legalArray, legalArraySize, index);
-            legalArraySize--;
-        }
-    }
-    game->solutionBoard[i][j]=EMPTY_CELL;
-    free(legalArray);
-    return 0;
 }
 
 int getRand(int legalArraySize){
@@ -266,7 +124,7 @@ int getRand(int legalArraySize){
         index=rand()%legalArraySize;
     return index;
 }
-
+/*
 int getLegalArray (int **mat, int x, int y, int *legalArray){
     int i=0,z;
     for (z=1;z<=RANGE;z++){
@@ -275,9 +133,9 @@ int getLegalArray (int **mat, int x, int y, int *legalArray){
             i++;
         }
     }
-    return i;/*i is legalArraySize*/
+    return i;
 }
-
+*/
 void deleteIndex(int *legalArray, int legalArraySize, int index){
     int i=0;
     /*shift cells from deleted cell's index*/

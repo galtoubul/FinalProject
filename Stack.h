@@ -17,8 +17,7 @@
 
 typedef struct Stack{
     int capacity;
-    Game* arr;
-    int* legalArray;
+    Game** arr;
     int top;
 }Stack;
 
