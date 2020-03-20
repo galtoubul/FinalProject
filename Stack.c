@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "Stack.h"
-#include "Game.h"
 
 Stack* createStack (int capacity){
     Stack* stack=(Stack*) malloc(sizeof(Stack));/*TODO: free*/
@@ -19,31 +18,31 @@ int isEmpty (Stack* stack){
     return stack->top==-1;
 }
 
-void push (Stack* stack, Mat* mat){
+void push (Stack* stack, Game* game){
     if(isFull(stack))
         stack->capacity+=100;
-    stack->arr[++stack->top]=*mat;
+    stack->arr[++stack->top]=*game;
     printf("inside push\n");/*TODO: delete*/
-    printGameBoard(mat->currBoard);/*TODO: delete*/
+    printGameBoard(game);/*TODO: delete*/
 }
 
 /* pre: assumes isEmpty(stack)=0*/
-Mat* pop(Stack* stack){
-    Mat* mat=top(stack);
+Game* pop(Stack* stack){
+    Game* game=top(stack);
+    /*removeFromStack(stack);*/
     stack->top--;
-    removeFromStack(stack);
-    return mat;
+    return game;
 }
-
+/*
 void removeFromStack(Stack* stack){
     if(!(isEmpty(stack)))
         free(&(stack->arr[stack->top]));
     else
-        printf("error in stack remove");
+        printf("error in stack remove\n");
 }
-
+*/
 /* pre: assumes isEmpty(stack)=0*/
-Mat* top (Stack* stack){
+Game* top (Stack* stack){
     printf("inside top\n");/*TODO: delete*/
     printGameBoard(&stack->arr[stack->top]);/*TODO: delete*/
     return &stack->arr[stack->top];
