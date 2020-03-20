@@ -30,13 +30,13 @@ void setCommand(Game* game, int col, int row, int z);
  * @param row - the index of the col
  * @return the number that exist in solvableBoard[x][y]
  */
-void hintCommand(Game* game, int col, int row);
+void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess);
 
 void solveCommand(Game* game, char* filePath);
 
 void saveCommand(Game* game, char*filePath);
 
-void editCommand(Game* game, Command* command);
+void editCommand(Game** game, Command* command);
 
 void markErrorsCommand(Game* game, Command* command);
 
@@ -46,7 +46,26 @@ void restartCommand(Game* game);
 
 void validateCommand(Game* game);
 
+void guessCommand(Game* game, Command* command);
+
 void exitCommand(Game* game);
+
+void generateCommand(Game* game, Command* command);
+
+void undoCommand(Game* game, Command* command);
+
+void redoCommand(Game* game, Command* command);
+
+void numSolutionsCommand(Game* game);
+
+void autoFillCommand(Game* game);
+
+void resetCommand(Game* game);
+
+
+
+
+
 
 
 #endif //SUDOKU_CMDHANDLER_H

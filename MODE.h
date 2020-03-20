@@ -1,5 +1,3 @@
-
-
 #ifndef SUDOKU_MODE_H
 #define SUDOKU_MODE_H
 

@@ -22,7 +22,7 @@
  *  setCommand          - assign new value to (x,y) at the game board
  *  isSafe              - checks if we can set value to (x,y) by checking if same value exist in same row,col,box.
  *  isBoardFull         - checks if every (x,y) has a value(0 == empty)
- *  hintCommand         - gives the true value of (x,y) at the solved game board --> note: solved board might not be updated
+ *  hintOrGuessHintCommand         - gives the true value of (x,y) at the solved game board --> note: solved board might not be updated
  *  destroyGame         - destroys game object by freeing it's memory
  *  freeBoard           - frees each row of the game board
  *
@@ -44,8 +44,10 @@ typedef struct game_t {
     int **currBoard;
     int **errorBoard;
     int mark_errors;
+    float threshold;
     bool solved;
     MODE mode;
+
 
 }Game;
 
@@ -154,5 +156,11 @@ void destroyGame(Game* game);
 void freeBoard(int** board,int row);
 
 int** copyBoard(int** board,int row,int col);
+
+bool isBoardErrorneous(Game* game);
+
+Game* deepCopyGame(Game* game);
+
+int numOfEmptyCells(Game* game);
 
 #endif

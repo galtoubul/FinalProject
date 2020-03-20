@@ -8,14 +8,16 @@ int loadPuzzle(char* filePath, Game* game){
     size_t len = 0;
     ssize_t read = 0;
     int counter = 0;
+    bool isError = false;
     fPointer = fopen(filePath,"r");
+    Game* prevGame = deepCopyGame(game);
 
     if(fPointer == NULL){
         printf("Error: file open failed\n");
         return 1;
     }
 
-    //loads first 2 lines of the file to get size or row and col.
+    /*loads first 2 lines of the file to get size or row and col.*/
     int m = 0;
     int n = 0;
     if(fscanf(fPointer,"%d %d", &m,&n) != 2){
@@ -27,7 +29,6 @@ int loadPuzzle(char* filePath, Game* game){
     game->rows = m*n;
     game->columns = m*n;
     game->size = game->rows*game->columns;
-
     createEmptyBoard(game);
     m = 0;
     n = 0;
@@ -39,7 +40,8 @@ int loadPuzzle(char* filePath, Game* game){
         while(token != NULL && strcmp(token,"\n") != 0){
             char* temp = (char*)malloc(sizeof(char));
             if (temp == NULL) {
-                return 0;
+                isError = true;
+                break;
             }
             if(n == game->columns){
                 n = 0;
@@ -48,7 +50,8 @@ int loadPuzzle(char* filePath, Game* game){
             temp = strncpy(temp,token,2);
             if(!isNumber(temp) || !validateCell(atoi(temp),game->rows)){
                 printf("Error: the value has been loaded is not valid\n");
-                return 0;
+                isError = true;
+                break;
             }
             game->currBoard[m][n] = atoi(temp);
             if(NULL != strrchr(token,'.')){
@@ -60,6 +63,19 @@ int loadPuzzle(char* filePath, Game* game){
             counter++;
         }
     }
+    if(counter == game->size && !isError){
+        /*Successfully loaded the game and all parameters are legal*/
+        destroyGame(prevGame);
+        return 0;
+    }
+    else if(isError || counter < game->size){
+        if(counter < game->size && !isError){
+            printf(loadGameNotEnoughParams);
+        }
+        destroyGame(game);
+        game = deepCopyGame(prevGame);
+    }
+
     fclose(fPointer);
     return 1;
 
@@ -69,26 +85,38 @@ int loadPuzzle(char* filePath, Game* game){
 int savePuzzle(char* filePath, Game* game, bool editMode){
 
     FILE* output;
-    int i = 0;
-    int j = 0;
+    int i = 0,j = 0;
     output = fopen(filePath,"wt");
+
     if(output == NULL){
-        printf("Error: Can't modify or save to this file\n");
-        return 1;
+        printf(saveFileError);
     }
+    else if(editMode && isBoardErrorneous(game)){
+        printf(saveErrorneousBoardCantSave);
+    }
+   /*else if(editMode && !isSolvable(game)){
+        printf(saveErrorNotSolvable);
+        TODO need to check if game is solvable
+    }*/
 
-    fprintf(output,"%d %d\n",game->rows,game->columns);
+    else{
+        fprintf(output,"%d %d\n",game->boxRow,game->boxCol);
 
-    for(i = 0; i < game->rows; i++){
-        for(j = 0; j < game->columns; j++){
-            fprintf(output,"%d",game->currBoard[i][j]);
-            if(editMode && game->currBoard[i][j] != 0){
-                fprintf(output,".");
+        for(i = 0; i < game->rows; i++){
+            for(j = 0; j < game->columns; j++){
+                fprintf(output,"%d",game->currBoard[i][j]);
+                if(editMode && game->currBoard[i][j] != 0){
+                    fprintf(output,".");
+                }
+                if(!editMode && game->fixedCellsBoard[i][j] == 1){
+                    fprintf(output,".");
+                }
+                fprintf(output, " ");
             }
-            fprintf(output, " ");
+            fprintf(output, "\n");
         }
-        fprintf(output, "\n");
     }
+
     fflush(output);
     fclose(output);
     return 1;

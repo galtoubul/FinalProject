@@ -1,5 +1,6 @@
 
 #include "Game.h"
+#include "ErrorsInterface.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -207,6 +208,7 @@ void destroyGame(Game* game){
     freeBoard(game->solutionBoard,game->rows);
     freeBoard(game->fixedCellsBoard,game->rows);
     freeBoard(game->currBoard,game->rows);
+    freeBoard(game->errorBoard,game->rows);
     free(game);
 }
 
@@ -223,8 +225,8 @@ int** copyBoard(int** board,int row,int col){
     int j;
     int** mat = (int**)calloc(row*col, sizeof(int*));
     if(mat == NULL){
-        printf("The copy board function failed! \n");
-        return NULL;
+        printf(failedToAllocateMem);
+        exit(EXIT_FAILURE);
     }
     for(i = 0; i < row; i++){
         mat[i] = calloc(col,sizeof(int*));
@@ -236,4 +238,53 @@ int** copyBoard(int** board,int row,int col){
         }
     }
     return mat;
+}
+
+bool isBoardErrorneous(Game* game){
+    int i,j;
+    for(i = 0; i < game->rows; i++){
+        for(j = 0; j < game->columns; j++){
+            if(game->errorBoard[i][j] == 1){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+int numOfEmptyCells(Game* game){
+    int i,j,count = 0;
+    for(i = 0; i < game->rows; i++){
+        for(j = 0; j < game->columns; j++){
+            if(game->currBoard[i][j] == 0){
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+Game* deepCopyGame(Game* game){
+    Game* gameCopy;
+    gameCopy = (Game*)malloc(sizeof(Game));
+    if(game == NULL){
+        printf(failedToAllocateMem);
+        free(game);
+        exit(EXIT_FAILURE);
+    }
+    gameCopy->mode = game->mode;
+    gameCopy->mark_errors = game->mark_errors;
+    gameCopy->columns = game->columns;
+    gameCopy->rows = game->rows;
+    gameCopy->size = game->size;
+    gameCopy->boxRow = game->boxRow;
+    gameCopy->boxCol = game->boxCol;
+    gameCopy->fixedCells = game->fixedCells;
+    gameCopy->solved = game->solved;
+    gameCopy->threshold = game->threshold;
+    gameCopy->currBoard = copyBoard(game->currBoard,gameCopy->rows,gameCopy->columns);
+    gameCopy->solutionBoard = copyBoard(game->solutionBoard,gameCopy->rows,gameCopy->columns);
+    gameCopy->errorBoard = copyBoard(game->errorBoard,gameCopy->rows,gameCopy->columns);
+    gameCopy->fixedCellsBoard = copyBoard(game->fixedCellsBoard,gameCopy->rows,gameCopy->columns);
+    return gameCopy;
 }
