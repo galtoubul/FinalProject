@@ -20,7 +20,7 @@ void setCommand(Game* game, int col, int row, int z){
         game->fixedCellsBoard[row][col] = 0;
     }
     else {
-        if(!isSafe(game->currBoard, row, col, z)){
+        if(!isSafe(game, row, col, z)){
             game->errorBoard[row][col] = 1;
         }
         game->currBoard[row][col] = z;
