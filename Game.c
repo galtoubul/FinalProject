@@ -72,6 +72,25 @@ void allocateMemory(Game* game,int rows,int columns){
     }
 }
 
+Game* copyGame(Game* otherGame){
+    Game* game = (Game*)malloc(sizeof(otherGame));
+    game->rows = otherGame->rows;
+    game->columns = otherGame->columns;
+    game->boxRow = otherGame->boxRow;
+    game->boxCol = otherGame->boxCol;
+    game->size = otherGame->size;
+    game->currBoard = copyBoard(otherGame->currBoard, game->rows, game->columns);
+    game->fixedCellsBoard = copyBoard(otherGame->fixedCellsBoard, game->rows, game->columns);
+    game->errorBoard = copyBoard(otherGame->errorBoard, game->rows, game->columns);
+    game->solutionBoard = copyBoard(otherGame->solutionBoard, game->rows, game->columns);
+    game->fixedCells = otherGame->fixedCells;
+    game->mark_errors = otherGame->mark_errors;
+    game->mode = otherGame->mode;
+    game->solved = otherGame->solved;
+
+    return game;
+}
+
 void initUserBoard(Game* game){
     int fixedCells = game->fixedCells;
     while(fixedCells > 0){

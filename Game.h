@@ -73,6 +73,8 @@ void createEmptyBoard(Game* game);
  */
 void allocateMemory(Game* game,int rows,int columns);
 
+Game* copyGame(Game* otherGame);
+
 /**
  * reveal the fixedCells of the board by randomizing the x,y of the cells we want to make sure are fixed, the rest
  * of the cells will treat as 0 - mean we haven't revealed them. it takes the "true" value from the
@@ -91,7 +93,6 @@ void printGameBoard(Game* game);
  * This function used by printGameBoard to print help print the given template.(basically it prints 34 -).
  */
 void printDashes(Game* game);
-
 
 /**
  * This function checks if it's safe to assign value to mat[row][col] by using 3 functions UsedInBox, UsedInCol
