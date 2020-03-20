@@ -1,5 +1,5 @@
-
-
+#ifndef EX3_GAME_H
+#define EX3_GAME_H
 #include <stdbool.h>
 #include "MODE.h"
 
@@ -161,3 +161,4 @@ Game* deepCopyGame(Game* game);
 
 int numOfEmptyCells(Game* game);
 
+#endif
