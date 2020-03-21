@@ -42,8 +42,6 @@ void markErrorsCommand(Game* game, Command* command);
 
 void printBoardCommand(Game* game);
 
-void restartCommand(Game* game);
-
 void validateCommand(Game* game);
 
 void guessCommand(Game* game, Command* command);
@@ -52,9 +50,9 @@ void exitCommand(Game* game);
 
 void generateCommand(Game* game, Command* command);
 
-void undoCommand(Game* game, Command* command);
+void undoCommand(Game* game);
 
-void redoCommand(Game* game, Command* command);
+void redoCommand(Game* game);
 
 void numSolutionsCommand(Game* game);
 
@@ -63,9 +61,4 @@ void autoFillCommand(Game* game);
 void resetCommand(Game* game);
 
 
-
-
-
-
-
-#endif //SUDOKU_CMDHANDLER_H
+#endif

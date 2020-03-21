@@ -6,6 +6,7 @@
 
 void setCommand(Game* game, int col, int row, int z){
 
+    Node* node;
     col = col - 1; /*rows and columns are 1's based --> mat[0][0] is mat[1][1]*/
     row = row - 1;
 
@@ -14,6 +15,7 @@ void setCommand(Game* game, int col, int row, int z){
         printf(setSolveModeAndFixedCell);
         return;
     }
+
     else if(z == 0){
         game->currBoard[row][col] = 0;
         game->errorBoard[row][col] = 0;
@@ -32,6 +34,11 @@ void setCommand(Game* game, int col, int row, int z){
         game->mode = INITMODE;
         printf("Puzzle solved successfully\n");
     }
+    node = newNode(game);
+    clearRedoNodes(game->head->next,game->rows);
+    insertNode(game,node);
+
+
 
 }
 
@@ -62,8 +69,7 @@ void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
 
 
 void solveCommand(Game* game, char* filePath){
-    game->mode = SOLVEMODE;
-    loadPuzzle(filePath,game);
+    loadPuzzle(filePath,game,true);
 }
 
 
@@ -79,13 +85,15 @@ void saveCommand(Game* game, char* filePath){
 void editCommand(Game** game, Command* command){
     int succeed = 0;
     if(command->fileName != NULL){
-        succeed = loadPuzzle(command->fileName,*game);
+        succeed = loadPuzzle(command->fileName,*game,false);
         if(succeed == 0){
             (*game)->mode = EDITMODE;
         }
     }
     /* case no path*/
     else if(command->fileName == NULL){
+        freeLinkedList((*game)->head,(*game)->rows);
+        destroyGame(*game);
         *game = createGame();
         (*game)->mode = EDITMODE;
     }
@@ -99,9 +107,6 @@ void printBoardCommand(Game* game){
         printGameBoard(game);
 }
 
-void restartCommand(Game* game){
-    destroyGame(game);
-}
 
 void validateCommand(Game* game){
     if(isBoardErrorneous(game)){
@@ -118,6 +123,7 @@ void validateCommand(Game* game){
 }
 
 void guessCommand(Game* game, Command* command){
+    /*Node* node;*/
     game->threshold = command->threshold;
     if(isBoardErrorneous(game)){
         printf(boardIsErrorneous);
@@ -125,17 +131,24 @@ void guessCommand(Game* game, Command* command){
     /*else{
         guessILP(game);
         TODO need to finish ILP then function guess using it
+        node = newNode(game);
+        clearRedoNodes(game->head->next,game->rows);
+        insertNode(game,node);
     }*/
 }
 
 void generateCommand(Game* game, Command* command){
+    /*Node* node;*/
     int num = numOfEmptyCells(game);
     if(num > command->X){
         printf(generateBoardNotContainXEmpty,num);
         return;
     }
     else{
-        /*generateILP(game,command.X,command.Y)*/
+        /*generateILP(game,command.X,command.Y)
+         *node = newNode(game);
+        clearRedoNodes(game->head->next,game->rows);
+        insertNode(game,node);*/
     }
 }
 
@@ -151,29 +164,58 @@ void numSolutionsCommand(Game* game){
 }
 
 void autoFillCommand(Game* game){
+    /*Node* node;*/
     if(isBoardErrorneous(game)){
         printf(boardIsErrorneous);
     }
     else{
         /*autoFillSolve(game);
+         *      node = newNode(game);
+                clearRedoNodes(game->head->next,game->rows);
+                insertNode(game,node);
          * TODO need to prompt this func*/
 
     }
 }
 
-/*void resetCommand(Game* game){
- * TODO needs to follow instructions
+void resetCommand(Game* game){
+    while(game->head->prev != NULL){
+        game->head = game->head->prev;
+    }
+    game->currBoard = copyBoard(game->head->currentBoard,game->rows,game->columns);
+    game->errorBoard = copyBoard(game->head->errorBoard,game->rows,game->columns);
+    printGameBoard(game);
+
 }
- */
 
 
-//void undoCommand(Game* game, Command* command){
-//    /*TODO needs to follow instructions */
-//}
-//
-//void redoCommand(Game* game, Command* command){
-//    /*TODO needs to follow instructions*/
-//}
+
+void undoCommand(Game* game){
+    if(game->head->prev == NULL){
+        printf(undoEmptyError);
+        return;
+    }
+    else{
+        compareBoards(game->currBoard,game->head->prev->currentBoard,game->rows,game->columns);
+        game->currBoard = copyBoard(game->head->prev->currentBoard,game->rows,game->columns);
+        game->errorBoard = copyBoard(game->head->prev->errorBoard,game->rows,game->columns);
+        game->head=game->head->prev;
+    }
+
+}
+
+void redoCommand(Game* game){
+    if(game->head->next == NULL){
+        printf(redoEmptyError);
+        return;
+    }
+    else{
+        compareBoards(game->currBoard,game->head->next->currentBoard,game->rows,game->columns);
+        game->currBoard = copyBoard(game->head->next->currentBoard,game->rows,game->columns);
+        game->errorBoard = copyBoard(game->head->next->errorBoard,game->rows,game->columns);
+        game->head = game->head->next;
+    }
+}
 
 void exitCommand(Game* game){
     destroyGame(game);
