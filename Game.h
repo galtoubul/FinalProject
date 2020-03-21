@@ -1,9 +1,8 @@
-
+#ifndef EX3_GAME_H
+#define EX3_GAME_H
 
 #include <stdbool.h>
 #include "MODE.h"
-
-
 
 /**
  *  Game Summary :
@@ -27,6 +26,14 @@
  */
 
 
+typedef struct node_t{
+    int** currentBoard;
+    int** errorBoard;
+    struct node_t* next;
+    struct node_t* prev;
+}Node;
+
+
 /**
  * Game Structure
  */
@@ -45,9 +52,9 @@ typedef struct game_t {
     float threshold;
     bool solved;
     MODE mode;
-
-
+    Node* head; /*points to current move,next is redo,prev is undo*/
 }Game;
+
 
 
 /**
@@ -70,15 +77,6 @@ void createEmptyBoard(Game* game);
  * @param columns
  */
 void allocateMemory(Game* game,int rows,int columns);
-
-
-/**
- * reveal the fixedCells of the board by randomizing the x,y of the cells we want to make sure are fixed, the rest
- * of the cells will treat as 0 - mean we haven't revealed them. it takes the "true" value from the
- * solvable board that exist in every game object.
- * @param game
- */
-void initUserBoard(Game* game);
 
 /**
  * This function prints the game board with the given template.
@@ -161,3 +159,18 @@ Game* deepCopyGame(Game* game);
 
 int numOfEmptyCells(Game* game);
 
+Node* newNode(Game* game);
+
+void insertNode(Game* game, Node* node);
+
+void compareBoards(int** thisBoard,int** otherBoard,int row,int col);
+
+void clearRedoNodes(Node* currNode,int rows);
+
+void freeNode(Node* node,int rows);
+
+void freeLinkedList(Node* node,int rows);
+
+bool validateFixedCells(Game* game);
+
+#endif

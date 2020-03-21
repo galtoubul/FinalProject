@@ -3,9 +3,8 @@
 #include <stdbool.h>
 #include "Game.h"
 #include "ErrorsInterface.h"
-
 #define RANGE 9
-#define EMPTY_CELL 0
+
 
 Game* createGame(){
     Game* game;
@@ -24,6 +23,7 @@ Game* createGame(){
     game->mode = INITMODE;
     game->mark_errors = 1;
     createEmptyBoard(game);
+    game->head = newNode(game);
 
     return game;
 }
@@ -69,19 +69,6 @@ void allocateMemory(Game* game,int rows,int columns){
         game->solutionBoard[i] = calloc(columns,sizeof(int*));
         game->fixedCellsBoard[i] = calloc(columns,sizeof(int*));
         game->errorBoard[i] = calloc(columns,sizeof(int*));
-    }
-}
-
-void initUserBoard(Game* game){
-    int fixedCells = game->fixedCells;
-    while(fixedCells > 0){
-        int y = rand()%RANGE;
-        int x = rand()%RANGE;
-        if(game->fixedCellsBoard[x][y] != 1){
-            game->currBoard[x][y] = game->solutionBoard[x][y]; /*Reveal the cell value*/
-            game->fixedCellsBoard[x][y] = 1; /*Mark the cell that is fixed*/
-            fixedCells--;
-        }
     }
 }
 
@@ -181,7 +168,7 @@ bool UsedInBox(Game* game, int row, int col, int num){
 bool isSafe(Game* game, int row, int col, int num)
 {
     /* Check if 'num' is not already placed in current row,
-       current column and current 3x3 box */
+       current column and current box */
     return !UsedInRow(game, row, num) &&
            !UsedInCol(game, col, num) &&
            !UsedInBox(game, row - row % game->boxRow, col - col % game->boxCol, num);
@@ -283,5 +270,85 @@ Game* deepCopyGame(Game* game){
     gameCopy->solutionBoard = copyBoard(game->solutionBoard,gameCopy->rows,gameCopy->columns);
     gameCopy->errorBoard = copyBoard(game->errorBoard,gameCopy->rows,gameCopy->columns);
     gameCopy->fixedCellsBoard = copyBoard(game->fixedCellsBoard,gameCopy->rows,gameCopy->columns);
+    gameCopy->head = game->head;
     return gameCopy;
+}
+
+void compareBoards(int** thisBoard,int** otherBoard,int row,int col){
+    int i,j,otherNum,thisNum;
+    for(i = 0; i < row; i++){
+        for(j = 0; j < col; j++){
+            thisNum = thisBoard[i][j];
+            otherNum = otherBoard[i][j];
+            if(thisNum != otherNum){
+                printf("cell at (%d,%d) was %d,now it's %d\n",i+1,j+1,thisNum,otherNum);
+            }
+
+        }
+    }
+
+}
+
+Node* newNode(Game* game) {
+    Node *node = (Node *) malloc(sizeof(Node));
+    if (node == NULL) {
+        printf("Failed too allocate memory, exiting...\n");
+        exit(EXIT_FAILURE);
+    }
+    node->currentBoard = copyBoard(game->currBoard,game->rows,game->columns);
+    node->errorBoard = copyBoard(game->errorBoard,game->rows,game->columns);
+    node->prev = NULL;
+    node->next = NULL;
+    return node;
+}
+
+void insertNode(Game* game, Node* node){
+    game->head->next = node;
+    node->prev = game->head;
+    game->head = node;
+}
+
+void clearRedoNodes(Node* currNode,int rows){
+    Node* temp;
+    while(currNode != NULL){
+        temp = currNode->next;
+        freeNode(currNode,rows);
+        currNode = temp;
+    }
+}
+
+void freeNode(Node* node,int rows){
+    freeBoard(node->currentBoard,rows);
+    freeBoard(node->errorBoard,rows);
+    free(node);
+}
+
+void freeLinkedList(Node* node,int rows){
+    Node* temp;
+    clearRedoNodes(node,rows);
+    while(node != NULL){
+        /*TODO there's a problem here if we insert edit as first command it collapses at the second iteration*/
+        temp = node->prev;
+        freeNode(node,rows);
+        node = temp;
+    }
+}
+
+bool validateFixedCells(Game* game){
+    int i,j,temp;
+    for(i = 0; i < game->rows; i++){
+        for(j = 0; j < game->columns; j++){
+            if(game->fixedCellsBoard[i][j] == 1){
+                temp = game->currBoard[i][j];
+                game->currBoard[i][j] = 0;
+                if(!isSafe(game,i,j,temp)){
+                    game->currBoard[i][j] = temp;
+                    printf(fixedCellIsError,i+1,j+1);
+                    return false;
+                }
+                game->currBoard[i][j] = temp;
+            }
+        }
+    }
+    return true;
 }
