@@ -8,4 +8,4 @@ typedef enum {
 } MODE;
 
 
-#endif //SUDOKU_MODE_H
+#endif
