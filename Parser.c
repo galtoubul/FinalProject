@@ -87,7 +87,7 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
         command.cmd = INVALID_INPUT_COMMAND;
     }
 
-    //free(copyInput);
+    /*free(copyInput); TODO when freeing solve and edit doesn't work as it frees the file path string*/
     return command;
 
 }
@@ -138,6 +138,7 @@ void setFunc(char *str, Command* command,int upperBound,MODE* mode){
 
     char* token;
     int i = 1, num;
+    bool error = false;
 
     if(*mode == INITMODE){
         printf(setIllegalMode);
@@ -150,7 +151,7 @@ void setFunc(char *str, Command* command,int upperBound,MODE* mode){
         token = strtok(str, delim);
         while(token != NULL && i < 4){
             token = strtok(NULL,delim);
-            if(isInteger(token)){
+            if(!error && isInteger(token)){
                 num = atoi(token);
                 if(i == 1 && validateRowCol(num,upperBound)){
                     command->X = num;
@@ -161,7 +162,11 @@ void setFunc(char *str, Command* command,int upperBound,MODE* mode){
                 else if(i == 3 && validateCell(num,upperBound)){
                     command->Z = num;
                 }
-                i++;
+                else{
+                    error = true;
+                    i--;
+                }
+
             }
             else{
                 command->cmd = ERROR;
@@ -179,6 +184,7 @@ void setFunc(char *str, Command* command,int upperBound,MODE* mode){
                 }
                 break;
             }
+            i++;
         }
     }
 
@@ -187,6 +193,7 @@ void setFunc(char *str, Command* command,int upperBound,MODE* mode){
 void hintOrGuessHintFunc(char *str, Command* command, int upperBound, MODE* mode){
     char* token;
     int i = 1, num;
+    bool error = false;
     if(*mode != SOLVEMODE){
         printf(hintIllegalMode);
         command->cmd = ERROR;
@@ -199,7 +206,7 @@ void hintOrGuessHintFunc(char *str, Command* command, int upperBound, MODE* mode
         token = strtok(str, delim);
         while(token != NULL && i < 3){
             token = strtok(NULL,delim);
-            if(isInteger(token)){
+            if(!error && isInteger(token)){
                 num = atoi(token);
                 if(i == 1 && validateRowCol(num, upperBound)){
                     command->X = num;
@@ -207,7 +214,10 @@ void hintOrGuessHintFunc(char *str, Command* command, int upperBound, MODE* mode
                 else if(i == 2 && validateRowCol(num, upperBound)){
                     command->Y = num;
                 }
-                i++;
+                else{
+                    error = true;
+                    i--;
+                }
             }
             else{
                 command->cmd = ERROR;
@@ -221,7 +231,7 @@ void hintOrGuessHintFunc(char *str, Command* command, int upperBound, MODE* mode
                 }
                 break;
             }
-
+            i++;
         }
     }
 }
