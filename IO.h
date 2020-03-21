@@ -8,7 +8,7 @@
 
 
 
-int loadPuzzle(char* filePath, Game* game);
+int loadPuzzle(char* filePath, Game* game,bool solveMode);
 
 int savePuzzle(char* filePath, Game* game, bool editMode);
 
@@ -21,4 +21,4 @@ int savePuzzle(char* filePath, Game* game, bool editMode);
 bool isNumber(char *text);
 
 
-#endif //SUDOKU_IO_H
+#endif

@@ -1,7 +1,8 @@
 
 #include "IO.h"
 
-int loadPuzzle(char* filePath, Game* game){
+
+int loadPuzzle(char* filePath, Game* game,bool solveMode){
 
     FILE *fPointer;
     char* line = NULL;
@@ -9,6 +10,7 @@ int loadPuzzle(char* filePath, Game* game){
     ssize_t read = 0;
     int counter = 0;
     bool isError = false;
+    Node* node;
     fPointer = fopen(filePath,"r");
     Game* prevGame = deepCopyGame(game);
 
@@ -37,7 +39,7 @@ int loadPuzzle(char* filePath, Game* game){
     read = getline(&line, &len, fPointer);
     while ((read = getline(&line, &len, fPointer)) != -1 && counter < game->size ) {
         char* token = strtok(line, " \t");
-        while(token != NULL && strcmp(token,"\n") != 0){
+        while(token != NULL && strcmp(token,"\n") != 0 && counter < game->size){
             char* temp = (char*)malloc(sizeof(char));
             if (temp == NULL) {
                 isError = true;
@@ -57,23 +59,33 @@ int loadPuzzle(char* filePath, Game* game){
             if(NULL != strrchr(token,'.')){
                 game->fixedCellsBoard[m][n] = 1;
             }
-            free(temp);
+            //free(temp);
             token = strtok(NULL," ");
             n++;
             counter++;
         }
     }
-    if(counter == game->size && !isError){
-        /*Successfully loaded the game and all parameters are legal*/
-        destroyGame(prevGame);
-        return 0;
-    }
-    else if(isError || counter < game->size){
+    /*an error occured while loading the file, revert back to previous board and print error*/
+    if(isError || counter < game->size){
         if(counter < game->size && !isError){
             printf(loadGameNotEnoughParams);
         }
         destroyGame(game);
         game = deepCopyGame(prevGame);
+    }
+    else if(!validateFixedCells(game)){
+        destroyGame(game);
+        game = deepCopyGame(prevGame);
+    }
+    else if(counter == game->size && !isError){
+        /*Successfully loaded the game and all parameters are legal*/
+        node = newNode(game);
+        game->head = node;
+        freeLinkedList(prevGame->head,prevGame->rows);
+        destroyGame(prevGame);
+        if(solveMode){
+            game->mode = SOLVEMODE;
+        }
     }
 
     fclose(fPointer);
