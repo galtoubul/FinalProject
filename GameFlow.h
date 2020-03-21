@@ -11,4 +11,4 @@ void runGame();
 
 void clear();
 
-#endif //SUDOKU_GAMEFLOW_H
+#endif

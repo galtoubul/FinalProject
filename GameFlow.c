@@ -58,11 +58,11 @@ void runGame(){
         }
 
         else if(command.cmd == REDO){
-            //redoCommand(game,&command);
+            redoCommand(game);
         }
 
         else if(command.cmd == UNDO){
-            //undoCommand(game,&command);
+            undoCommand(game);
         }
 
         else if(command.cmd == NUM_SOLUTIONS){
@@ -74,7 +74,7 @@ void runGame(){
         }
 
         else if(command.cmd == RESET){
-            //resetCommand(game);
+            resetCommand(game);
         }
 
         else if(command.cmd == GUESS){
