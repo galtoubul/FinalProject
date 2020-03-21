@@ -31,7 +31,7 @@
 #define guessParamIsNotFloat "Error : guess accepts only float argument\n"
 
 
-#define generateIllegalMode "Error: generate command available only in error mode\n"
+#define generateIllegalMode "Error: generate command available only in edit mode\n"
 #define generateTooManyArguments "Error: generate command accepts only 2 arguments\n"
 #define generateErrorArgOne "Error: argument 1 needs to be a positive number\n"
 #define generateErrorArgTwo "Error: argument 2 needs to be a non negative number\n"
@@ -71,6 +71,10 @@
 #define saveFileError "Error: Can't modify or save to this file\n"
 
 
+#define undoEmptyError "Error: there are no moves to undo\n"
+#define redoEmptyError "Error: there are no moves to redo\n"
+
+
 
 
 
@@ -79,4 +83,5 @@
 #define boardNotSolvable   "Board is not solvable\n"
 #define boardIsErrorneous "can't prompt this command if board has errorneous cells\n"
 #define failedToAllocateMem "failed to allocate memmory, exiting...\n"
-#endif //SUDOKU_ERRORSINTERFACE_H
+#define fixedCellIsError     "can't load this game since cell (%d,%d) is fixed and is not valid at this position\n"
+#endif
