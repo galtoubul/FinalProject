@@ -4,9 +4,7 @@
 #define ARRSIZE 258
 
 void runGame(){
-
-    printf("Welcome to Sudoku Game!\n");
-
+    Game* game;
     char* input = (char*) malloc(ARRSIZE * sizeof(char));
     if(input == NULL){
         printf("Error: Program has failed!\n");
@@ -14,7 +12,9 @@ void runGame(){
         exit(EXIT_FAILURE);
     }
 
-    Game* game = createGame();
+    printf("Welcome to Sudoku Game!\n");
+    game = createGame();
+
     while(1){
 
         Command command;
@@ -97,6 +97,7 @@ void runGame(){
             free(input);
             return;
         }
+
     }
 }
 

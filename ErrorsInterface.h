@@ -84,4 +84,5 @@
 #define boardIsErrorneous "can't prompt this command if board has errorneous cells\n"
 #define failedToAllocateMem "failed to allocate memmory, exiting...\n"
 #define fixedCellIsError     "can't load this game since cell (%d,%d) is fixed and is not valid at this position\n"
+#define ExitingCmd           "Exiting...\n"
 #endif

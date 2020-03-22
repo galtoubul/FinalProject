@@ -8,23 +8,22 @@ int loadPuzzle(char* filePath, Game* game,bool solveMode){
     char* line = NULL;
     size_t len = 0;
     ssize_t read = 0;
-    int counter = 0;
+    int counter = 0,m=0,n=0;
     bool isError = false;
     Node* node;
-    fPointer = fopen(filePath,"r");
     Game* prevGame = deepCopyGame(game);
+    fPointer = fopen(filePath,"r");
+
 
     if(fPointer == NULL){
         printf("Error: file open failed\n");
-        return 1;
+        return 0;
     }
 
     /*loads first 2 lines of the file to get size or row and col.*/
-    int m = 0;
-    int n = 0;
     if(fscanf(fPointer,"%d %d", &m,&n) != 2){
         printf("Error: invalid Sudoku size parameters\n");
-        return 1;
+        return 0;
     }
     game->boxCol = n;
     game->boxRow = m;
@@ -35,7 +34,7 @@ int loadPuzzle(char* filePath, Game* game,bool solveMode){
     m = 0;
     n = 0;
 
-    //read file line by line, iterate through game board and add the values correctly.
+    /*read file line by line, iterate through game board and add the values correctly.*/
     read = getline(&line, &len, fPointer);
     while ((read = getline(&line, &len, fPointer)) != -1 && counter < game->size ) {
         char* token = strtok(line, " \t");
@@ -59,12 +58,15 @@ int loadPuzzle(char* filePath, Game* game,bool solveMode){
             if(NULL != strrchr(token,'.')){
                 game->fixedCellsBoard[m][n] = 1;
             }
-            //free(temp);
+            /*free(temp);*/
             token = strtok(NULL," ");
             n++;
             counter++;
         }
     }
+
+    fclose(fPointer);
+
     /*an error occured while loading the file, revert back to previous board and print error*/
     if(isError || counter < game->size){
         if(counter < game->size && !isError){
@@ -72,10 +74,12 @@ int loadPuzzle(char* filePath, Game* game,bool solveMode){
         }
         destroyGame(game);
         game = deepCopyGame(prevGame);
+        return 0;
     }
     else if(!validateFixedCells(game)){
         destroyGame(game);
         game = deepCopyGame(prevGame);
+        return 0;
     }
     else if(counter == game->size && !isError){
         /*Successfully loaded the game and all parameters are legal*/
@@ -88,7 +92,6 @@ int loadPuzzle(char* filePath, Game* game,bool solveMode){
         }
     }
 
-    fclose(fPointer);
     return 1;
 
 }

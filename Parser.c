@@ -12,7 +12,7 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
 
     Command command;
     char* token;
-    char *copyInput = (char*) malloc(strlen(input)*sizeof(char));
+    char *copyInput = (char*) malloc((strlen(input)+1)*sizeof(char));
     if(copyInput == NULL){
         printf("Error: parseCommand has failed\n");
         free(copyInput);
@@ -21,6 +21,7 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
     command.cmd = ERROR;
     strcpy(copyInput,input);
     token = strtok(input,delim);
+
     if(strlen(copyInput) > 256){
         command.cmd = MAX_ARGS_REACHED;
         clear();
@@ -462,7 +463,7 @@ bool isFloat(char* str){
 
 bool isLegalLengthCmd(char* str, int len){
     char* token;
-    char copyStr[strlen(str)];
+    char* copyStr = (char*)malloc(strlen(str)*sizeof(char));
     int i = 0;
     strcpy(copyStr,str);
     token = strtok(copyStr,delim);
@@ -470,11 +471,15 @@ bool isLegalLengthCmd(char* str, int len){
         token = strtok(NULL,delim);
         i++;
     }
+
+    /*free(copyStr); TODO remove comment after, debugging error's...*/
+
     if(i != len){
         return false;
     } else{
         return true;
     }
+
 }
 
 bool validateCell(int num,int upperBound){
