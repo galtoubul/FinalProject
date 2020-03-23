@@ -29,6 +29,7 @@
 #define guessIllegalMode "Error: guess command available only in solve mode\n"
 #define guessTooManyArguments "Error: guess command accepts only 1 argument\n"
 #define guessParamIsNotFloat "Error : guess accepts only float argument\n"
+#define guessParamInvalidRange "Error: guess parameter needs to be floating point between 0 to 1\n"
 
 
 #define generateIllegalMode "Error: generate command available only in edit mode\n"
