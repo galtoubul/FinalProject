@@ -1,7 +1,8 @@
 
 #include "GameFlow.h"
 
-#define ARRSIZE 258
+#define ARRSIZE 256
+
 
 void runGame(){
     Game* game;
