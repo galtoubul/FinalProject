@@ -119,7 +119,7 @@ bool is_empty(const char *s);
 
 bool isInteger(char* str);
 
-bool isFloat(char* str);
+bool isFloat(char* str,float* float_num);
 
 bool isLegalLengthCmd(char* str, int len);
 

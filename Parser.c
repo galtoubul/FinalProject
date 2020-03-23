@@ -22,7 +22,7 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
     strcpy(copyInput,input);
     token = strtok(input,delim);
 
-    if(strlen(copyInput) > 256){
+    if(copyInput[strlen(copyInput)-1] != '\n'){
         command.cmd = MAX_ARGS_REACHED;
         clear();
     }
@@ -126,6 +126,7 @@ void solveAndSaveFunc(char *str, Command* command,MODE* mode){
     }
     else if(!isLegalLengthCmd(str,2)){
         printf(solveOrSaveIllegalArugments);
+        command->cmd = ERROR;
     }
     else{
         token = strtok(str,delim);
@@ -331,13 +332,14 @@ void guessFunc(char* str, Command* command, MODE* mode){
     else {
         token = strtok(str,delim);
         token = strtok(NULL,delim);
-        if(!isFloat(token)){
+        if(!isFloat(token,&command->threshold)){
             printf(guessParamIsNotFloat);
+        }
+        else if(command->threshold < 0 || command->threshold > 1){
+            printf(guessParamInvalidRange);
         }
         else{
             command->cmd = GUESS;
-            command->threshold = strtof(token,NULL);
-
         }
     }
 
@@ -442,9 +444,9 @@ bool isInteger(char* str){
     return true;
 }
 
-bool isFloat(char* str){
+bool isFloat(char* str,float* float_num){
     char* c=str;
-    int seenDot = 0;
+    int seenDot = 0,ret;
     while(c[0]){
         if(!isdigit(c[0]) && (c[0] != '.' || seenDot)) {
             return false; /*str has two dots or has a illegal char in it*/
@@ -458,7 +460,8 @@ bool isFloat(char* str){
     if(c[0]=='.') {
         return false; /*str ends with dot*/
     }
-    return true;
+    ret = sscanf(str, "%f",float_num);
+    return ret == 1;
 }
 
 bool isLegalLengthCmd(char* str, int len){
