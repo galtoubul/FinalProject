@@ -6,8 +6,8 @@ int loadPuzzle(char* filePath, Game* game,bool solveMode){
 
     FILE *fPointer;
     char* line = NULL;
-    size_t len = 0;
-    ssize_t read = 0;
+    int len = 0;
+    int read = 0;
     int counter = 0,m=0,n=0;
     bool isError = false;
     Node* node;
@@ -35,8 +35,8 @@ int loadPuzzle(char* filePath, Game* game,bool solveMode){
     n = 0;
 
     /*read file line by line, iterate through game board and add the values correctly.*/
-    read = getline(&line, &len, fPointer);
-    while ((read = getline(&line, &len, fPointer)) != -1 && counter < game->size ) {
+    read = readline(&line, &len, fPointer);
+    while ((read = readline(&line, &len, fPointer)) != -1 && counter < game->size ) {
         char* token = strtok(line, " \t");
         while(token != NULL && strcmp(token,"\n") != 0 && counter < game->size){
             char* temp = (char*)malloc(sizeof(char));
@@ -156,4 +156,46 @@ bool isNumber(char *input)
         return false;
     }
     return true;
+}
+
+int readline(char** toWrite,int* len,FILE* pointer){
+        const int defSize = 16;
+        int num_read = 0,c,sizeTwo;
+        char* temp;
+
+        if((toWrite == NULL) || (len == NULL) || (pointer == NULL)){
+            return -1;
+        }
+        if(*toWrite == NULL){
+            *toWrite = malloc(defSize);
+            if(*toWrite == NULL){
+                return -1;
+            }
+            *len = defSize;
+        }
+        while(EOF != (c = getc(pointer))){
+            num_read++;
+            if(num_read >= *len){
+                sizeTwo = *len + defSize;
+                temp = realloc(*toWrite,sizeTwo + 1);
+                if(temp != NULL){
+                    *toWrite = temp;
+                    *len = sizeTwo;
+                }
+                else{
+                    return -1;
+                }
+            }
+            (*toWrite)[num_read -1] = (char)c;
+            if(EOF == c){
+                return -1;
+            }
+
+            if(c == '\n'){
+                break;
+            }
+        }
+
+    (*toWrite)[num_read] = '\0';
+    return c;
 }

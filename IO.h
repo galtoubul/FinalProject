@@ -12,6 +12,8 @@ int loadPuzzle(char* filePath, Game* game,bool solveMode);
 
 int savePuzzle(char* filePath, Game* game, bool editMode);
 
+int readline(char** toWrite,int* len,FILE* pointer);
+
 
 /**
  * gets current token from the file and checks if it's a number
