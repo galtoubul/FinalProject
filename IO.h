@@ -8,7 +8,7 @@
 
 
 
-int loadPuzzle(char* filePath, Game* game,bool solveMode);
+int loadPuzzle(char* filePath, Game** game,bool solveMode);
 
 int savePuzzle(char* filePath, Game* game, bool editMode);
 
@@ -20,7 +20,7 @@ int readline(char** toWrite,int* len,FILE* pointer);
  * @param text - current token
  * @return tre iff is a valid number
  */
-bool isNumber(char *text);
+bool isNumber(char *input,bool prevDot);
 
 
 #endif

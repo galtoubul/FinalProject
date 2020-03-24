@@ -1,20 +1,27 @@
 
 #include "IO.h"
+#include <ctype.h>
 
 
-int loadPuzzle(char* filePath, Game* game,bool solveMode){
+int loadPuzzle(char* filePath, Game** game,bool solveMode){
 
     FILE *fPointer;
     char* line = NULL;
+    char* token;
     int len = 0;
     int read = 0;
     int counter = 0,m=0,n=0;
-    bool isError = false;
+    bool isError = false, fixedCandidate = false;
     Node* node;
-    Game* prevGame = deepCopyGame(game);
+    Game* newGame = (Game*)malloc(sizeof(Game));
+
+    if(game == NULL){
+        printf(failedToAllocateMem);
+        free(game);
+        exit(EXIT_FAILURE);
+    }
+
     fPointer = fopen(filePath,"r");
-
-
     if(fPointer == NULL){
         printf("Error: file open failed\n");
         return 0;
@@ -25,41 +32,40 @@ int loadPuzzle(char* filePath, Game* game,bool solveMode){
         printf("Error: invalid Sudoku size parameters\n");
         return 0;
     }
-    game->boxCol = n;
-    game->boxRow = m;
-    game->rows = m*n;
-    game->columns = m*n;
-    game->size = game->rows*game->columns;
-    createEmptyBoard(game);
+    newGame->boxCol = n;
+    newGame->boxRow = m;
+    newGame->rows = m*n;
+    newGame->columns = m*n;
+    newGame->size = newGame->rows*newGame->columns;
+    newGame->mark_errors = 1;
+    createEmptyBoard(newGame);
     m = 0;
     n = 0;
 
     /*read file line by line, iterate through game board and add the values correctly.*/
-    read = readline(&line, &len, fPointer);
-    while ((read = readline(&line, &len, fPointer)) != -1 && counter < game->size ) {
-        char* token = strtok(line, " \t");
-        while(token != NULL && strcmp(token,"\n") != 0 && counter < game->size){
-            char* temp = (char*)malloc(sizeof(char));
-            if (temp == NULL) {
-                isError = true;
-                break;
-            }
-            if(n == game->columns){
+    while ((read = readline(&line, &len, fPointer)) != -1 && counter < newGame->size && !isError) {
+        token = strtok(line, " \t\r\n");
+        while(token != NULL && strcmp(token,"\n") != 0 && counter < newGame->size){
+            fixedCandidate = false;
+            if(n == newGame->columns){
                 n = 0;
                 m++;
             }
-            temp = strncpy(temp,token,2);
-            if(!isNumber(temp) || !validateCell(atoi(temp),game->rows)){
+            if(token[strlen(token)-1] == '.'){
+                token[strlen(token)-1] = '\0';
+                fixedCandidate = true;
+            }
+            if(!isNumber(token,fixedCandidate) || !validateCell(atoi(token),newGame->rows)){
                 printf("Error: the value has been loaded is not valid\n");
                 isError = true;
                 break;
             }
-            game->currBoard[m][n] = atoi(temp);
-            if(NULL != strrchr(token,'.')){
-                game->fixedCellsBoard[m][n] = 1;
+            newGame->currBoard[m][n] = atoi(token);
+            if(fixedCandidate){
+                newGame->fixedCellsBoard[m][n] = 1;
             }
-            /*free(temp);*/
-            token = strtok(NULL," ");
+
+            token = strtok(NULL," \t\r\n");
             n++;
             counter++;
         }
@@ -68,27 +74,26 @@ int loadPuzzle(char* filePath, Game* game,bool solveMode){
     fclose(fPointer);
 
     /*an error occured while loading the file, revert back to previous board and print error*/
-    if(isError || counter < game->size){
-        if(counter < game->size && !isError){
+    if(isError || counter < newGame->size){
+        if(counter < newGame->size && !isError){
             printf(loadGameNotEnoughParams);
         }
-        destroyGame(game);
-        game = deepCopyGame(prevGame);
+        destroyGame(newGame);
         return 0;
     }
-    else if(!validateFixedCells(game)){
-        destroyGame(game);
-        game = deepCopyGame(prevGame);
+    else if(!validateFixedCells(newGame)){
+        destroyGame(newGame);
         return 0;
     }
-    else if(counter == game->size && !isError){
+    else if(counter == newGame->size && !isError){
         /*Successfully loaded the game and all parameters are legal*/
-        node = newNode(game);
-        game->head = node;
-        freeLinkedList(prevGame->head,prevGame->rows);
-        destroyGame(prevGame);
+        node = newNode(newGame);
+        newGame->head = node;
+        freeLinkedList((*game)->head,(*game)->rows);
+        destroyGame(*game);
+        *game = newGame;
         if(solveMode){
-            game->mode = SOLVEMODE;
+            (*game)->mode = SOLVEMODE;
         }
     }
 
@@ -109,10 +114,10 @@ int savePuzzle(char* filePath, Game* game, bool editMode){
     else if(editMode && isBoardErrorneous(game)){
         printf(saveErrorneousBoardCantSave);
     }
-   /*else if(editMode && !isSolvable(game)){
-        printf(saveErrorNotSolvable);
-        TODO need to check if game is solvable
-    }*/
+        /*else if(editMode && !isSolvable(game)){
+             printf(saveErrorNotSolvable);
+             TODO need to check if game is solvable
+         }*/
 
     else{
         fprintf(output,"%d %d\n",game->boxRow,game->boxCol);
@@ -138,64 +143,69 @@ int savePuzzle(char* filePath, Game* game, bool editMode){
 
 }
 
-bool isNumber(char *input)
-{
-    int j;
-    int size = 2;
-
-    if(strlen(input) == 1){
-        size = 1;
+bool isNumber(char *input,bool prevDot) {
+    int seenDot = 0;
+    char *c = input;
+    if(prevDot){
+        seenDot = 1;
     }
-    if(strstr(input,"\n") != NULL){
-        size = 1;
-    }
-    for(j = 0; j < size; j++){
-        if((input[j] > 47 && input[j] < 58) || input[j] == '.'){
-            continue;
+    while (c[0]) {
+        if (!isdigit(c[0]) && (c[0] != '.' || seenDot == 1)) {
+            return false;
         }
+        if (c[0] == '.') {
+            seenDot++;
+        }
+        c++;
+    }
+    if(c[0] == '.' && seenDot == 1){
         return false;
     }
     return true;
+
 }
 
 int readline(char** toWrite,int* len,FILE* pointer){
-        const int defSize = 16;
-        int num_read = 0,c,sizeTwo;
-        char* temp;
+    const int defSize = 16;
+    int num_read = 0,c,sizeTwo;
+    char* temp;
 
-        if((toWrite == NULL) || (len == NULL) || (pointer == NULL)){
+    if((toWrite == NULL) || (len == NULL) || (pointer == NULL)){
+        return -1;
+    }
+    if(*toWrite == NULL){
+        *toWrite = malloc(defSize);
+        if(*toWrite == NULL){
             return -1;
         }
-        if(*toWrite == NULL){
-            *toWrite = malloc(defSize);
-            if(*toWrite == NULL){
-                return -1;
-            }
-            *len = defSize;
+        *len = defSize;
+    }
+    while(EOF != (c = getc(pointer))){
+        if(c == '\n'){
+            break;
         }
-        while(EOF != (c = getc(pointer))){
-            num_read++;
-            if(num_read >= *len){
-                sizeTwo = *len + defSize;
-                temp = realloc(*toWrite,sizeTwo + 1);
-                if(temp != NULL){
-                    *toWrite = temp;
-                    *len = sizeTwo;
-                }
-                else{
-                    return -1;
-                }
+        num_read++;
+        if(num_read >= *len){
+            sizeTwo = *len + defSize;
+            temp = realloc(*toWrite,sizeTwo + 1);
+            if(temp != NULL){
+                *toWrite = temp;
+                *len = sizeTwo;
             }
-            (*toWrite)[num_read -1] = (char)c;
-            if(EOF == c){
+            else{
                 return -1;
             }
+        }
+        (*toWrite)[num_read -1] = (char)c;
+        if(EOF == c){
+            return -1;
+        }
 
-            if(c == '\n'){
-                break;
-            }
-        }
+    }
 
     (*toWrite)[num_read] = '\0';
-    return c;
+    if(c == -1){
+        return -1;
+    }
+    return num_read;
 }
