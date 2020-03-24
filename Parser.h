@@ -114,6 +114,7 @@ void autoFillFunc(char* str, Command* command,MODE* mode);
 
 void resetFunc(char* str, Command* command, MODE* mode);
 
+char* copyLongString(char* str);
 
 bool is_empty(const char *s);
 
@@ -128,6 +129,7 @@ bool validateCell(int num,int upperBound);
 bool validateRowCol(int num, int upperBound);
 
 void clear();
+
 
 
 

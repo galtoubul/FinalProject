@@ -88,7 +88,7 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
         command.cmd = INVALID_INPUT_COMMAND;
     }
 
-    /*free(copyInput); TODO when freeing solve and edit doesn't work as it frees the file path string*/
+    free(copyInput);
     return command;
 
 }
@@ -131,7 +131,7 @@ void solveAndSaveFunc(char *str, Command* command,MODE* mode){
     else{
         token = strtok(str,delim);
         token = strtok(NULL,delim);
-        command->fileName = token;
+        command->fileName = copyLongString(token);
     }
 
 }
@@ -248,7 +248,7 @@ void editFunc(char *str, Command* command){
     token = strtok(str,delim);
     token = strtok(NULL,delim);
     if(token != NULL){
-        command->fileName = token;
+        command->fileName = copyLongString(token);
     }
     else{
         command->fileName = NULL;
@@ -505,4 +505,19 @@ bool validateRowCol(int num, int upperBound){
 void clear(){
     int c = 0;
     while ((c = getchar()) != '\n' && c != EOF) { }
+}
+
+char* copyLongString(char* str){
+    int i = 0;
+    char* copyTo = (char*)malloc(strlen(str)+1);
+    if(copyTo == NULL){
+        printf(failedToAllocateMem);
+        exit(EXIT_FAILURE);
+    }
+    while(str[0]){
+        copyTo[i++] = str[0];
+        str++;
+    }
+    copyTo[i] = '\0';
+    return copyTo;
 }
