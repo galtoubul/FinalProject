@@ -327,7 +327,6 @@ void freeLinkedList(Node* node,int rows){
     Node* temp;
     clearRedoNodes(node->next,rows);
     while(node != NULL){
-        /*TODO there's a problem here if we insert edit as first command it collapses at the second iteration*/
         temp = node->prev;
         freeNode(node,rows);
         node = temp;
