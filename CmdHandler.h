@@ -32,7 +32,7 @@ void setCommand(Game* game, int col, int row, int z);
  */
 void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess);
 
-void solveCommand(Game* game, char* filePath);
+void solveCommand(Game** game, char* filePath);
 
 void saveCommand(Game* game, char*filePath);
 

@@ -68,11 +68,11 @@ void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
 }
 
 
-void solveCommand(Game* game, char* filePath){
+void solveCommand(Game** game, char* filePath){
     int succeed;
     succeed = loadPuzzle(filePath,game,true);
     if(succeed == 1){
-        printGameBoard(game);
+        printGameBoard(*game);
     }
 }
 
@@ -89,7 +89,7 @@ void saveCommand(Game* game, char* filePath){
 void editCommand(Game** game, Command* command){
     int succeed = 0;
     if(command->fileName != NULL){
-        succeed = loadPuzzle(command->fileName,*game,false);
+        succeed = loadPuzzle(command->fileName,game,false);
         if(succeed == 1){
             (*game)->mode = EDITMODE;
             printGameBoard(*game);
