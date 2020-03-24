@@ -41,7 +41,7 @@ void runGame(){
             validateCommand(game);
         }
         else if(command.cmd == SOLVE){
-            solveCommand(game,command.fileName);
+            solveCommand(&game,command.fileName);
         }
         else if(command.cmd == EDIT){
             editCommand(&game,&command);
@@ -95,6 +95,7 @@ void runGame(){
         }
         else if(command.cmd == EXIT){
             exitCommand(game);
+            free(command.fileName);
             free(input);
             return;
         }
