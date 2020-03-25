@@ -6,7 +6,7 @@
 #define RANGE 9
 
 
-Game* createGame(){
+Game* createGame(int r,int c){
     Game* game;
     game = (Game*)malloc(sizeof(Game));
     if(game == NULL){
@@ -14,11 +14,11 @@ Game* createGame(){
         free(game);
         exit(EXIT_FAILURE);
     }
-    game->columns = 9;
-    game->rows = 9;
-    game->boxRow = 3;
-    game->boxCol = 3;
-    game->size = 81;
+    game->columns = r*c;
+    game->rows = r*c;
+    game->boxRow = r;
+    game->boxCol = c;
+    game->size = (r*c)*(r*c);
     game->solved = false;
     game->mode = INITMODE;
     game->mark_errors = 1;
@@ -224,7 +224,7 @@ int** copyBoard(int** board,int row,int col){
     return mat;
 }
 
-bool isBoardErrorneous(Game* game){
+bool isBoardErroneous(Game* game){
     int i,j;
     for(i = 0; i < game->rows; i++){
         for(j = 0; j < game->columns; j++){
@@ -350,4 +350,21 @@ bool validateFixedCells(Game* game){
         }
     }
     return true;
+}
+
+void initErrorBoard(Game* game){
+    int i,j,temp;
+    for(i = 0; i < game->rows; i++){
+        for(j = 0; j < game->columns; j++){
+            temp = game->currBoard[i][j];
+            game->currBoard[i][j] = 0;
+            if(!isSafe(game,i,j,temp)){
+                game->errorBoard[i][j] = 1;
+            }
+            else{
+                game->errorBoard[i][j] = 0;
+            }
+            game->currBoard[i][j] = temp;
+        }
+    }
 }

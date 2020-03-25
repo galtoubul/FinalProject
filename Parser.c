@@ -26,7 +26,7 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
         command.cmd = MAX_ARGS_REACHED;
         clear();
     }
-    else if(is_empty(input)){
+    else if(isEmptyCmd(input)){
         command.cmd = EMPTY;
     }
     else if(strcmp(token,"set") == 0) {
@@ -259,76 +259,68 @@ void editFunc(char *str, Command* command){
 void markErrorsFunc(char* str, Command* command,MODE* mode){
     char* token;
     int x = 0;
+    bool err = false;
 
-    if(*mode != SOLVEMODE){
+    if(*mode != SOLVEMODE)
         printf(markErrorsIllegalMode);
-    }
 
-    else if(!isLegalLengthCmd(str,2)){
+    else if(!isLegalLengthCmd(str,2))
         printf(markErrorsTooManyArguments);
-    }
+
     else{
         command->cmd = MARK_ERRORS;
         token = strtok(str,delim);
         token = strtok(NULL,delim);
         if(isInteger(token)){
             x = atoi(token);
-            if(x == 0){
+            if(x == 0)
                 command->mark = 0;
-            }
-            else if(x == 1){
+            else if(x == 1)
                 command->mark = 1;
-            }
             else{
-                command->cmd = ERROR;
-                printf(markErrorsIllegalVal);
+                err = true;
             }
         }
-        else{
+        if(err){
             command->cmd = ERROR;
             printf(markErrorsIllegalVal);
         }
     }
-
 }
 
 void printBoardFunc(char* str, Command* command,MODE* mode){
 
-    if(*mode == INITMODE){
+    if(*mode == INITMODE)
         printf(printBoardIllegalMode);
-    }
-    else if(isLegalLengthCmd(str,1)){
-        command->cmd = PRINT_BOARD;
-    }
-    else{
-        printf(printBoardIllegal);
-    }
 
+    else if(isLegalLengthCmd(str,1))
+        command->cmd = PRINT_BOARD;
+
+    else
+        printf(printBoardIllegal);
 }
 
 void validateFunc(char* str, Command* command,MODE* mode){
 
-    if(*mode == INITMODE){
+    if(*mode == INITMODE)
         printf(validateIllegalMode);
-    }
-    else if(isLegalLengthCmd(str,1)){
-        command->cmd = VALIDATE;
-    }
-    else{
-        printf(validateTooManyArguments);
-    }
 
+    else if(isLegalLengthCmd(str,1))
+        command->cmd = VALIDATE;
+
+    else
+        printf(validateTooManyArguments);
 }
 
 void guessFunc(char* str, Command* command, MODE* mode){
     char* token;
 
-    if(*mode != SOLVEMODE){
+    if(*mode != SOLVEMODE)
         printf(guessIllegalMode);
-    }
-    else if(!isLegalLengthCmd(str,2)){
+
+    else if(!isLegalLengthCmd(str,2))
             printf(guessTooManyArguments);
-    }
+
     else {
         token = strtok(str,delim);
         token = strtok(NULL,delim);
@@ -348,12 +340,12 @@ void guessFunc(char* str, Command* command, MODE* mode){
 void generateFunc(char* str, Command* command,MODE* mode){
     char* token;
     int i=1,num;
-    if(*mode != EDITMODE){
+    if(*mode != EDITMODE)
         printf(generateIllegalMode);
-    }
-    else if(!isLegalLengthCmd(str,3)){
+
+    else if(!isLegalLengthCmd(str,3))
         printf(generateTooManyArguments);
-    }
+
     else{
         token = strtok(str,delim);
         command->cmd = GENERATE;
@@ -387,48 +379,45 @@ void generateFunc(char* str, Command* command,MODE* mode){
 }
 
 void undoFunc(char* str,Command* command,MODE* mode){
-
-    if(*mode == INITMODE){
+    if(*mode == INITMODE)
         printf(undoIllegalMode);
-    }
-    else if(isLegalLengthCmd(str,1)){
+
+    else if(isLegalLengthCmd(str,1))
         command->cmd = UNDO;
-    }
-    else{
+
+    else
         printf(undoTooManyArguments);
-    }
 }
 
 void redoFunc(char* str, Command* command, MODE* mode){
-    if(*mode == INITMODE){
+    if(*mode == INITMODE)
         printf(redoIllegalMode);
-    }
-    else if(isLegalLengthCmd(str,1)){
+
+    else if(isLegalLengthCmd(str,1))
         command->cmd = REDO;
-    }
-    else{
+
+    else
         printf(redoTooManyArguments);
-    }
 
 }
 
 void numSolutionsFunc(char* str, Command* command, MODE* mode){
-    if(*mode == INITMODE){
+    if(*mode == INITMODE)
         printf(numSolutionsIllegalMode);
-    }
-    else if(isLegalLengthCmd(str,1)){
+
+    else if(isLegalLengthCmd(str,1))
         command->cmd = NUM_SOLUTIONS;
-    }
-    else{
+
+    else
         printf(numSolutionsInvalidArgs);
-    }
+
 }
 
-bool is_empty(const char *s) {
-    while (*s != '\0') {
-        if (!isspace((unsigned char)*s))
+bool isEmptyCmd(const char* str) {
+    while (*str != '\0') {
+        if (!isspace((unsigned char)*str))
             return false;
-        s++;
+        str++;
     }
     return true;
 }
@@ -475,7 +464,7 @@ bool isLegalLengthCmd(char* str, int len){
         i++;
     }
 
-    /*free(copyStr); TODO remove comment after, debugging error's...*/
+    free(copyStr);
 
     if(i != len){
         return false;

@@ -3,49 +3,37 @@
 #include <ctype.h>
 
 
-int loadPuzzle(char* filePath, Game** game,bool solveMode){
+int loadPuzzle(char* filePath, Game** game){
 
     FILE *fPointer;
     char* line = NULL;
     char* token;
-    int len = 0;
-    int read = 0;
-    int counter = 0,m=0,n=0;
+    int counter = 0,m=0,n=0,len=0,read=0;
     bool isError = false, fixedCandidate = false;
     Node* node;
-    Game* newGame = (Game*)malloc(sizeof(Game));
+    Game* newGame;
 
-    if(game == NULL){
-        printf(failedToAllocateMem);
-        free(game);
-        exit(EXIT_FAILURE);
-    }
 
     fPointer = fopen(filePath,"r");
     if(fPointer == NULL){
-        printf("Error: file open failed\n");
+        printf(loadFileOpenFailed);
         return 0;
     }
 
-    /*loads first 2 lines of the file to get size or row and col.*/
+    /*loads first 2 parameters of the file to get size or row and col.*/
     if(fscanf(fPointer,"%d %d", &m,&n) != 2){
-        printf("Error: invalid Sudoku size parameters\n");
+        printf(loadInvalidSizeParams);
         return 0;
     }
-    newGame->boxCol = n;
-    newGame->boxRow = m;
-    newGame->rows = m*n;
-    newGame->columns = m*n;
-    newGame->size = newGame->rows*newGame->columns;
-    newGame->mark_errors = 1;
-    createEmptyBoard(newGame);
+
+    newGame = createGame(m,n);
     m = 0;
     n = 0;
 
     /*read file line by line, iterate through game board and add the values correctly.*/
     while ((read = readline(&line, &len, fPointer)) != -1 && counter < newGame->size && !isError) {
         token = strtok(line, " \t\r\n");
-        while(token != NULL && strcmp(token,"\n") != 0 && counter < newGame->size){
+        while(token != NULL && counter < newGame->size){
             fixedCandidate = false;
             if(n == newGame->columns){
                 n = 0;
@@ -61,23 +49,26 @@ int loadPuzzle(char* filePath, Game** game,bool solveMode){
                 break;
             }
             newGame->currBoard[m][n] = atoi(token);
-            if(fixedCandidate){
+            if(fixedCandidate)
                 newGame->fixedCellsBoard[m][n] = 1;
-            }
 
             token = strtok(NULL," \t\r\n");
-            n++;
-            counter++;
+            n++; /*inc the columns index*/
+            counter++; /*inc total number of elements added to this point*/
         }
     }
 
+    if(token != NULL || isFileHasExtraParams(fPointer))
+        counter++;
+
     fclose(fPointer);
 
-    /*an error occured while loading the file, revert back to previous board and print error*/
-    if(isError || counter < newGame->size){
-        if(counter < newGame->size && !isError){
+    /*an error occured while loading the file, revert back and print error*/
+    if(isError || counter != newGame->size){
+        if(counter < newGame->size && !isError)
             printf(loadGameNotEnoughParams);
-        }
+        if(counter > newGame->size && !isError)
+            printf(loadGameHasTooManyParams);
         destroyGame(newGame);
         return 0;
     }
@@ -87,14 +78,12 @@ int loadPuzzle(char* filePath, Game** game,bool solveMode){
     }
     else if(counter == newGame->size && !isError){
         /*Successfully loaded the game and all parameters are legal*/
+        initErrorBoard(newGame);
         node = newNode(newGame);
         newGame->head = node;
         freeLinkedList((*game)->head,(*game)->rows);
         destroyGame(*game);
         *game = newGame;
-        if(solveMode){
-            (*game)->mode = SOLVEMODE;
-        }
     }
 
     return 1;
@@ -111,7 +100,7 @@ int savePuzzle(char* filePath, Game* game, bool editMode){
     if(output == NULL){
         printf(saveFileError);
     }
-    else if(editMode && isBoardErrorneous(game)){
+    else if(editMode && isBoardErroneous(game)){
         printf(saveErrorneousBoardCantSave);
     }
         /*else if(editMode && !isSolvable(game)){
@@ -208,4 +197,15 @@ int readline(char** toWrite,int* len,FILE* pointer){
         return -1;
     }
     return num_read;
+}
+
+bool isFileHasExtraParams(FILE* fpointer){
+    int c;
+
+    while(EOF != (c = getc(fpointer))){
+        if(!isspace(c)){
+            return true;
+        }
+    }
+    return false;
 }

@@ -13,13 +13,13 @@ void runGame(){
         exit(EXIT_FAILURE);
     }
 
-    printf("Welcome to Sudoku Game!\n");
-    game = createGame();
+    printf(welcome);
+    game = createGame(3,3);
 
     while(1){
 
         Command command;
-        printf("Please enter a Command\n");
+        printf(enterCmd);
         if(!fgets(input,ARRSIZE,stdin)){/*checks if reading user input failed or EOF*/
             exitCommand(game);
             free(input);
@@ -29,7 +29,7 @@ void runGame(){
         command = parseCommand(input,game->rows,&game->mode);
 
         if(command.cmd == INVALID_INPUT_COMMAND){
-            printf("Error: Invalid Command\n");
+            printf(invalidCmd);
         }
         else if(command.cmd == SET){
             setCommand(game,command.X,command.Y,command.Z);
@@ -91,7 +91,7 @@ void runGame(){
         }
 
         else if(command.cmd == MAX_ARGS_REACHED){
-            printf("Error: Input command is exceeds limit\n");
+            printf(inputExceedsError);
         }
         else if(command.cmd == EXIT){
             exitCommand(game);

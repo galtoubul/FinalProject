@@ -8,11 +8,13 @@
 
 
 
-int loadPuzzle(char* filePath, Game** game,bool solveMode);
+int loadPuzzle(char* filePath, Game** game);
 
 int savePuzzle(char* filePath, Game* game, bool editMode);
 
 int readline(char** toWrite,int* len,FILE* pointer);
+
+bool isFileHasExtraParams(FILE* fpointer);
 
 
 /**

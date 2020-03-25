@@ -66,6 +66,9 @@
 
 
 #define loadGameNotEnoughParams "Error: there are not enough parameters of the game board in current file\n"
+#define loadGameHasTooManyParams "Error: there are too many parameters in the file\n"
+#define loadInvalidSizeParams     "Error: invalid Sudoku size parameters\n"
+#define loadFileOpenFailed         "Error : file open failed\n"
 
 #define saveErrorneousBoardCantSave "Error: can't save errorneous board\n"
 #define saveErrorNotSolvable "Error: can't save unsolvable board\n"
@@ -86,4 +89,8 @@
 #define failedToAllocateMem "failed to allocate memmory, exiting...\n"
 #define fixedCellIsError     "can't load this game since cell (%d,%d) is fixed and is not valid at this position\n"
 #define ExitingCmd           "Exiting...\n"
+#define invalidCmd            "Invalid Command\n"
+#define enterCmd "Please enter a command\n"
+#define welcome "Welcome to Sudoku Game!\n"
+#define inputExceedsError "Error: the input exceeds 256 chars limit\n"
 #endif

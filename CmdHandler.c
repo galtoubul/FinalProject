@@ -27,16 +27,17 @@ void setCommand(Game* game, int col, int row, int z){
         }
         game->currBoard[row][col] = z;
     }
-    printGameBoard(game);
 
     if(isBoardFull(game->currBoard,game->rows,game->columns)){
         game->solved = true;
         game->mode = INITMODE;
         printf("Puzzle solved successfully\n");
     }
+    initErrorBoard(game);
     node = newNode(game);
     clearRedoNodes(game->head->next,game->rows);
     insertNode(game,node);
+    printGameBoard(game);
 
 
 
@@ -46,7 +47,7 @@ void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
     col = col - 1;
     row = row - 1;
     if(isGuess){} /*TODO need to delete after we finish solvable and LP solvable it's here only for compilation purpose*/
-    if(isBoardErrorneous(game)){
+    if(isBoardErroneous(game)){
         printf(boardIsErrorneous);
     }
     else if(game->fixedCellsBoard[row][col] == 1){
@@ -70,8 +71,9 @@ void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
 
 void solveCommand(Game** game, char* filePath){
     int succeed;
-    succeed = loadPuzzle(filePath,game,true);
+    succeed = loadPuzzle(filePath,game);
     if(succeed == 1){
+        (*game)->mode = SOLVEMODE;
         printGameBoard(*game);
     }
 }
@@ -89,7 +91,7 @@ void saveCommand(Game* game, char* filePath){
 void editCommand(Game** game, Command* command){
     int succeed = 0;
     if(command->fileName != NULL){
-        succeed = loadPuzzle(command->fileName,game,false);
+        succeed = loadPuzzle(command->fileName,game);
         if(succeed == 1){
             (*game)->mode = EDITMODE;
             printGameBoard(*game);
@@ -99,7 +101,7 @@ void editCommand(Game** game, Command* command){
     else if(command->fileName == NULL){
         freeLinkedList((*game)->head,(*game)->rows);
         destroyGame(*game);
-        *game = createGame();
+        *game = createGame(3,3);
         (*game)->mode = EDITMODE;
         printGameBoard(*game);
     }
@@ -115,7 +117,7 @@ void printBoardCommand(Game* game){
 
 
 void validateCommand(Game* game){
-    if(isBoardErrorneous(game)){
+    if(isBoardErroneous(game)){
         printf(boardIsErrorneous);
     }
     /*else if(isSolvableBoard(game)){
@@ -131,7 +133,7 @@ void validateCommand(Game* game){
 void guessCommand(Game* game, Command* command){
     /*Node* node;*/
     game->threshold = command->threshold;
-    if(isBoardErrorneous(game)){
+    if(isBoardErroneous(game)){
         printf(boardIsErrorneous);
     }
     /*else{
@@ -162,7 +164,7 @@ void generateCommand(Game* game, Command* command){
 
 void numSolutionsCommand(Game* game){
 
-    if(isBoardErrorneous(game)){
+    if(isBoardErroneous(game)){
         printf(boardIsErrorneous);
     }
     else{
@@ -173,7 +175,7 @@ void numSolutionsCommand(Game* game){
 
 void autoFillCommand(Game* game){
     /*Node* node;*/
-    if(isBoardErrorneous(game)){
+    if(isBoardErroneous(game)){
         printf(boardIsErrorneous);
     }
     else{

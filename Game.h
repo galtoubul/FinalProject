@@ -6,26 +6,42 @@
 
 /**
  *  Game Summary :
- *  A container that holds a Game structure that represent one user game
- *  Each objects contain the user board, solution board for reference and fixedBoard for pre fixed cells
- *  and relevant parameters to be used in it's utility functions.
+ *  A container that holds a Game structure that represent current user game and a Node structure that represent a doubly linked
+ *  list such that the program save certain moves of the user to this linked list so the user can iterate through it and 
+ *  undo\redo his moves.
+ *  Each object contains the current game board, solution board for reference, fixedBoard for fixed cells
+ *  and error board to mark any erroneous cells.
+ *  furthermore, it contains utility parameters such board rows,columns etc...
  *
- *  createGame          - creates new game.
- *  createEmptyBoard    - creates an empty board of the game, zero value == empty cell.
+ *
+ *  createGame          - creates a game from skretch from 2 param's box row and box column
+ *  createEmptyBoard    - creates an empty boards of the game, zero value == empty cell.
  *  allocateMemory      - gets a pre allocated matrix and allocate memory to every row of the matrix
- *  initUserBoard       - reveal the number of fixed cells the user asked for
  *  printGameBoard      - prints the game in the pre defined template
  *  printDashes         - print a partition line of dashes
- *  setCommand          - assign new value to (x,y) at the game board
  *  isSafe              - checks if we can set value to (x,y) by checking if same value exist in same row,col,box.
  *  isBoardFull         - checks if every (x,y) has a value(0 == empty)
  *  hintOrGuessHintCommand         - gives the true value of (x,y) at the solved game board --> note: solved board might not be updated
- *  destroyGame         - destroys game object by freeing it's memory
+ *  destroyGame         - destroys game object by freeing it's memory --> it acts like deep destroy as we destroy each board.
  *  freeBoard           - frees each row of the game board
- *
+ *  copyBoard           - gets a board and return a copy of this board.
+ *  isBoardErroneous    - gets a board and check if it has any error cells in it's error board
+ *  deepCopyGame        - gets a game and make a deep copy of the structure and returns the copied game
+ *  numOfEmptyCells     - gets a game board and return how many empty cells it contains
+ *  newNode             - creates a new Node
+ *  insertNode          - gets a node and an constructed linked list and adds the node to it's end
+ *  freeNode            - gets a Node and free it's memory and all it's sub parameters memory
+ *  freeLinkedList      - gets a node in a linked list and 'iterates' over the linked list and deletes all nodes
+ *  clearRedoNodes      - gets a node and clear all the following nodes to this node including the node itself
+ *  compareBoards       - gets 2 board and prints all the differences of cells
+ *  validateFixedCells  - gets a game board and validate all fixed cells
+ *  initErrorBoard      - gets a game board and initliaze the erroneous cells of it's error board
+ *   */
+
+
+/**
+ * Node Structure that holds two matrix's and pointer to prev node and next node
  */
-
-
 typedef struct node_t{
     int** currentBoard;
     int** errorBoard;
@@ -61,7 +77,7 @@ typedef struct game_t {
  * Creates new emptyGame of fixed size 9x9
  * @return the new sudoku game
  */
-Game* createGame();
+Game* createGame(int r, int c);
 
 /**
  * This function used in createGame function to create empty board(memory creatinon)
@@ -147,30 +163,98 @@ void destroyGame(Game* game);
 /**
  * This function used in to destroy the game boards, it destroys each array of the matrix
  * @param board - the board to be destroyed
- * @param row  - num of rows to iterate throw.
+ * @param row  - num of rows to iterate over
  */
 void freeBoard(int** board,int row);
 
+/**
+ * This function copy's given board and returns the copy
+ * @param board - board to copy from
+ * @param row - num of rows to iterate over
+ * @param col - num of columns to iterate over
+ * @return the copied board
+ */
 int** copyBoard(int** board,int row,int col);
 
-bool isBoardErrorneous(Game* game);
+/**
+ * This function returns weather the current game board contains any errors aka cells that contain values that do
+ * not belong to there such that this board is not solvable at the current state
+ * @param game - the current game to check if erroneous
+ * @return true if erroneous
+ */
+bool isBoardErroneous(Game* game);
 
+/**
+ * This function make a deep copy of the current game such that all boards and parameters are copied
+ * @param game - game to copy from
+ * @return a copy of the game
+ */
 Game* deepCopyGame(Game* game);
 
+/**
+ * This function counts the number of empty cells in the current game --> '0' represent empty cell
+ * @param game - game to num of empty cells
+ * @return number of empty cells
+ */
 int numOfEmptyCells(Game* game);
 
+/**
+ * This function creates a newNode, such it allocates memory to the 2 boards it saves
+ * @param game - game to copy it's error board and current board
+ * @return a Node
+ */
 Node* newNode(Game* game);
 
+/**
+ * This function inserts the given Node to the end of the game doubly linked list
+ * @param game - game to get doubly linked list and insert to it's end
+ * @param node - node to insert to the game doubly linked list
+ */
 void insertNode(Game* game, Node* node);
 
+/**
+ * This function gets 2 boards and it prints all the differences between the 2 board such that if (x,y) at this board
+ * is k and (x,y) at other board is p such that p != k it prints a msg to the user
+ * @param thisBoard - the board to compare to
+ * @param otherBoard - the board we compare
+ * @param row - num of rows to iterate over
+ * @param col - num of columns to iterate over
+ */
 void compareBoards(int** thisBoard,int** otherBoard,int row,int col);
 
+/**
+ * This function gets a node and delete all the nodes that are following to that node at the list
+ * @param currNode - the node to start deleting from it deletes also this node
+ * @param rows - the dimensions of the board it holds so it will be freed as well
+ */
 void clearRedoNodes(Node* currNode,int rows);
 
+/**
+ * This function frees memory allocated for the node and deletes it
+ * @param node - the node to free
+ * @param rows - the dimensions of the board it holds so it will be freed as well
+ */
 void freeNode(Node* node,int rows);
 
+/**
+ * This function frees the all the previous nodes and following nodes of the node it receives, including this node
+ * @param node - the node to start free from
+ * @param rows - the dimensions of the board it holds so it will be freed as well
+ */
 void freeLinkedList(Node* node,int rows);
 
+/**
+ * This function iterates over the game fixed cells and check weather they are all valid
+ * @param game - the game to validate it's fixed cells
+ * @return true if all valid fixed cells are valid
+ */
 bool validateFixedCells(Game* game);
+
+/**
+ * This function iterates over the current game and check every cell if it's valid or not, if not valid
+ * it marks '1' in the error board that the game holds
+ * @param game - the game to init it's error board
+ */
+void initErrorBoard(Game* game);
 
 #endif
