@@ -352,7 +352,7 @@ bool validateFixedCells(Game* game){
     return true;
 }
 
-void initErrorBoard(Game* game){
+void updateErrorBoard(Game* game){
     int i,j,temp;
     for(i = 0; i < game->rows; i++){
         for(j = 0; j < game->columns; j++){
