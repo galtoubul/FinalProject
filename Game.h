@@ -35,7 +35,7 @@
  *  clearRedoNodes      - gets a node and clear all the following nodes to this node including the node itself
  *  compareBoards       - gets 2 board and prints all the differences of cells
  *  validateFixedCells  - gets a game board and validate all fixed cells
- *  initErrorBoard      - gets a game board and initliaze the erroneous cells of it's error board
+ *  updateErrorBoard      - gets a game board and initliaze the erroneous cells of it's error board
  *   */
 
 
@@ -255,6 +255,6 @@ bool validateFixedCells(Game* game);
  * it marks '1' in the error board that the game holds
  * @param game - the game to init it's error board
  */
-void initErrorBoard(Game* game);
+void updateErrorBoard(Game* game);
 
 #endif

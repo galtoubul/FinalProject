@@ -3,7 +3,7 @@
 #include <ctype.h>
 
 
-int loadPuzzle(char* filePath, Game** game){
+int loadSudoku(char* filePath, Game** game){
 
     FILE *fPointer;
     char* line = NULL;
@@ -35,7 +35,7 @@ int loadPuzzle(char* filePath, Game** game){
         token = strtok(line, " \t\r\n");
         while(token != NULL && counter < newGame->size){
             fixedCandidate = false;
-            if(n == newGame->columns){
+            if(n == newGame->columns){/*if the columns index reaches it's top range --> init it to 0*/
                 n = 0;
                 m++;
             }
@@ -44,7 +44,7 @@ int loadPuzzle(char* filePath, Game** game){
                 fixedCandidate = true;
             }
             if(!isNumber(token,fixedCandidate) || !validateCell(atoi(token),newGame->rows)){
-                printf("Error: the value has been loaded is not valid\n");
+                printf(loadInvalidValue);
                 isError = true;
                 break;
             }
@@ -78,20 +78,18 @@ int loadPuzzle(char* filePath, Game** game){
     }
     else if(counter == newGame->size && !isError){
         /*Successfully loaded the game and all parameters are legal*/
-        initErrorBoard(newGame);
+        updateErrorBoard(newGame);
         node = newNode(newGame);
         newGame->head = node;
         freeLinkedList((*game)->head,(*game)->rows);
         destroyGame(*game);
         *game = newGame;
     }
-
     return 1;
-
 }
 
 
-int savePuzzle(char* filePath, Game* game, bool editMode){
+void saveSudoku(char* filePath, Game* game, bool editMode){
 
     FILE* output;
     int i = 0,j = 0;
@@ -125,33 +123,25 @@ int savePuzzle(char* filePath, Game* game, bool editMode){
             fprintf(output, "\n");
         }
     }
-
     fflush(output);
     fclose(output);
-    return 1;
-
 }
 
 bool isNumber(char *input,bool prevDot) {
     int seenDot = 0;
     char *c = input;
-    if(prevDot){
+    if(prevDot)
         seenDot = 1;
-    }
     while (c[0]) {
-        if (!isdigit(c[0]) && (c[0] != '.' || seenDot == 1)) {
+        if (!isdigit(c[0]) && (c[0] != '.' || seenDot == 1))
             return false;
-        }
-        if (c[0] == '.') {
+        if (c[0] == '.')
             seenDot++;
-        }
         c++;
     }
-    if(c[0] == '.' && seenDot == 1){
+    if(c[0] == '.' && seenDot == 1)
         return false;
-    }
     return true;
-
 }
 
 int readline(char** toWrite,int* len,FILE* pointer){
@@ -170,9 +160,8 @@ int readline(char** toWrite,int* len,FILE* pointer){
         *len = defSize;
     }
     while(EOF != (c = getc(pointer))){
-        if(c == '\n'){
+        if(c == '\n')
             break;
-        }
         num_read++;
         if(num_read >= *len){
             sizeTwo = *len + defSize;
@@ -181,31 +170,24 @@ int readline(char** toWrite,int* len,FILE* pointer){
                 *toWrite = temp;
                 *len = sizeTwo;
             }
-            else{
+            else
                 return -1;
-            }
         }
         (*toWrite)[num_read -1] = (char)c;
-        if(EOF == c){
+        if(EOF == c)
             return -1;
-        }
-
     }
-
     (*toWrite)[num_read] = '\0';
-    if(c == -1){
+    if(c == -1)
         return -1;
-    }
     return num_read;
 }
 
 bool isFileHasExtraParams(FILE* fpointer){
     int c;
-
     while(EOF != (c = getc(fpointer))){
-        if(!isspace(c)){
+        if(!isspace(c))
             return true;
-        }
     }
     return false;
 }

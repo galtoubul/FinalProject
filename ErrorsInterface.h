@@ -2,6 +2,12 @@
 #ifndef SUDOKU_ERRORSINTERFACE_H
 #define SUDOKU_ERRORSINTERFACE_H
 
+/**
+ * ErrorsInterface Summary:
+ * This module contains all program errors and messages to be printed.
+ */
+
+
 #define markErrorsIllegalVal "Error: mark_errors command accepts either 0 or 1\n"
 #define markErrorsIllegalMode "Error: mark_errors command available only at solve mode\n"
 #define markErrorsTooManyArguments "Error: mark_errors command accepts only 1 argument\n"
@@ -70,6 +76,7 @@
 #define loadGameHasTooManyParams "Error: there are too many parameters in the file\n"
 #define loadInvalidSizeParams     "Error: invalid Sudoku size parameters\n"
 #define loadFileOpenFailed         "Error : file open failed\n"
+#define loadInvalidValue           "Error: One of the loaded values is invalid\n"
 
 #define saveErrorneousBoardCantSave "Error: can't save errorneous board\n"
 #define saveErrorNotSolvable "Error: can't save unsolvable board\n"
@@ -94,4 +101,5 @@
 #define enterCmd "Please enter a command\n"
 #define welcome "Welcome to Sudoku Game!\n"
 #define inputExceedsError "Error: the input exceeds 256 chars limit\n"
+
 #endif

@@ -51,7 +51,7 @@ void runGame(){
         }
 
         else if(command.cmd == MARK_ERRORS){
-            markErrorsCommand(game,&command);
+            markErrorsCommand(game,command.mark);
         }
 
         else if(command.cmd == GENERATE){
@@ -79,7 +79,7 @@ void runGame(){
         }
 
         else if(command.cmd == GUESS){
-            guessCommand(game,&command);
+            guessCommand(game,command.threshold);
         }
 
         else if(command.cmd == GUESS_HINT){
