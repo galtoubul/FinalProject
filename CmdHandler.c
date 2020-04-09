@@ -54,10 +54,9 @@ void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
     else if(game->currBoard[row][col] != 0){
         printf(hintContCellError);
     }
-        /*else if(!isGuess && isSolvableBoard(game)){
-            printf(hintFindHintMsg,game->solutionBoard[row][col]);
-            TODO needs to run ILP to check if board is solvable
-        }*/
+    else if(!isGuess && isSolvable(game)){
+        printf(hintFindHintMsg, game->solutionBoard[row][col]);
+    }
         /*else if(isGuess && isSolvableBoardLP(game)){
            TODO need to run LP to check if board solvable, need print all legal values of cell X,Y
         }*/
