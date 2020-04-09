@@ -1,5 +1,6 @@
 
 #include "CmdHandler.h"
+#include "Solve.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -22,7 +23,7 @@ void setCommand(Game* game, int col, int row, int z){
         game->fixedCellsBoard[row][col] = 0;
     }
     else {
-        if(!isSafe(game, row, col, z)){
+        if(!isSafe(game->currBoard, game, row, col, z)){
             game->errorBoard[row][col] = 1;
         }
         game->currBoard[row][col] = z;
@@ -147,18 +148,21 @@ void guessCommand(Game* game, Command* command){
 }
 
 void generateCommand(Game* game, Command* command){
-    /*Node* node;*/
+    Node* node;
+    int succeededTogenerateILP;
     int num = numOfEmptyCells(game);
-    if(num > command->X){
+    if(num < command->X){
         printf(generateBoardNotContainXEmpty,num);
         return;
     }
     else{
-        /*generateILP(game,command.X,command.Y)
-         *node = newNode(game);
+        succeededTogenerateILP = generateILP(game, command->X, command->Y);
+        if (!succeededTogenerateILP)
+            printf(generatePuzzleError);
+        node = newNode(game);
         clearRedoNodes(game->head->next,game->rows);
         insertNode(game,node);
-         printGameBoard(game)*/
+        printGameBoard(game);
     }
 }
 

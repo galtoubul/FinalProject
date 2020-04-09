@@ -135,43 +135,43 @@ void printDashes(Game* game){
 
 /* Returns a boolean which indicates whether an assigned entry
    in the specified row matches the given number. */
-bool UsedInRow(Game* game, int row, int num){
+bool UsedInRow(int** board, Game* game, int row, int num){
     int col;
 
     for (col = 0; col < game->columns; col++)
-        if (game->currBoard[row][col] == num)
+        if (board[row][col] == num)
             return true;
     return false;
 }
 
 
-bool UsedInCol(Game* game, int col, int num){
+bool UsedInCol(int** board, Game* game, int col, int num){
     int row;
 
     for (row = 0; row < game->rows; row++)
-        if (game->currBoard[row][col] == num)
+        if (board[row][col] == num)
             return true;
     return false;
 }
 
 
-bool UsedInBox(Game* game, int row, int col, int num){
+bool UsedInBox(int** board, Game* game, int row, int col, int num){
     int boxStartRow = row;
     int boxStartCol = col;
     for (row = 0; row < game->boxRow; row++)
         for (col = 0; col < game->boxCol; col++)
-            if (game->currBoard[row+boxStartRow][col+boxStartCol] == num)
+            if (board[row+boxStartRow][col+boxStartCol] == num)
                 return true;
     return false;
 }
 
-bool isSafe(Game* game, int row, int col, int num)
+bool isSafe(int** board, Game* game, int row, int col, int num)
 {
     /* Check if 'num' is not already placed in current row,
        current column and current box */
-    return !UsedInRow(game, row, num) &&
-           !UsedInCol(game, col, num) &&
-           !UsedInBox(game, row - row % game->boxRow, col - col % game->boxCol, num);
+    return !UsedInRow(board, game, row, num) &&
+           !UsedInCol(board, game, col, num) &&
+           !UsedInBox(board, game, row - row % game->boxRow, col - col % game->boxCol, num);
 }
 
 bool isBoardFull(int** board,int row, int col){
@@ -237,7 +237,7 @@ bool isBoardErroneous(Game* game){
 }
 
 int numOfEmptyCells(Game* game){
-    int i,j,count = 0;
+    int i , j, count = 0;
     for(i = 0; i < game->rows; i++){
         for(j = 0; j < game->columns; j++){
             if(game->currBoard[i][j] == 0){
@@ -340,7 +340,7 @@ bool validateFixedCells(Game* game){
             if(game->fixedCellsBoard[i][j] == 1){
                 temp = game->currBoard[i][j];
                 game->currBoard[i][j] = 0;
-                if(!isSafe(game,i,j,temp)){
+                if(!isSafe(game->currBoard, game, i, j, temp)){
                     game->currBoard[i][j] = temp;
                     printf(fixedCellIsError,i+1,j+1);
                     return false;
@@ -358,7 +358,7 @@ void initErrorBoard(Game* game){
         for(j = 0; j < game->columns; j++){
             temp = game->currBoard[i][j];
             game->currBoard[i][j] = 0;
-            if(!isSafe(game,i,j,temp)){
+            if(!isSafe(game->currBoard, game, i, j, temp)){
                 game->errorBoard[i][j] = 1;
             }
             else{
