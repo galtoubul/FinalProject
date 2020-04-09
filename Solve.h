@@ -106,3 +106,5 @@ int calcNextJ(Game *game, int j);
 
 int generateILP(Game* game, int X, int Y);
 
+int isSolvable(Game* game);
+

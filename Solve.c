@@ -274,3 +274,16 @@ int generateILP(Game* game, int X, int Y){
     return 0;
 }
 
+int isSolvable(Game* game){
+    double* sol;
+    EntryTable* et = createEntryTable(game);
+    calcVariables(game, et);
+    sol = (double*) malloc(et->variablesNum * sizeof(double));
+    if (sol == NULL) {
+        printf("Error: malloc sol has failed\n");
+        exit(EXIT_FAILURE);
+    }
+    if(ILPSolver(game, et, sol))
+        return 1;
+    return 0;
+}

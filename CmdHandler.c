@@ -54,13 +54,13 @@ void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
     else if(game->currBoard[row][col] != 0){
         printf(hintContCellError);
     }
-    /*else if(!isGuess && isSolvableBoard(game)){
-        printf(hintFindHintMsg,game->solutionBoard[row][col]);
-        TODO needs to run ILP to check if board is solvable
-    }*/
-    /*else if(isGuess && isSolvableBoardLP(game)){
-       TODO need to run LP to check if board solvable, need print all legal values of cell X,Y
-    }*/
+        /*else if(!isGuess && isSolvableBoard(game)){
+            printf(hintFindHintMsg,game->solutionBoard[row][col]);
+            TODO needs to run ILP to check if board is solvable
+        }*/
+        /*else if(isGuess && isSolvableBoardLP(game)){
+           TODO need to run LP to check if board solvable, need print all legal values of cell X,Y
+        }*/
     else{
         printf(boardNotSolvable);
     }
@@ -93,7 +93,7 @@ void editCommand(Game** game, Command* command){
             printGameBoard(*game);
         }
     }
-    /* case no path*/
+        /* case no path*/
     else if(command->fileName == NULL){
         freeLinkedList((*game)->head,(*game)->rows);
         destroyGame(*game);
@@ -104,24 +104,23 @@ void editCommand(Game** game, Command* command){
 }
 
 void markErrorsCommand(Game* game, int markErrors){
-        game->mark_errors = markErrors;
+    game->mark_errors = markErrors;
 }
 
 void printBoardCommand(Game* game){
-        printGameBoard(game);
+    printGameBoard(game);
 }
 
 void validateCommand(Game* game){
-    if(isBoardErroneous(game)){
+    if(isBoardErroneous(game))
         printf(boardIsErrorneous);
-    }
-    /*else if(isSolvableBoard(game)){
+
+    else{
+        if(isSolvable(game)){
             printf(boardSolvable);
             return;
-            TODO gal needs to finish solvable function using ILP, to be checked later
-    }*/
-    else{
-        printf(boardNotSolvable);
+        }else
+            printf(boardNotSolvable);
     }
 }
 
