@@ -169,18 +169,16 @@ void numSolutionsCommand(Game* game){
 }
 
 void autoFillCommand(Game* game){
-    /*Node* node;*/
+    Node* node;
     if(isBoardErroneous(game))
         printf(boardIsErrorneous);
 
     else{
-        /*autoFillSolve(game);
-         *      node = newNode(game);
-                clearRedoNodes(game->head->next,game->rows);
-                insertNode(game,node);
-         * printGameBoard(game)
-         * TODO need to prompt this func*/
-
+        autofill(game);
+        node = newNode(game);
+        clearRedoNodes(game->head->next,game->rows);
+        insertNode(game,node);
+        printGameBoard(game);
     }
 }
 

@@ -108,3 +108,6 @@ int generateILP(Game* game, int X, int Y);
 
 int isSolvable(Game* game);
 
+void autofill (Game* game);
+
+

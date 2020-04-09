@@ -3,6 +3,7 @@
 #include "Solve.h"
 #include "Stack.h"
 #include "ILPSolver.h"
+#define EMPTY_CELL 0
 
 void calcNextRowAndCol(Game* game, int* row, int* col){
     if (*col < game->columns-1){
@@ -289,4 +290,29 @@ int isSolvable(Game* game){
     }
     free(sol);
     return 0;
+}
+
+void autofill (Game* game){
+    int i, j, legalArraySize;
+    int* legalArray;
+    int** currBoardCopy = copyBoard(game->currBoard, game->rows, game->columns);
+    legalArray = (int*) malloc (game->rows * sizeof(int));
+    for (i = 0; i < game->rows; ++i) {
+        for (j = 0; j < game->columns; ++j) {
+            if(currBoardCopy[i][j] == EMPTY_CELL){
+                legalArraySize = getLegalArray(game->currBoard, game, i, j, legalArray);
+                if (legalArraySize == 1)
+                    currBoardCopy[i][j] = legalArray[0];
+            }
+        }
+    }
+
+    for (i = 0; i < game->rows; i++){
+        for (j = 0; j < game->columns; ++j) {
+            if (currBoardCopy[i][j] != game->currBoard[i][j]){
+                game->currBoard[i][j] = currBoardCopy[i][j];
+                printf("Cell <%d,%d> was filled during autofill with %d\n", i, j, currBoardCopy[i][j]);
+            }
+        }
+    }
 }
