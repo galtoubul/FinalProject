@@ -142,14 +142,14 @@ void guessCommand(Game* game, float threshold){
 
 void generateCommand(Game* game, Command* command){
     Node* node;
-    int succeededTogenerateILP;
+    int succeededToGenerateILP;
     int num = numOfEmptyCells(game);
     if(num < command->X){
         printf(generateBoardNotContainXEmpty,num);
     }
     else{
-        succeededTogenerateILP = generateILP(game, command->X, command->Y);
-        if (!succeededTogenerateILP)
+        succeededToGenerateILP = generateILP(game, command->X, command->Y);
+        if (!succeededToGenerateILP)
             printf(generatePuzzleError);
         node = newNode(game);
         clearRedoNodes(game->head->next,game->rows);

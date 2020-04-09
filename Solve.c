@@ -250,7 +250,6 @@ int generateILP(Game* game, int X, int Y){
             }
             succeededToSolveBoard = ILPSolver(game, et, sol);
 
-            printf("back in generateILP\n");fflush(stdout);
             if (succeededToSolveBoard){
                 parseSol (board, et, sol);
                 free(sol);
@@ -283,7 +282,11 @@ int isSolvable(Game* game){
         printf("Error: malloc sol has failed\n");
         exit(EXIT_FAILURE);
     }
-    if(ILPSolver(game, et, sol))
+    if(ILPSolver(game, et, sol)){
+        parseSol (game->solutionBoard, et, sol);
+        free(sol);
         return 1;
+    }
+    free(sol);
     return 0;
 }
