@@ -114,7 +114,7 @@ void printDashes(Game* game);
  * @param num - the num we want to assign
  * @return true if possible to assign else false
  */
-bool isSafe(Game* game, int row, int col, int num);
+bool isSafe(int** board, Game* game, int row, int col, int num);
 
 /**
  * This function checks if a number - num already used in the box
@@ -124,7 +124,7 @@ bool isSafe(Game* game, int row, int col, int num);
  * @param num - the number we want to assign
  * @return true if possible to assign else false
  */
-bool UsedInBox(Game* game, int row, int col, int num);
+bool UsedInBox(int** board, Game* game, int row, int col, int num);
 
 /**
  * This function checks if a number - num already used in the current column
@@ -133,7 +133,7 @@ bool UsedInBox(Game* game, int row, int col, int num);
  * @param num - the number we want to assign
  * @return true if possible to assign else false
  */
-bool UsedInCol(Game* game, int col, int num);
+bool UsedInCol(int** board, Game* game, int col, int num);
 
 /**
  * This function checks if a number - num already used in the current row
@@ -142,7 +142,7 @@ bool UsedInCol(Game* game, int col, int num);
  * @param num - the number we want to assign
  * @return true if possible to assign else false
  */
-bool UsedInRow(Game* game, int row, int num);
+bool UsedInRow(int** board, Game* game, int row, int num);
 
 /**
  * This function used in setCommand, if we successeded to assign z to (x,y) previously then we test

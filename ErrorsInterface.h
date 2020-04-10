@@ -43,6 +43,7 @@
 #define generateErrorArgOne "Error: argument 1 needs to be a positive number\n"
 #define generateErrorArgTwo "Error: argument 2 needs to be a non negative number\n"
 #define generateBoardNotContainXEmpty "Error: the board can fill up to %d empty cells, please insert again\n"
+#define generatePuzzleError "Error: couldn't generate a board with given inputs\n"
 
 
 #define undoIllegalMode "Error: undo command available in solve or edit mode\n"

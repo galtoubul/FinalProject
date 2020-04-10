@@ -1,5 +1,6 @@
 
 #include "CmdHandler.h"
+#include "Solve.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -22,7 +23,7 @@ void setCommand(Game* game, int col, int row, int z){
         game->fixedCellsBoard[row][col] = 0;
     }
     else {
-        if(!isSafe(game, row, col, z)){
+        if(!isSafe(game->currBoard, game, row, col, z)){
             game->errorBoard[row][col] = 1;
         }
         game->currBoard[row][col] = z;
@@ -53,15 +54,12 @@ void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
     else if(game->currBoard[row][col] != 0){
         printf(hintContCellError);
     }
-    /*else if(!isGuess && isSolvableBoard(game)){
-        printf(hintFindHintMsg,game->solutionBoard[row][col]);
-        TODO needs to run ILP to check if board is solvable
-    }*/
-    /*else if(isGuess && isSolvableBoardLP(game)){
-       TODO need to run LP to check if board solvable, need print all legal values of cell X,Y
-    }*/
-    else{
-        printf(boardNotSolvable);
+    else if(!isGuess && isSolvable(game)){
+        printf(hintFindHintMsg, game->solutionBoard[row][col]);
+    }
+    else if(isGuess){
+        if(!guessHintLP(game, col, row))
+            printf(boardNotSolvable);
     }
 }
 
@@ -92,7 +90,7 @@ void editCommand(Game** game, Command* command){
             printGameBoard(*game);
         }
     }
-    /* case no path*/
+        /* case no path*/
     else if(command->fileName == NULL){
         freeLinkedList((*game)->head,(*game)->rows);
         destroyGame(*game);
@@ -103,55 +101,56 @@ void editCommand(Game** game, Command* command){
 }
 
 void markErrorsCommand(Game* game, int markErrors){
-        game->mark_errors = markErrors;
+    game->mark_errors = markErrors;
 }
 
 void printBoardCommand(Game* game){
-        printGameBoard(game);
+    printGameBoard(game);
 }
 
 void validateCommand(Game* game){
-    if(isBoardErroneous(game)){
+    if(isBoardErroneous(game))
         printf(boardIsErrorneous);
-    }
-    /*else if(isSolvableBoard(game)){
+
+    else{
+        if(isSolvable(game)){
             printf(boardSolvable);
             return;
-            TODO gal needs to finish solvable function using ILP, to be checked later
-    }*/
-    else{
-        printf(boardNotSolvable);
+        }else
+            printf(boardNotSolvable);
     }
 }
 
 void guessCommand(Game* game, float threshold){
-    /*Node* node;*/
+    Node* node;
     game->threshold = threshold;
     if(isBoardErroneous(game)){
         printf(boardIsErrorneous);
     }
-    /*else{
-        guessILP(game);
-        TODO need to finish ILP then function guess using it
+    else{
+        guessLP(game, threshold);
         node = newNode(game);
         clearRedoNodes(game->head->next,game->rows);
         insertNode(game,node);
-        printGameBoard(game)
-    }*/
+        printGameBoard(game);
+    }
 }
 
 void generateCommand(Game* game, Command* command){
-    /*Node* node;*/
+    Node* node;
+    int succeededToGenerateILP;
     int num = numOfEmptyCells(game);
     if(num < command->X){
         printf(generateBoardNotContainXEmpty,num);
     }
     else{
-        /*generateILP(game,command.X,command.Y)
-         *node = newNode(game);
+        succeededToGenerateILP = generateILP(game, command->X, command->Y);
+        if (!succeededToGenerateILP)
+            printf(generatePuzzleError);
+        node = newNode(game);
         clearRedoNodes(game->head->next,game->rows);
         insertNode(game,node);
-         printGameBoard(game)*/
+        printGameBoard(game);
     }
 }
 
@@ -167,18 +166,16 @@ void numSolutionsCommand(Game* game){
 }
 
 void autoFillCommand(Game* game){
-    /*Node* node;*/
+    Node* node;
     if(isBoardErroneous(game))
         printf(boardIsErrorneous);
 
     else{
-        /*autoFillSolve(game);
-         *      node = newNode(game);
-                clearRedoNodes(game->head->next,game->rows);
-                insertNode(game,node);
-         * printGameBoard(game)
-         * TODO need to prompt this func*/
-
+        autofill(game);
+        node = newNode(game);
+        clearRedoNodes(game->head->next,game->rows);
+        insertNode(game,node);
+        printGameBoard(game);
     }
 }
 

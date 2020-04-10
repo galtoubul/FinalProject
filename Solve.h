@@ -67,7 +67,7 @@ int solveBoard(Game *game, int **mat, int i, int j);
  * @param legalArray - an empty array which will contain the the legal values for cell (x,y) after function's finish
  * @return the actual size of the legal array after function's finish
  */
-int getLegalArray (int **mat, int x, int y, int *legalArray);
+int getLegalArray (int **board, Game* game, int x, int y, int *legalArray);
 
 /**
  * Deletes an index from legalArray
@@ -104,3 +104,12 @@ int calcNextI(Game *game, int i, int j);
  */
 int calcNextJ(Game *game, int j);
 
+int generateILP(Game* game, int X, int Y);
+
+int isSolvable(Game* game);
+
+void autofill (Game* game);
+
+void guessLP (Game* game, double threshold);
+
+int guessHintLP (Game* game, int x, int y);

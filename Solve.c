@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Solve.h"
-#include "Game.h"
 #include "Stack.h"
-#define RANGE 9
+#include "ILPSolver.h"
+#define EMPTY_CELL 0
 
 void calcNextRowAndCol(Game* game, int* row, int* col){
     if (*col < game->columns-1){
@@ -69,17 +69,11 @@ int num_solutions (Game* currGame) {
     Stack* stack = createStack(currGame->rows * currGame->columns);
     push(stack, deepCopyGame(currGame));
 
-    printf("inside num_solutions. printing stack->arr[stack->top]:\n");
-    printGameBoard(stack->arr[stack->top]);
-
     findFirstEmptyCell(currGame, row, col);
-    printf("first empty cell: [%d,%d]\n", *row, *col);
 
     while(1){
-
         if(*row == currGame->rows){
             solCounter++;
-            printf("solCounter = %d\n", solCounter);
             pop(stack);
             free(currGame);
             currGame=pop(stack);
@@ -88,7 +82,7 @@ int num_solutions (Game* currGame) {
 
         futureValue=currGame->currBoard[*row][*col]+1;
 
-        while (!(isSafe(currGame, *row, *col, futureValue)) || futureValue > currGame->rows){
+        while (!(isSafe(currGame->currBoard, currGame, *row, *col, futureValue)) || futureValue > currGame->rows){
             if (futureValue > currGame->rows){
                 free(currGame);
                 currGame=pop(stack);
@@ -99,65 +93,277 @@ int num_solutions (Game* currGame) {
                 }
                 futureValue = currGame->currBoard[*row][*col];
             }
-            printf("inside isSafe while\n");
-            printGameBoard(currGame);
-            printf("current futureValue (was not good): %d \n", futureValue);
             futureValue++;
-            printf("next futureValue: %d \n", futureValue);
         }
-
-        printf("printing game before setting currBoard[*row][*col] to future value:\n");
-        printGameBoard(currGame);
         currGame->currBoard[*row][*col]=futureValue;
-        printf("printing game after setting currBoard[*row][*col] to future value:\n");
-        printGameBoard(currGame);
 
         push(stack, deepCopyGame(currGame));
         findNextEmptyCell(currGame, row, col);
-        printf("next emptyCell: [%d,%d]\n", *row, *col);
     }
 }
 
-int getRand(int legalArraySize){
+int getRand(int size){
     int index=0;
-    if(legalArraySize!=1)
-        index=rand()%legalArraySize;
+    if(size!=1)
+        index = rand()%size;
     return index;
 }
-/*
-int getLegalArray (int **mat, int x, int y, int *legalArray){
-    int i=0,z;
-    for (z=1;z<=RANGE;z++){
-        if(isSafe(mat,x,y,z)){
-            legalArray[i]=z;
+
+int getLegalArray (int **board, Game* game, int x, int y, int *legalArray){
+    int i = 0, z;
+    for (z = 1; z <= game->rows; z++){
+        if(isSafe(board, game, x, y, z)){
+            legalArray[i] = z;
             i++;
         }
     }
-    return i;
+    return i; /* i is legalArraySize */
 }
-*/
-void deleteIndex(int *legalArray, int legalArraySize, int index){
-    int i=0;
+
+void deleteInd(int** array, int size, int index){
+    int i;
     /*shift cells from deleted cell's index*/
-    for(i=index;i<legalArraySize-1;i++)
-        legalArray[i]=legalArray[i+1];
+    for(i = index; i < size - 1; i++){
+        array[i][0] = array[i+1][0];
+        array[i][1] = array[i+1][1];
+    }
 }
 
-int calcNextI(Game *game, int i, int j)
-{
-    int nextI=0;
-    if(j!=game->columns-1)/*somewhere in the middle of a current row*/
-        nextI=i;
-    else/*end of row*/
-        nextI=i+1;
-    return nextI;
+int chooseAndFillX (int** board, Game* game, int X){
+    int i, j, row, col, legalArraySize, value, unChosenSize, numOfEmptyCellAtStart, ind = 0;
+    int** unChosen;
+    int* legalArray = (int*) malloc(game->rows * sizeof(int));
+
+    numOfEmptyCellAtStart = numOfEmptyCells(game);
+    unChosenSize = numOfEmptyCellAtStart;
+    unChosen = (int**) malloc (unChosenSize * sizeof(int*));
+    for (i = 0; i < unChosenSize; i++)
+        unChosen[i] = (int*) malloc(2 * sizeof(int));
+
+    for (i = 0; i < game->rows; i++){
+        for (j = 0; j < game->columns; j++) {
+            if (game->currBoard[i][j] == 0){
+                unChosen[ind][0] = i;
+                unChosen[ind][1] = j;
+                ind++;
+            }
+        }
+    }
+
+    for (i = 0; i < X; i++){
+        ind = getRand(unChosenSize);
+        row = unChosen[ind][0];
+        col = unChosen[ind][1];
+
+        deleteInd(unChosen, unChosenSize, ind);
+        unChosenSize--;
+
+        legalArraySize = getLegalArray (board, game, row, col, legalArray);
+        if (legalArraySize == 0)
+            return 0;
+
+        value = legalArray[getRand(legalArraySize)];
+        board[row][col] = value;
+    }
+
+    free(legalArray);
+    for (i = 0; i < numOfEmptyCellAtStart; ++i) {
+        free(unChosen[i]);
+    }
+    free(unChosen);
+
+    return 1;
 }
 
-int calcNextJ(Game *game, int j){
-    int nextJ=0;
-    if(j!=game->columns-1)/*somewhere in the middle of a current row*/
-        nextJ=j+1;
-    else/*end of row*/
-        nextJ=0;
-    return nextJ;
+void chooseYCellsAndClearTheRest(int** board, Game* game, int Y){
+    int i, j, row, col, unChosenSize, ind = 0;
+    int** unChosen;
+    int** chosenY = (int**) malloc (game->rows * sizeof(int*));
+    for (i = 0; i < game->rows; i++)
+        chosenY[i] = (int*) malloc(game->columns * sizeof(int));
+
+    unChosenSize = game->rows * game->columns;
+    unChosen = (int**) malloc (unChosenSize * sizeof(int*));
+    for (i = 0; i < unChosenSize; i++)
+        unChosen[i] = (int*) malloc(2 * sizeof(int));
+
+    for (i = 0; i < game->rows; i++) {
+        for (j = 0; j < game->rows; j++) {
+            chosenY[i][j] = 0;
+            unChosen[ind][0] = i;
+            unChosen[ind][1] = j;
+            ind++;
+        }
+    }
+
+    for (i = 0; i < Y; ++i) {
+        ind = getRand(unChosenSize);
+        row = unChosen[ind][0];
+        col = unChosen[ind][1];
+        chosenY[row][col] = 1;
+
+        deleteInd(unChosen, unChosenSize, ind);
+        unChosenSize--;
+    }
+
+    for (i = 0; i < game->rows; i++) {
+        for (j = 0; j < game->rows; j++) {
+            if(chosenY[i][j] == 0)
+                board[i][j] = 0;
+        }
+    }
+
+    for(i = 0; i < game->rows; i++)
+        free(chosenY[i]);
+    free(chosenY);
+
+    for (i = 0; i < game->rows * game->columns; ++i) {
+        free(unChosen[i]);
+    }
+    free(unChosen);
+}
+
+int generateILP(Game* game, int X, int Y){
+    int i, j, succeededToFillX, succeededToSolveBoard;
+    double* sol;
+    int** board;
+    EntryTable* et;
+
+    board = (int**) malloc (game->rows * sizeof(int*));
+    for (i = 0; i < game->rows; i++)
+        board[i] = (int*) malloc(game->columns * sizeof(int));
+
+    for (i = 0; i < game->rows; i++){
+        for (j = 0; j < game->columns; j++){
+            board[i][j] = game->currBoard[i][j];
+        }
+    }
+
+    for (i = 0; i < 1000; i++){
+        succeededToFillX = chooseAndFillX (board, game, X);
+        if (succeededToFillX){
+            et = createEntryTable(game);
+            calcVariables(game, et);
+            sol = (double*) malloc(et->variablesNum * sizeof(double));
+            if (sol == NULL) {
+                printf("Error: malloc sol has failed\n");
+                exit(EXIT_FAILURE);
+            }
+            succeededToSolveBoard = ILPSolver(game, et, sol);
+
+            if (succeededToSolveBoard){
+                parseSol (board, et, sol);
+                free(sol);
+
+                chooseYCellsAndClearTheRest(board, game, Y);
+
+                for(j = 0; j < game->rows; j++)
+                    free(game->currBoard[j]);
+                free(game->currBoard);
+
+                game->currBoard = board;
+                return 1;
+            }
+        }
+    }
+
+    for(j = 0; j < game->rows; j++)
+        free(board[i]);
+    free(board);
+
+    return 0;
+}
+
+int isSolvable(Game* game){
+    double* sol;
+    EntryTable* et = createEntryTable(game);
+    calcVariables(game, et);
+    sol = (double*) malloc(et->variablesNum * sizeof(double));
+    if (sol == NULL) {
+        printf("Error: malloc sol has failed\n");
+        exit(EXIT_FAILURE);
+    }
+    if(ILPSolver(game, et, sol)){
+        parseSol (game->solutionBoard, et, sol);
+        free(sol);
+        return 1;
+    }
+    free(sol);
+    return 0;
+}
+
+void autofill (Game* game){
+    int i, j, legalArraySize;
+    int* legalArray;
+    int** currBoardCopy = copyBoard(game->currBoard, game->rows, game->columns);
+    legalArray = (int*) malloc (game->rows * sizeof(int));
+    for (i = 0; i < game->rows; ++i) {
+        for (j = 0; j < game->columns; ++j) {
+            if(currBoardCopy[i][j] == EMPTY_CELL){
+                legalArraySize = getLegalArray(game->currBoard, game, i, j, legalArray);
+                if (legalArraySize == 1)
+                    currBoardCopy[i][j] = legalArray[0];
+            }
+        }
+    }
+
+    for (i = 0; i < game->rows; i++){
+        for (j = 0; j < game->columns; ++j) {
+            if (currBoardCopy[i][j] != game->currBoard[i][j]){
+                game->currBoard[i][j] = currBoardCopy[i][j];
+                printf("Cell <%d,%d> was filled during autofill with %d\n", i, j, currBoardCopy[i][j]);
+            }
+        }
+    }
+}
+
+void guessLP(Game* game, double threshold){
+    int j;
+    EntryTable* et;
+    double* sol;
+
+    int** guessBoard = copyBoard(game->currBoard, game->rows, game->columns);
+    et = createEntryTable(game);
+    sol = (double*) malloc (et->variablesNum * sizeof(double));
+
+    LPSolver(game, et, sol);
+    parseLPSol(game, guessBoard, et, sol, threshold);
+
+    for(j = 0; j < game->rows; j++)
+        free(game->currBoard[j]);
+    free(game->currBoard);
+
+    game->currBoard = guessBoard;
+}
+
+int guessHintLP (Game* game, int x, int y){
+    int j, row, col, value;
+    EntryTable* et;
+    double* sol;
+    int solvable;
+    int variablesMatInd = 1;
+
+    et = createEntryTable(game);
+    sol = (double*) malloc (et->variablesNum * sizeof(double));
+
+    solvable = LPSolver(game, et, sol);
+    if(!solvable)
+        return 0;
+
+    for (j = 0; j < et->variablesNum; ++j) {
+        if (sol[j] > 0){
+            variablesMatInd = et->gurobiToVariablesMat[j];
+            row = et->varToInd[variablesMatInd - 1][0];
+            col = et->varToInd[variablesMatInd - 1][1];
+            if(row == x && col == y){
+                value = variablesMatInd % et->possibleValuesPerCell;
+                if (value == 0)
+                    value = et->possibleValuesPerCell;
+                printf("%d is a possible value for <%d,%d>. Its score: %f\n", value, row, col, sol[j]);
+
+            }
+        }
+    }
+
+    return 1;
 }

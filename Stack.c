@@ -28,9 +28,7 @@ void push (Stack* stack, Game* game){
 
 /* pre: assumes isEmpty(stack)=0*/
 Game* pop(Stack* stack){
-    printf("in pop\n");
     Game* game=top(stack);
-    printf("back in pop\n");
     removeFromStack(stack);
     stack->top--;
     return game;
