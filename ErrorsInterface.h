@@ -13,7 +13,7 @@
 #define markErrorsTooManyArguments "Error: mark_errors command accepts only 1 argument\n"
 
 #define printBoardIllegal "Error: print_board does not accepts any extra parameters\n"
-#define printBoardIllegalMode "Error: print_board command can't be used in Init mode\n"
+#define printBoardIllegalMode "Error: print_board command available only in solve or edit mode\n"
 
 #define editIllegal "Error: edit accepts either 1 argument or 0 arguments\n"
 
@@ -60,12 +60,12 @@
 #define hintContCellError "Error: cell already contains value\n"
 #define hintFindHintMsg "your hint is %d\n"
 
-#define numSolutionsIllegalMode "Error: num solutions command available only in solve or edit mode\n"
-#define numSolutionsInvalidArgs "Error: num solutions accepts 0 arguments\n"
+#define numSolutionsIllegalMode "Error: num_solutions command available only in solve or edit mode\n"
+#define numSolutionsInvalidArgs "Error: num_solutions accepts 0 arguments\n"
 #define numSolutionsMsg "Current board number of solutions is - %d\n"
 
-#define autoFillIllegalMode "Error: auto fill command available only in solve mode\n"
-#define autoFillInvalidArgs "Error: auto fill accepts 0 arguments\n"
+#define autoFillIllegalMode "Error: autofill command available only in solve mode\n"
+#define autoFillInvalidArgs "Error: autofill accepts 0 arguments\n"
 
 #define resetIllegalMode "Error: reset command available only in solve or edit mode\n"
 #define resetInvalidArgs "Error: reset accepts 0 arguments\n"

@@ -139,11 +139,9 @@ bool UsedInRow(int** board, Game* game, int row, int num){
     int col;
 
     for (col = 0; col < game->columns; col++)
-        if (board[row][col] == num){
-              printf("Used in Row - %d %d\n",row,col);
-                fflush(stdout);
+        if (board[row][col] == num)
             return true;
-            }
+            
     return false;
 }
 
@@ -151,11 +149,9 @@ bool UsedInCol(int** board, Game* game, int col, int num){
     int row;
 
     for (row = 0; row < game->rows; row++)
-        if (board[row][col] == num){
-                printf("Used in Col - %d %d\n",row,col);
-                fflush(stdout);
+        if (board[row][col] == num)
             return true;
-            }
+            
     return false;
 }
 
@@ -165,11 +161,9 @@ bool UsedInBox(int** board, Game* game, int row, int col, int num){
     int boxStartCol = col;
     for (row = 0; row < game->boxRow; row++)
         for (col = 0; col < game->boxCol; col++)
-            if (board[row+boxStartRow][col+boxStartCol] == num){
-                printf("Used in box - %d %d\n",row+boxStartRow,col+boxStartCol);
-                fflush(stdout);
+            if (board[row+boxStartRow][col+boxStartCol] == num)
                 return true;
-                }
+                
     return false;
 }
 
@@ -236,11 +230,8 @@ bool isBoardErroneous(Game* game){
     int i,j;
     for(i = 0; i < game->rows; i++){
         for(j = 0; j < game->columns; j++){
-            if(game->errorBoard[i][j] == 1){
-                printf(" in is board erroneous num is %d %d",i,j);
-                fflush(stdout);
-                return true;
-            }
+            if(game->errorBoard[i][j] == 1)
+                return true;          
         }
     }
     return false;
@@ -291,7 +282,7 @@ void compareBoards(int** thisBoard,int** otherBoard,int row,int col){
             thisNum = thisBoard[i][j];
             otherNum = otherBoard[i][j];
             if(thisNum != otherNum){
-                printf("cell at (%d,%d) was %d,now it's %d\n",i+1,j+1,thisNum,otherNum);
+                printf("cell at (%d,%d) was %d, now it's %d\n",i+1,j+1,thisNum,otherNum);
             }
 
         }
@@ -302,7 +293,7 @@ void compareBoards(int** thisBoard,int** otherBoard,int row,int col){
 Node* newNode(Game* game) {
     Node *node = (Node *) malloc(sizeof(Node));
     if (node == NULL) {
-        printf("Failed too allocate memory, exiting...\n");
+        printf(failedToAllocateMem);
         exit(EXIT_FAILURE);
     }
     node->currentBoard = copyBoard(game->currBoard,game->rows,game->columns);
@@ -364,22 +355,22 @@ bool validateFixedCells(Game* game){
 bool checkFixedCell(Game* game, int row, int col, int num) {
     int boxStartRow = row - row % game->boxRow;
     int boxStartCol = col - col % game->boxCol;
-    int i = 0;
-    for (row = 0; row < game->boxRow; row++){
-        for (col = 0; col < game->boxCol; col++){
-            if (game->currBoard[row + boxStartRow][col + boxStartCol] == num &&
-                game->fixedCellsBoard[row + boxStartRow][col + boxStartCol] == 1)
+    int i = 0,j = 0;
+    for (i = 0; i < game->boxRow; i++){
+        for (j = 0; j < game->boxCol; j++){
+            if (game->currBoard[i + boxStartRow][j + boxStartCol] == num &&
+                game->fixedCellsBoard[i + boxStartRow][j + boxStartCol] == 1)
                 return false;
         }
     }
     /*search in the row*/
     for (i = 0; i < game->columns; i++) {
-        if (game->currBoard[boxStartRow][i] == num && game->fixedCellsBoard[boxStartRow][i] == 1)
+        if (game->currBoard[row][i] == num && game->fixedCellsBoard[row][i] == 1)
             return false;
     }
     /*search in the col*/
     for(i = 0; i < game->rows; i++){
-        if(game->currBoard[i][boxStartCol] == num && game->fixedCellsBoard[i][boxStartCol] == 1)
+        if(game->currBoard[i][col] == num && game->fixedCellsBoard[i][col] == 1)
             return false;
     }
     return true;
@@ -391,14 +382,10 @@ void updateErrorBoard(Game* game){
         for(j = 0; j < game->columns; j++){
             temp = game->currBoard[i][j];
             game->currBoard[i][j] = 0;
-            if(temp != 0 &&!isSafe(game->currBoard,game,i,j,temp)){
-                game->errorBoard[i][j] = 1;
-                printf(" in updateError num is %d i is %d j is %d\n",temp,i,j);
-                fflush(stdout);
-            }
-            else{
+            if(temp != 0 &&!isSafe(game->currBoard,game,i,j,temp))
+                game->errorBoard[i][j] = 1;   
+            else
                 game->errorBoard[i][j] = 0;
-            }
             game->currBoard[i][j] = temp;
         }
     }

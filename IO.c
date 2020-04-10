@@ -31,7 +31,7 @@ int loadSudoku(char* filePath, Game** game,bool editMode){
     n = 0;
 
     /*read file line by line, iterate through game board and add the values correctly.*/
-    while ((read = readline(&line, &len, fPointer)) != -1 && counter < newGame->size && !isError) {
+    while (counter < newGame->size && !isError && (read = readline(&line, &len, fPointer)) != -1) {
         token = strtok(line, " \t\r\n");
         while(token != NULL && counter < newGame->size){
             fixedCandidate = false;
@@ -92,20 +92,13 @@ int loadSudoku(char* filePath, Game** game,bool editMode){
 void saveSudoku(char* filePath, Game* game, bool editMode){
 
     FILE* output;
-    int i = 0,j = 0;
+    int i = 0,j = 0;     
     output = fopen(filePath,"wt");
 
     if(output == NULL){
         printf(saveFileError);
     }
-    else if(editMode && isBoardErroneous(game)){
-        printf(saveErrorneousBoardCantSave);
-    }
-        /*else if(editMode && !isSolvable(game)){
-             printf(saveErrorNotSolvable);
-             TODO need to check if game is solvable
-         }*/
-
+    
     else{
         fprintf(output,"%d %d\n",game->boxRow,game->boxCol);
 
@@ -170,16 +163,17 @@ int readline(char** toWrite,int* len,FILE* pointer){
                 *toWrite = temp;
                 *len = sizeTwo;
             }
-            else
-                return -1;
+            else{
+                printf(failedToAllocateMem);
+                exit(EXIT_FAILURE);
+            }
         }
         (*toWrite)[num_read -1] = (char)c;
         if(EOF == c)
             return -1;
     }
+    if(c == -1 && num_read == 0) return -1;
     (*toWrite)[num_read] = '\0';
-    if(c == -1)
-        return -1;
     return num_read;
 }
 

@@ -44,7 +44,7 @@ void setCommand(Game* game, int col, int row, int z){
 void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
     col = col - 1;
     row = row - 1;
-    if(isGuess){} /*TODO need to delete after we finish solvable and LP solvable it's here only for compilation purpose*/
+    
     if(isBoardErroneous(game)){
         printf(boardIsErrorneous);
     }
@@ -74,6 +74,14 @@ void solveCommand(Game** game, char* filePath){
 
 void saveCommand(Game* game, char* filePath){
     if(game->mode == EDITMODE){
+        if(isBoardErroneous(game)){
+            printf(saveErrorneousBoardCantSave);
+            return;
+    }
+        if(!isSolvable(game)){
+            printf(saveErrorNotSolvable);
+            return;
+    }
         saveSudoku(filePath, game, true);
     }
     else{
@@ -86,12 +94,12 @@ void editCommand(Game** game, Command* command){
     if(command->fileName != NULL){
         succeed = loadSudoku(command->fileName, game,true);
         if(succeed == 1){
-            (*game)->mode = EDITMODE;
+        (*game)->mode = EDITMODE;
             printGameBoard(*game);
         }
     }
         /* case no path*/
-    else if(command->fileName == NULL){
+    else{
         freeLinkedList((*game)->head,(*game)->rows);
         destroyGame(*game);
         *game = createGame(3,3);
@@ -124,9 +132,8 @@ void validateCommand(Game* game){
 void guessCommand(Game* game, float threshold){
     Node* node;
     game->threshold = threshold;
-    if(isBoardErroneous(game)){
+    if(isBoardErroneous(game))
         printf(boardIsErrorneous);
-    }
     else{
         guessLP(game, threshold);
         node = newNode(game);
@@ -140,9 +147,10 @@ void generateCommand(Game* game, Command* command){
     Node* node;
     int succeededToGenerateILP;
     int num = numOfEmptyCells(game);
-    if(num < command->X){
-        printf(generateBoardNotContainXEmpty,num);
-    }
+    if(num < command->X)
+        printf(generateBoardNotContainXEmpty,num);   
+    else if(isBoardErroneous(game))
+        printf(boardIsErrorneous);
     else{
         succeededToGenerateILP = generateILP(game, command->X, command->Y);
         if (!succeededToGenerateILP)
@@ -155,13 +163,11 @@ void generateCommand(Game* game, Command* command){
 }
 
 void numSolutionsCommand(Game* game){
-
     if(isBoardErroneous(game))
         printf(boardIsErrorneous);
-
-    else{
+    else
         printf(numSolutionsMsg,num_solutions(game));
-    }
+    
 
 }
 
