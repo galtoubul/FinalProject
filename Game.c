@@ -341,8 +341,6 @@ bool validateFixedCells(Game* game){
                 temp = game->currBoard[i][j];
                 game->currBoard[i][j] = 0;
                 if(!checkFixedCell(game,i,j,temp)){
-                if(!isSafe(game->currBoard, game, i, j, temp)){
-                    game->currBoard[i][j] = temp;
                     printf(fixedCellIsError,i+1,j+1);
                     return false;
                 }
