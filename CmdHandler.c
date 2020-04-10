@@ -65,7 +65,7 @@ void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
 
 void solveCommand(Game** game, char* filePath){
     int succeed;
-    succeed = loadSudoku(filePath, game);
+    succeed = loadSudoku(filePath, game,false);
     if(succeed == 1){
         (*game)->mode = SOLVEMODE;
         printGameBoard(*game);
@@ -84,7 +84,7 @@ void saveCommand(Game* game, char* filePath){
 void editCommand(Game** game, Command* command){
     int succeed = 0;
     if(command->fileName != NULL){
-        succeed = loadSudoku(command->fileName, game);
+        succeed = loadSudoku(command->fileName, game,true);
         if(succeed == 1){
             (*game)->mode = EDITMODE;
             printGameBoard(*game);

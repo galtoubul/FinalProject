@@ -3,7 +3,7 @@
 #include <ctype.h>
 
 
-int loadSudoku(char* filePath, Game** game){
+int loadSudoku(char* filePath, Game** game,bool editMode){
 
     FILE *fPointer;
     char* line = NULL;
@@ -49,7 +49,7 @@ int loadSudoku(char* filePath, Game** game){
                 break;
             }
             newGame->currBoard[m][n] = atoi(token);
-            if(fixedCandidate)
+            if(fixedCandidate && !editMode)
                 newGame->fixedCellsBoard[m][n] = 1;
 
             token = strtok(NULL," \t\r\n");

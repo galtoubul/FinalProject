@@ -24,9 +24,10 @@
  * it doesn't creates the new game and print informative message
  * @param filePath - the given file path to load the new game from
  * @param game - current played game
+ * @param editMode - indicated weather we load from edit mode
  * @return 1 iff file load succeeded
  */
-int loadSudoku(char* filePath, Game** game);
+int loadSudoku(char* filePath, Game** game,bool editMode);
 
 /**
  * This function saves the current game to the given filepath if editMode == true then every cell will be saved as fixed cell
