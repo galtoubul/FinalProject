@@ -23,7 +23,7 @@
  * is in the right form.
  *
  * parseCommand         - parsing the command type of the string input(set,hint,validate,restart,exit)
- * copyLongString       - used to copy full file paths as strcpy doesn't work properly on long strings
+ * copyFileAddress       - used to copy full file paths as strcpy doesn't work properly on long strings
  * isEmptyCmd           - iterates over the input received from user and checks if it contains only white spaces
  * isInteger            - checks if received string is valid integer
  * isFloat              - checks if received string is valid float number and assign the number to given float parameter
@@ -186,7 +186,7 @@ void resetFunc(char* str, Command* command, MODE* mode);
  * @param str - the string to copy from
  * @return the copied string
  */
-char* copyLongString(char* str);
+void copyFileAddress(char* str, Command* cmd);
 
 /**
  * This function checks if the input contains only white spaces

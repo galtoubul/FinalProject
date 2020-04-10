@@ -257,4 +257,5 @@ bool validateFixedCells(Game* game);
  */
 void updateErrorBoard(Game* game);
 
+bool checkFixedCell(Game* game, int row, int col, int num);
 #endif

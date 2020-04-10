@@ -34,7 +34,7 @@
 
 #define guessIllegalMode "Error: guess command available only in solve mode\n"
 #define guessTooManyArguments "Error: guess command accepts only 1 argument\n"
-#define guessParamIsNotFloat "Error : guess accepts only float argument\n"
+#define guessParamIsNotFloat "Error: guess accepts only float argument\n"
 #define guessParamInvalidRange "Error: guess parameter needs to be floating point between 0 to 1\n"
 
 
@@ -74,7 +74,7 @@
 #define loadGameNotEnoughParams "Error: there are not enough parameters of the game board in current file\n"
 #define loadGameHasTooManyParams "Error: there are too many parameters in the file\n"
 #define loadInvalidSizeParams     "Error: invalid Sudoku size parameters\n"
-#define loadFileOpenFailed         "Error : file open failed\n"
+#define loadFileOpenFailed         "Error: file open failed\n"
 #define loadInvalidValue           "Error: One of the loaded values is invalid\n"
 
 #define saveErrorneousBoardCantSave "Error: can't save errorneous board\n"
@@ -92,7 +92,7 @@
 /* -------------------------General Messages/Errors-------------------------------*/
 #define boardSolvable     "Board is solvable\n"
 #define boardNotSolvable   "Board is not solvable\n"
-#define boardIsErrorneous "can't prompt this command if board has errorneous cells\n"
+#define boardIsErrorneous "Error: can't prompt this command if board has errorneous cells\n"
 #define failedToAllocateMem "failed to allocate memmory, exiting...\n"
 #define fixedCellIsError     "can't load this game since cell (%d,%d) is fixed and is not valid at this position\n"
 #define ExitingCmd           "Exiting...\n"

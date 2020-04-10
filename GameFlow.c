@@ -95,11 +95,15 @@ void runGame(){
         }
         else if(command.cmd == EXIT){
             exitCommand(game);
-            free(command.fileName);
+            if(command.fileName != NULL){
+                free(command.fileName);
+            }
             free(input);
             return;
         }
-
+        else if(command.fileName != NULL){
+            free(command.fileName);
+        }
     }
 }
 

@@ -340,14 +340,37 @@ bool validateFixedCells(Game* game){
             if(game->fixedCellsBoard[i][j] == 1){
                 temp = game->currBoard[i][j];
                 game->currBoard[i][j] = 0;
-                if(!isSafe(game,i,j,temp)){
-                    game->currBoard[i][j] = temp;
+                if(!checkFixedCell(game,i,j,temp)){
                     printf(fixedCellIsError,i+1,j+1);
                     return false;
                 }
                 game->currBoard[i][j] = temp;
             }
         }
+    }
+    return true;
+}
+
+bool checkFixedCell(Game* game, int row, int col, int num) {
+    int boxStartRow = row - row % game->boxRow;
+    int boxStartCol = col - col % game->boxCol;
+    int i = 0;
+    for (row = 0; row < game->boxRow; row++){
+        for (col = 0; col < game->boxCol; col++){
+            if (game->currBoard[row + boxStartRow][col + boxStartCol] == num &&
+                game->fixedCellsBoard[row + boxStartRow][col + boxStartCol] == 1)
+                return false;
+        }
+    }
+    /*search in the row*/
+    for (i = 0; i < game->columns; i++) {
+        if (game->currBoard[boxStartRow][i] == num && game->fixedCellsBoard[boxStartRow][i] == 1)
+            return false;
+    }
+    /*search in the col*/
+    for(i = 0; i < game->rows; i++){
+        if(game->currBoard[i][boxStartCol] == num && game->fixedCellsBoard[i][boxStartCol] == 1)
+            return false;
     }
     return true;
 }

@@ -19,6 +19,7 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
         exit(EXIT_FAILURE);
     }
     command.cmd = ERROR;
+    command.fileName = NULL;
     strcpy(copyInput,input);
     token = strtok(input,delim);
 
@@ -131,7 +132,7 @@ void solveAndSaveFunc(char *str, Command* command,MODE* mode){
     else{
         token = strtok(str,delim);
         token = strtok(NULL,delim);
-        command->fileName = copyLongString(token);
+        copyFileAddress(token,command);
     }
 
 }
@@ -248,7 +249,7 @@ void editFunc(char *str, Command* command){
     token = strtok(str,delim);
     token = strtok(NULL,delim);
     if(token != NULL){
-        command->fileName = copyLongString(token);
+        copyFileAddress(token,command);
     }
     else{
         command->fileName = NULL;
@@ -259,7 +260,7 @@ void editFunc(char *str, Command* command){
 void markErrorsFunc(char* str, Command* command,MODE* mode){
     char* token;
     int x = 0;
-    bool err = false;
+    bool err = true;
 
     if(*mode != SOLVEMODE)
         printf(markErrorsIllegalMode);
@@ -273,13 +274,12 @@ void markErrorsFunc(char* str, Command* command,MODE* mode){
         token = strtok(NULL,delim);
         if(isInteger(token)){
             x = atoi(token);
-            if(x == 0)
-                command->mark = 0;
-            else if(x == 1)
-                command->mark = 1;
-            else{
-                err = true;
+            if(x == 0 || x == 1){
+                command->mark = x;
+                err = false;
             }
+            else
+                err = true;
         }
         if(err){
             command->cmd = ERROR;
@@ -340,6 +340,7 @@ void guessFunc(char* str, Command* command, MODE* mode){
 void generateFunc(char* str, Command* command,MODE* mode){
     char* token;
     int i=1,num;
+    command->X = -1,command->Y = -1;
     if(*mode != EDITMODE)
         printf(generateIllegalMode);
 
@@ -349,9 +350,9 @@ void generateFunc(char* str, Command* command,MODE* mode){
     else{
         token = strtok(str,delim);
         command->cmd = GENERATE;
-        while(token != NULL && i < 3){
+        while(i < 3){
             token = strtok(NULL,delim);
-            if(isInteger(token)){
+            if(token != NULL && isInteger(token)){
                 num = atoi(token);
                 if(i == 1 && num >= 0){
                     command->X = num;
@@ -359,20 +360,16 @@ void generateFunc(char* str, Command* command,MODE* mode){
                 else if(i == 2 && num > 0){
                     command->Y = num;
                 }
-                i++;
             }
-            else{
-                command->cmd = ERROR;
-                switch(i){
-                    case 1:
-                        printf(generateErrorArgOne);
-                        break;
-                    case 2:
-                        printf(generateErrorArgTwo);
-                        break;
-                }
-                break;
-            }
+            i++;
+        }
+        if(command->X == -1){
+            printf(generateErrorArgOne);
+            command->cmd = ERROR;
+        }
+        else if(command->Y == -1){
+            printf(generateErrorArgTwo);
+            command->cmd = ERROR;
         }
 
     }
@@ -457,6 +454,11 @@ bool isLegalLengthCmd(char* str, int len){
     char* token;
     char* copyStr = (char*)malloc(strlen(str)*sizeof(char));
     int i = 0;
+    if(copyStr == NULL){
+        printf(failedToAllocateMem);
+        free(copyStr);
+        exit(EXIT_FAILURE);
+    }
     strcpy(copyStr,str);
     token = strtok(copyStr,delim);
     while(token != NULL && i <= len){
@@ -464,8 +466,7 @@ bool isLegalLengthCmd(char* str, int len){
         i++;
     }
 
-    free(copyStr);
-
+    /*free(copyStr);*/
     if(i != len){
         return false;
     } else{
@@ -496,17 +497,16 @@ void clear(){
     while ((c = getchar()) != '\n' && c != EOF) { }
 }
 
-char* copyLongString(char* str){
+void copyFileAddress(char* str, Command* cmd){
     int i = 0;
-    char* copyTo = (char*)malloc(strlen(str)+1);
-    if(copyTo == NULL){
+    cmd->fileName = (char*)malloc(strlen(str)+1);
+    if(cmd->fileName == NULL){
         printf(failedToAllocateMem);
         exit(EXIT_FAILURE);
     }
     while(str[0]){
-        copyTo[i++] = str[0];
+        cmd->fileName[i++] = str[0];
         str++;
     }
-    copyTo[i] = '\0';
-    return copyTo;
+    cmd->fileName[i] = '\0';
 }
