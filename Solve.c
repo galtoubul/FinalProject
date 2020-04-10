@@ -316,3 +316,22 @@ void autofill (Game* game){
         }
     }
 }
+
+void guessLP(Game* game, double threshold){
+    int j;
+    EntryTable* et;
+    double* sol;
+
+    int** guessBoard = copyBoard(game->currBoard, game->rows, game->columns);
+    et = createEntryTable(game);
+    sol = (double*) malloc (et->variablesNum * sizeof(double));
+
+    LPSolver(game, et, sol);
+    parseLPSol(game, guessBoard, et, sol, threshold);
+
+    for(j = 0; j < game->rows; j++)
+        free(game->currBoard[j]);
+    free(game->currBoard);
+
+    game->currBoard = guessBoard;
+}

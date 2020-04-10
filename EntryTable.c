@@ -108,7 +108,8 @@ void calcVariables (Game* game, EntryTable* et){
             for (k = 1; k <= et->possibleValuesPerCell; k++){
                 if (et->variablesMat[i][j][k - 1] != 0){
                     et->gurobiToVariablesMat[variableNum] = et->variablesMat[i][j][k - 1];
-                    et->variablesMatToGurobi[et->variablesMat[i][j][k - 1]] = variableNum;
+                    et->variablesMatToGurobi[et->variablesMat[i][j][k - 1] - 1] = variableNum;
+                    /*et->variablesMatToGurobi[et->variablesMat[i][j][k - 1]] = variableNum*/
                     variableNum++;
                 }
             }
@@ -131,6 +132,69 @@ void parseSol (int** board, EntryTable* et, double* sol){
         }
     }
 }
+
+void parseLPSol (Game* game, int** board, EntryTable* et, double* sol, double threshold){
+    int i, j, k, row, col, value, variablesMatInd, greaterThanXSize;
+    double sumOfProb, r, sumOfPrev;
+    double** greaterThanX = (double **) malloc (et->possibleValuesPerCell * sizeof(double));
+    for (i = 0; i < et->possibleValuesPerCell; ++i)
+        greaterThanX[i] = (double*) malloc (2 * sizeof(int));
+
+    i = 0;
+    for (j = 1; j <= game->rows * game->columns; ++j) {
+        greaterThanXSize = 0;
+        sumOfProb = 0;
+        while ( et->gurobiToVariablesMat[i] <= (j * et->possibleValuesPerCell) ){
+            if (sol[i] >= threshold){
+                variablesMatInd = et->gurobiToVariablesMat[i];
+                row = et->varToInd[variablesMatInd - 1][0];
+                col = et->varToInd[variablesMatInd - 1][1];
+                value = variablesMatInd % et->possibleValuesPerCell;
+                if (value == 0)
+                    value = et->possibleValuesPerCell;
+
+                if(isSafe(board, game, row, col, value)){
+                    greaterThanX[greaterThanXSize][0] = sol[i];
+                    greaterThanX[greaterThanXSize][1] = value;
+                    greaterThanXSize++;
+                    sumOfProb += sol[i];
+                }
+            }
+            i++;
+        }
+
+        if (greaterThanXSize > 0){
+            r = (double) rand();
+            r /= RAND_MAX;
+            r *= sumOfProb;
+            sumOfPrev = 0;
+            for (k = 0; k < greaterThanXSize; k++){
+                if (k != 0)
+                    sumOfPrev += greaterThanX[k - 1][0];
+                if (r >= sumOfPrev && r <= (sumOfPrev + greaterThanX[k][0]) ){
+                    board[row][col] = (int)greaterThanX[k][1];
+                    break;
+                }
+            }
+        }
+    }
+}
+
+/*
+int*** possibleValuesPerCell = (int***) malloc (et->maxVariableNum * )
+for (i = 0; i < et->variablesNum; ++i) {
+    if(sol[i] > threshold){
+        gurobiVarInd = i;
+        variablesMatInd = et->gurobiToVariablesMat[gurobiVarInd];
+        row = et->varToInd[variablesMatInd - 1][0];
+        col = et->varToInd[variablesMatInd - 1][1];
+        value = variablesMatInd % et->possibleValuesPerCell;
+        if (value == 0)
+            value = et->possibleValuesPerCell;
+        board[row][col] = value;
+    }
+}*/
+
 
 void printEntryTable (EntryTable* et, Game* game){
     int i, j ,k;

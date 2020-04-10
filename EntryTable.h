@@ -32,3 +32,5 @@ void destroyConstraintMat(int** mat, Game* game);
 
 void parseSol (int** board, EntryTable* et, double* sol);
 
+void parseLPSol (Game* game, int** board, EntryTable* et, double* sol, double threshold);
+

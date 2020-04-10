@@ -124,19 +124,18 @@ void validateCommand(Game* game){
 }
 
 void guessCommand(Game* game, float threshold){
-    /*Node* node;*/
+    Node* node;
     game->threshold = threshold;
     if(isBoardErroneous(game)){
         printf(boardIsErrorneous);
     }
-    /*else{
-        guessILP(game);
-        TODO need to finish ILP then function guess using it
+    else{
+        guessLP(game, threshold);
         node = newNode(game);
         clearRedoNodes(game->head->next,game->rows);
         insertNode(game,node);
-        printGameBoard(game)
-    }*/
+        printGameBoard(game);
+    }
 }
 
 void generateCommand(Game* game, Command* command){
