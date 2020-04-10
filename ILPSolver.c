@@ -102,8 +102,8 @@ int ILPSolver(Game* game, EntryTable* et, double* sol)
             constraintSize = 0;
             for (k = 0; k < et->possibleValuesPerCell; ++k) {
                 if (et->variablesMat[i][j][k] != 0){
-                    ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k]];
-                    printf("ind[%d] = %d\n", constraintSize, et->variablesMatToGurobi[et->variablesMat[i][j][k]]);
+                    ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1];
+                    printf("ind[%d] = %d\n", constraintSize, et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1]);
                     val[constraintSize] = 1.0;
                     constraintSize++;
                 }
@@ -128,8 +128,8 @@ int ILPSolver(Game* game, EntryTable* et, double* sol)
             constraintSize = 0;
             for (j = 0; j < game->columns; ++j) {
                 if (et->variablesMat[i][j][k] != 0){
-                    ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k]];
-                    printf("ind[%d] = %d\n", constraintSize, et->variablesMatToGurobi[et->variablesMat[i][j][k]]);
+                    ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1];
+                    printf("ind[%d] = %d\n", constraintSize, et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1]);
                     val[constraintSize] = 1.0;
                     constraintSize++;
                 }
@@ -155,8 +155,8 @@ int ILPSolver(Game* game, EntryTable* et, double* sol)
             constraintSize = 0;
             for (i = 0; i < game->rows; ++i) {
                 if (et->variablesMat[i][j][k] != 0){
-                    ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k]];
-                    printf("ind[%d] = %d\n", constraintSize, et->variablesMatToGurobi[et->variablesMat[i][j][k]]);
+                    ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1];
+                    printf("ind[%d] = %d\n", constraintSize, et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1]);
                     val[constraintSize] = 1.0;
                     constraintSize++;
                 }
