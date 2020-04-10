@@ -359,7 +359,7 @@ int guessHintLP (Game* game, int x, int y){
                 value = variablesMatInd % et->possibleValuesPerCell;
                 if (value == 0)
                     value = et->possibleValuesPerCell;
-                printf("%d is a possible value for <%d,%d>. Its score: %f\n", value, row, col, sol[j]);
+                printf("%d is a possible value for <%d,%d>. Its score: %f\n", value, row+1, col+1, sol[j]);
 
             }
         }

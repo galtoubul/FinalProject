@@ -160,7 +160,7 @@ void numSolutionsCommand(Game* game){
         printf(boardIsErrorneous);
 
     else{
-        /*printf(numSolutionsMsg,num_solutions(game));*/
+        printf(numSolutionsMsg,num_solutions(game));
     }
 
 }

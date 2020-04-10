@@ -7,7 +7,7 @@ int loadSudoku(char* filePath, Game** game,bool editMode){
 
     FILE *fPointer;
     char* line = NULL;
-    char* token;
+    char* token = NULL;
     int counter = 0,m=0,n=0,len=0,read=0;
     bool isError = false, fixedCandidate = false;
     Node* node;
