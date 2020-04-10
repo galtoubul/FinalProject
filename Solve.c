@@ -335,3 +335,35 @@ void guessLP(Game* game, double threshold){
 
     game->currBoard = guessBoard;
 }
+
+int guessHintLP (Game* game, int x, int y){
+    int j, row, col, value;
+    EntryTable* et;
+    double* sol;
+    int solvable;
+    int variablesMatInd = 1;
+
+    et = createEntryTable(game);
+    sol = (double*) malloc (et->variablesNum * sizeof(double));
+
+    solvable = LPSolver(game, et, sol);
+    if(!solvable)
+        return 0;
+
+    for (j = 0; j < et->variablesNum; ++j) {
+        if (sol[j] > 0){
+            variablesMatInd = et->gurobiToVariablesMat[j];
+            row = et->varToInd[variablesMatInd - 1][0];
+            col = et->varToInd[variablesMatInd - 1][1];
+            if(row == x && col == y){
+                value = variablesMatInd % et->possibleValuesPerCell;
+                if (value == 0)
+                    value = et->possibleValuesPerCell;
+                printf("%d is a possible value for <%d,%d>. Its score: %f\n", value, row, col, sol[j]);
+
+            }
+        }
+    }
+
+    return 1;
+}

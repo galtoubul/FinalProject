@@ -110,5 +110,6 @@ int isSolvable(Game* game);
 
 void autofill (Game* game);
 
-void guessLP(Game* game, double threshold);
+void guessLP (Game* game, double threshold);
 
+int guessHintLP (Game* game, int x, int y);
