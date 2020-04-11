@@ -285,6 +285,7 @@ int generateILP(Game* game, int X, int Y){
     for(j = 0; j < game->rows; j++)
         free(board[i]);
     free(board);
+    destroyEntryTable(et, game);
 
     return 0;
 }
