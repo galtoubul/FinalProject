@@ -61,30 +61,33 @@ typedef struct command_t {
 } Command;
 
 /**
- * recives a line of potential command from the user and parse the command to check which command is it -
- * List of possible command - set,hint,validate,exit,restart.
+ * This function receives a line of potential command from the user and parse the command to check which command is it -
+ * List of possible command - set,hint,validate,exit,restart,guess_hint,generate,autofill,num_solutions,undo,redo,solve,edit
+ * save,mark_errors,print_board.
  * if none of the above commands entered then it will return INVALID INPUT COMMAND.
  * @param input  - the input string that the user entered.
- * @return command type.
+ * @return if succeeded return a full command object with the relevant parameters, else INVALID INPUT CMD.
  */
 Command parseCommand(char* input, int upperBound, MODE* mode);
 
 
 /**
  * This function parse the x y z to the command type set
+ * Note* x is horizontal axis, and y is the vertical axis.
  * @param str - the string to get x y z from
  * @param command - the command we are working on
  * @param mode  - solve and edit mode accepts this command
  */
-void setFunc(char *str,Command* command,int upperBound,MODE* mode);
+void setFunc(char *str,Command* command,int upperBound,const MODE* mode);
 
 /**
  * This function parse the x y to the command type hint or guess hint
+ *  * Note* x is horizontal axis, and y is the vertical axis.
  * @param str - the string to get x y from
  * @param command - the command we are working on
  * @param mode  - only solve mode accepts this command
  */
-void hintOrGuessHintFunc(char *str, Command* command, int upperBound, MODE* mode);
+void hintOrGuessHintFunc(char *str, Command* command, int upperBound, const MODE* mode);
 
 /**
  * This function parse the file path to the command type solve or save
@@ -92,7 +95,7 @@ void hintOrGuessHintFunc(char *str, Command* command, int upperBound, MODE* mode
  * @param command - the command we are working that holds file path string
  * @param mode - save command can be accepted in solve or edit mode
  */
-void solveAndSaveFunc(char *str, Command* command,MODE* mode);
+void solveAndSaveFunc(char *str, Command* command,const MODE* mode);
 
 /**
  * This function parse the file path if exist, else it initialize it to NULL
@@ -107,7 +110,7 @@ void editFunc(char *str, Command* command);
  * @param command - the command to save the mark errors parsed
  * @param mode  - only solve mode accepts this command
  */
-void markErrorsFunc(char* str, Command* command,MODE* mode);
+void markErrorsFunc(char* str, Command* command,const MODE* mode);
 
 /**
  * This function parse the print board command --> command has 0 params so it only validates length and mode
@@ -115,7 +118,7 @@ void markErrorsFunc(char* str, Command* command,MODE* mode);
  * @param command - the command to change the cmd type to print_board if its valid
  * @param mode - solve or edit modes only accepts this command
  */
-void printBoardFunc(char* str, Command* command,MODE* mode);
+void printBoardFunc(char* str, Command* command,const MODE* mode);
 
 /**
  * This function parse the validate command --> command has 0 params so it only validates length and mode
@@ -123,7 +126,7 @@ void printBoardFunc(char* str, Command* command,MODE* mode);
  * @param command - the command to change the cmd type validate if its valid
  * @param mode - solve or edit modes only accepts this command
  */
-void validateFunc(char* str, Command* command,MODE* mode);
+void validateFunc(char* str, Command* command,const MODE* mode);
 
 /**
  * This function parse the guess parameters
@@ -131,15 +134,15 @@ void validateFunc(char* str, Command* command,MODE* mode);
  * @param command - the command to change the cmd type if its valid
  * @param mode - only solve mode accepts this command
  */
-void guessFunc(char* str, Command* command, MODE* mode);
+void guessFunc(char* str, Command* command, const MODE* mode);
 
 /**
- * This funcion parse the generate parameters
+ * This function parse the generate parameters
  * @param str - the string to parse x y parameters
  * @param command - the command to change the cmd type if its valid
  * @param mode - init or solve mode only accepts this command
  */
-void generateFunc(char* str, Command* command,MODE* mode);
+void generateFunc(char* str, Command* command,const MODE* mode);
 
 /**
  * This function parse the undo command --> command has 0 params so it only validates length and mode
@@ -171,7 +174,7 @@ void numSolutionsFunc(char* str, Command* command, MODE* mode);
  * @param command - the command to change the cmd type if its valid
  * @param mode - only solve mode accepts this command
  */
-void autoFillFunc(char* str, Command* command,MODE* mode);
+void autoFillFunc(char* str, Command* command,const MODE* mode);
 
 /**
  * This function parse reset command --> command has 0 params so it only validates length and mode
@@ -179,7 +182,7 @@ void autoFillFunc(char* str, Command* command,MODE* mode);
  * @param command - the command to change the cmd type if its valid
  * @param mode - edit or solve mode only accepts this command
  */
-void resetFunc(char* str, Command* command, MODE* mode);
+void resetFunc(char* str, Command* command, const MODE* mode);
 
 /**
  * This function copies long strings such as full file paths, preferably use over strcmp as it some times undefined
@@ -219,7 +222,7 @@ bool isFloat(char* str,float* float_num);
 bool isLegalLengthCmd(char* str, int len);
 
 /**
- * This function recieves a number and bounded number to check if the number is in the range
+ * This function receives a number and bounded number to check if the number is in the range
  * @param num - the num to check if in range
  * @param upperBound - the upper bound of the range --> lower bound is 0
  * @return true iff 0 <= num <= upperBound
@@ -227,7 +230,7 @@ bool isLegalLengthCmd(char* str, int len);
 bool validateCell(int num,int upperBound);
 
 /**
- * This function recieves a number and a bounded number o check if the number is in the range
+ * This function receives a number and a bounded number o check if the number is in the range
  * @param num - the num to check if in range
  * @param upperBound - the upper bound of the range --> lower bound is 1
  * @return true iff 1 <= num <= upperBound
@@ -235,7 +238,7 @@ bool validateCell(int num,int upperBound);
 bool validateRowCol(int num, int upperBound);
 
 /**
- * clears the stdin of the input
+ * clears the stdin
  */
 void clear();
 

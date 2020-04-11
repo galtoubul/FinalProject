@@ -34,8 +34,9 @@
  *  freeLinkedList      - gets a node in a linked list and 'iterates' over the linked list and deletes all nodes
  *  clearRedoNodes      - gets a node and clear all the following nodes to this node including the node itself
  *  compareBoards       - gets 2 board and prints all the differences of cells
- *  validateFixedCells  - gets a game board and validate all fixed cells
- *  updateErrorBoard      - gets a game board and initliaze the erroneous cells of it's error board
+ *  validateFixedCells  - gets a game board and validates that there are no 2 fixed cell that has same value
+ *                        and in the same box/row/column
+ *  updateErrorBoard      - gets a game board and initialize the erroneous cells of it's error board
  *   */
 
 
@@ -54,7 +55,6 @@ typedef struct node_t{
  * Game Structure
  */
 typedef struct game_t {
-    int fixedCells;
     int boxRow; /* number of rows in every box */
     int boxCol; /* number of cols in every box */
     int rows;
@@ -65,7 +65,6 @@ typedef struct game_t {
     int **currBoard;
     int **errorBoard;
     int mark_errors;
-    float threshold;
     bool solved;
     MODE mode;
     Node* head; /*points to current move,next is redo,prev is undo*/
@@ -246,7 +245,7 @@ void freeLinkedList(Node* node,int rows);
 /**
  * This function iterates over the game fixed cells and check weather they are all valid
  * @param game - the game to validate it's fixed cells
- * @return true if all valid fixed cells are valid
+ * @return true if all fixed cells are valid
  */
 bool validateFixedCells(Game* game);
 
@@ -257,5 +256,14 @@ bool validateFixedCells(Game* game);
  */
 void updateErrorBoard(Game* game);
 
+/**
+ * This function gets a fixed cell at position (row,col) in the game and checks if there is any other fixed
+ * cell with the same value that lives in the same box/row/column of the given fixed cell position
+ * @param game - the game to search for other fixed cell
+ * @param row - the horizontal axis of the given fixed cell
+ * @param col - the vertical axis of the given fixed cell
+ * @param num - the number of the given fixed cell to be tested on, Note that the game at[row][col] is now 0.
+ * @return true iff there is no other fixed cell with the same value in the box/row/column.
+ */
 bool checkFixedCell(Game* game, int row, int col, int num);
 #endif

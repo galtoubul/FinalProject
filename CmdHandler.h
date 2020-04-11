@@ -53,9 +53,9 @@ void saveCommand(Game* game, char*filePath);
  * This function receives a command that holds a file path, if file path is null it creates an default game of size 9x9
  * if file path exists and valid it loads the game from the file and run it on edit mode
  * @param game
- * @param command - the command that holds the file path
+ * @param filePath - the filePath to read from
  */
-void editCommand(Game** game, Command* command);
+void editCommand(Game** game, char* filePath);
 
 /**
  * This function change the current game mark errors to the new one which command holds

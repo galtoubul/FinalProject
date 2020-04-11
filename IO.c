@@ -10,7 +10,7 @@ int loadSudoku(char* filePath, Game** game,bool editMode){
     char* token = NULL;
     int counter = 0,m=0,n=0,len=0,read=0;
     bool isError = false, fixedCandidate = false;
-    Node* node;
+    Node* node = NULL;
     Game* newGame;
 
 
@@ -43,6 +43,7 @@ int loadSudoku(char* filePath, Game** game,bool editMode){
                 token[strlen(token)-1] = '\0';
                 fixedCandidate = true;
             }
+            /*checks if token contains only digits and checks if it's a number it checks if it's in range*/
             if(!isNumber(token,fixedCandidate) || !validateCell(atoi(token),newGame->rows)){
                 printf(loadInvalidValue);
                 isError = true;
@@ -57,48 +58,51 @@ int loadSudoku(char* filePath, Game** game,bool editMode){
             counter++; /*inc total number of elements added to this point*/
         }
     }
-
+    /*checks if File has extra parameters that are not white spaces*/
     if(token != NULL || isFileHasExtraParams(fPointer))
         counter++;
 
     fclose(fPointer);
-
-    /*an error occured while loading the file, revert back and print error*/
+    /*if an error occured while loading the file or there are too many or not enough params, revert back and print error*/
     if(isError || counter != newGame->size){
         if(counter < newGame->size && !isError)
             printf(loadGameNotEnoughParams);
         if(counter > newGame->size && !isError)
             printf(loadGameHasTooManyParams);
         destroyGame(newGame);
+        freeLinkedList(newGame->head,newGame->rows);
+        free(line);
         return 0;
     }
-    else if(!validateFixedCells(newGame)){
+    /*if solve mode check if fixed cells are all valid, i.e there are no 2 fixed cells in same box/row/col with same value*/
+    else if(!editMode && !validateFixedCells(newGame)){
         destroyGame(newGame);
+        freeLinkedList(newGame->head,newGame->rows);
+        free(line);
         return 0;
     }
     else if(counter == newGame->size && !isError){
         /*Successfully loaded the game and all parameters are legal*/
         updateErrorBoard(newGame);
         node = newNode(newGame);
+        freeNode(newGame->head,newGame->rows);
         newGame->head = node;
-        freeLinkedList((*game)->head,(*game)->rows);
         destroyGame(*game);
+        freeLinkedList((*game)->head,(*game)->rows);
         *game = newGame;
+        free(line);
     }
     return 1;
 }
 
-
 void saveSudoku(char* filePath, Game* game, bool editMode){
-
     FILE* output;
-    int i = 0,j = 0;     
-    output = fopen(filePath,"wt");
+    int i = 0,j = 0;
 
-    if(output == NULL){
+    output = fopen(filePath,"wt");
+    if(output == NULL)
         printf(saveFileError);
-    }
-    
+
     else{
         fprintf(output,"%d %d\n",game->boxRow,game->boxCol);
 
@@ -164,7 +168,7 @@ int readline(char** toWrite,int* len,FILE* pointer){
                 *len = sizeTwo;
             }
             else{
-                printf(failedToAllocateMem);
+                printf(failedToAllocateMem,"readLine");
                 exit(EXIT_FAILURE);
             }
         }
