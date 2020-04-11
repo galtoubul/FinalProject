@@ -1,31 +1,11 @@
 #include "Game.h"
 
-void calcNextRowAndCol(Game* game, int* row, int* col);
-
-void findFirstEmptyCell (Game* game, int* row, int* col);
-
-void calcPrevRowAndCol(Game* game, int* row, int* col);
-
-void findLastEditedCell (int** curBoard, Game* game, int* row, int* col);
-
-/**
- * Calculates and returns the number of solutions to the given game.
- *
- * @param game - the target game
- * @return number of possible solutions to the given game
- */
-int num_solutions(Game* game);
-
-void destroyCurBoard(int** curBoard, Game* game);
-
-/* --------------------------------------------- EX3 --------------------------------------------------------- */
-
 /**
  * Solve Summary:
  *
- * Contains the functions for solving a board
+ * Contains the functions for solving a board or getting information related to the solution
  *
- * generatePuzzle  - solves an empty board
+ * numSolutions  - return the number of solution to a given game board
  * solveBoard      - tries to solve a board from a given state
  * getLegalArray   - updates the legal values for a cell in its legalArray
  * deleteIndex     - deletes an index from legalArray
@@ -34,6 +14,28 @@ void destroyCurBoard(int** curBoard, Game* game);
  * calcNextJ       - returns the column index of the next cell
  *
  */
+
+/**
+ * Calculates and returns the number of solutions to the given game board.
+ *
+ * @param game - the target game
+ * @return number of possible solutions to the given game
+ */
+int num_solutions(Game* game);
+
+void calcNextRowAndCol(Game* game, int* row, int* col);
+
+void findFirstEmptyCell (Game* game, int* row, int* col);
+
+void calcPrevRowAndCol(Game* game, int* row, int* col);
+
+void findLastEditedCell (int** curBoard, Game* game, int* row, int* col);
+
+
+
+void destroyCurBoard(int** curBoard, Game* game);
+
+
 
 /**
  *Calculates the array which contains the legal values for cell (x,y)

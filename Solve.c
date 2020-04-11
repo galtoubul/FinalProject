@@ -4,6 +4,8 @@
 #include "Stack.h"
 #include "ILPSolver.h"
 #define EMPTY_CELL 0
+#define LP 1
+#define ILP 0
 
 void calcNextRowAndCol(Game* game, int* row, int* col){
     if (*col < game->columns-1)
@@ -232,9 +234,8 @@ void chooseYCellsAndClearTheRest(int** board, Game* game, int Y){
         free(chosenY[i]);
     free(chosenY);
 
-    for (i = 0; i < game->rows * game->columns; ++i) {
+    for (i = 0; i < game->rows * game->columns; ++i)
         free(unChosen[i]);
-    }
     free(unChosen);
 }
 
@@ -263,9 +264,12 @@ int generateILP(Game* game, int X, int Y){
             if (sol == NULL) {
                 printf("Error: malloc sol has failed\n");
                 destroyEntryTable(et, game);
+                for(j = 0; j < game->rows; j++)
+                    free(board[i]);
+                free(board);
                 exit(EXIT_FAILURE);
             }
-            succeededToSolveBoard = ILPSolver(game, et, sol);
+            succeededToSolveBoard = LPSolver(game, et, sol, ILP);
 
             if (succeededToSolveBoard){
                 parseSol (board, et, sol);
@@ -303,7 +307,7 @@ int isSolvable(Game* game){
         printf("Error: malloc sol has failed\n");
         exit(EXIT_FAILURE);
     }
-    if(ILPSolver(game, et, sol)){
+    if(LPSolver(game, et, sol, ILP)){
         parseSol (game->solutionBoard, et, sol);
         free(sol);
         return 1;
@@ -352,13 +356,14 @@ void guessLP(Game* game, double threshold){
     et = createEntryTable(game);
     sol = (double*) malloc (et->variablesNum * sizeof(double));
 
-    LPSolver(game, et, sol);
+    LPSolver(game, et, sol, LP);
     parseLPSol(game, guessBoard, et, sol, threshold);
+    free(sol);
 
     for(j = 0; j < game->rows; j++)
         free(game->currBoard[j]);
     free(game->currBoard);
-
+    destroyEntryTable(et, game);
     game->currBoard = guessBoard;
 }
 
@@ -372,9 +377,12 @@ int guessHintLP (Game* game, int x, int y){
     et = createEntryTable(game);
     sol = (double*) malloc (et->variablesNum * sizeof(double));
 
-    solvable = LPSolver(game, et, sol);
-    if(!solvable)
+    solvable = LPSolver(game, et, sol, LP);
+    if(!solvable){
+        destroyEntryTable(et, game);
+        free(sol);
         return 0;
+    }
 
     for (j = 0; j < et->variablesNum; ++j) {
         if (sol[j] > 0){
@@ -391,5 +399,7 @@ int guessHintLP (Game* game, int x, int y){
         }
     }
 
+    destroyEntryTable(et, game);
+    free(sol);
     return 1;
 }

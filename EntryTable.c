@@ -178,23 +178,11 @@ void parseLPSol (Game* game, int** board, EntryTable* et, double* sol, double th
             }
         }
     }
+
+    for (i = 0; i < et->possibleValuesPerCell; ++i)
+        free(greaterThanX[i]);
+    free(greaterThanX);
 }
-
-/*
-int*** possibleValuesPerCell = (int***) malloc (et->maxVariableNum * )
-for (i = 0; i < et->variablesNum; ++i) {
-    if(sol[i] > threshold){
-        gurobiVarInd = i;
-        variablesMatInd = et->gurobiToVariablesMat[gurobiVarInd];
-        row = et->varToInd[variablesMatInd - 1][0];
-        col = et->varToInd[variablesMatInd - 1][1];
-        value = variablesMatInd % et->possibleValuesPerCell;
-        if (value == 0)
-            value = et->possibleValuesPerCell;
-        board[row][col] = value;
-    }
-}*/
-
 
 void printEntryTable (EntryTable* et, Game* game){
     int i, j ,k;
@@ -234,9 +222,8 @@ void printEntryTable (EntryTable* et, Game* game){
 void destroyEntryTable(EntryTable* et, Game* game){
     int i, j;
 
-    for (i = 0; i < et->variablesNum; ++i)
+    for (i = 0; i < et->maxVariableNum; ++i)
         free(et->varToInd[i]);
-
     free(et->varToInd);
 
     for (i = 0; i < game->rows; i++) {
@@ -247,10 +234,10 @@ void destroyEntryTable(EntryTable* et, Game* game){
 
     for (i = 0; i < game->columns; i++)
         free(et->variablesMat[i]);
+    free(et->variablesMat);
 
     free(et->gurobiToVariablesMat);
-
-    free(et->variablesMat);
+    free(et->variablesMatToGurobi);
 
     free(et);
 }
