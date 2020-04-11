@@ -6,10 +6,7 @@ void findFirstEmptyCell (Game* game, int* row, int* col);
 
 void calcPrevRowAndCol(Game* game, int* row, int* col);
 
-void findLastEditedCell (Game* game, int* row, int* col);
-/*
-Mat* copyMat (Mat* otherMat);
-*/
+void findLastEditedCell (int** curBoard, Game* game, int* row, int* col);
 
 /**
  * Calculates and returns the number of solutions to the given game.
@@ -18,6 +15,8 @@ Mat* copyMat (Mat* otherMat);
  * @return number of possible solutions to the given game
  */
 int num_solutions(Game* game);
+
+void destroyCurBoard(int** curBoard, Game* game);
 
 /* --------------------------------------------- EX3 --------------------------------------------------------- */
 
@@ -35,28 +34,6 @@ int num_solutions(Game* game);
  * calcNextJ       - returns the column index of the next cell
  *
  */
-
-/**
- * Solves an empty board. When finished the solution will be available in game->solutionBoard.
- *
- * @param game - the target game
- * @param i - starting row index
- * @param j - starting column index
- * @return 1 - if it managed to solve the board. Otherwise - returns 0
- */
-int generatePuzzle(Game *game, int i, int j);
-
-/**
- * Tries to solve a board from a given state
- * If it managed to solve it, then the solution will be available in game->solutionBoard.
- *
- * @param game - the target game
- * @param mat - a copy of the original board which the function is trying to solve
- * @param i - starting row index
- * @param j - starting column index
- * @return 1 - if it managed to solve the board. Otherwise - returns 0
- */
-int solveBoard(Game *game, int **mat, int i, int j);
 
 /**
  *Calculates the array which contains the legal values for cell (x,y)
@@ -84,25 +61,7 @@ void deleteIndex(int *legalArray, int legalArraySize, int index);
  */
 int getRand(int legalArraySize);
 
-/**
- * Calculates the row's index of the next cell
- *
- * @param game - the target game
- * @param i - the row's index of the current cell
- * @param j - the column's index of the current cell
- * @return the row's index of the next cell
- */
-int calcNextI(Game *game, int i, int j);
 
-/**
- * Calculates the column's index of the next cell
- *
- * @param game - the target game
- * @param i - the row's index of the current cell
- * @param j - the column's index of the current cell
- * @return the column's index of the next cell
- */
-int calcNextJ(Game *game, int j);
 
 int generateILP(Game* game, int X, int Y);
 

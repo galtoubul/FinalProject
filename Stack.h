@@ -17,21 +17,26 @@
 
 typedef struct Stack{
     int capacity;
-    Game** arr;
+    int*** arr;
     int top;
+    int gameRows;
+    int gameColumns;
+    int gameBoxRow;
+    int gameBoxCol;
 }Stack;
 
-Stack* createStack (int capacity);
+Stack* createStack (int capacity, Game* game);
 
 int isFull (Stack* stack);
 
 int isEmpty (Stack* stack);
 
-void push (Stack* stack, Game* mat);
+void push (Stack* stack, int** board);
 
-Game* pop(Stack* stack);
+int** pop(Stack* stack);
 
-Game* top (Stack* stack);
+int** top (Stack* stack);
 
 void removeFromStack(Stack* stack);
 
+void destroyStack(Stack* stack);

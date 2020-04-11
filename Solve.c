@@ -6,26 +6,23 @@
 #define EMPTY_CELL 0
 
 void calcNextRowAndCol(Game* game, int* row, int* col){
-    if (*col < game->columns-1){
+    if (*col < game->columns-1)
         *col = *col+1;
-        return;
-    }else{
+    else{
         *row = *row+1;
         *col=0;
-        return;
     }
 }
 
 void findFirstEmptyCell (Game* game, int* row, int* col){
     while (*row != game->rows){
-        if (game->fixedCellsBoard[*row][*col] == 0)
+        if (game->currBoard[*row][*col] == EMPTY_CELL)
             return;
         else
             calcNextRowAndCol(game, row, col);
     }
-    /*all cells are fixed*/
+    /*all cells are non empty*/
     *row = -1;
-    return;
 }
 
 void calcPrevRowAndCol(Game* game, int* row, int* col){
@@ -39,66 +36,84 @@ void calcPrevRowAndCol(Game* game, int* row, int* col){
     }
 }
 
-void findLastEditedCell (Game* game, int* row, int* col){
+void findLastEditedCell (int** curBoard, Game* game, int* row, int* col){
     *row = game->rows - 1;
     *col = game->columns - 2;
     while (*row != -1){
-        if (game->fixedCellsBoard[*row][*col] == 0 && game->currBoard[*row][*col] != 0)
+        if (game->currBoard[*row][*col] == EMPTY_CELL && curBoard[*row][*col] != EMPTY_CELL)
             return;
         else
             calcPrevRowAndCol(game, row, col);
     }
-    return;
 }
 
 void findNextEmptyCell (Game* game, int* row, int* col){
     calcNextRowAndCol(game, row, col);
     while (*row != game->rows){
-        if (game->fixedCellsBoard[*row][*col] == 0)
+        if (game->currBoard[*row][*col] == EMPTY_CELL)
             return;
         else
             calcNextRowAndCol(game, row, col);
     }
-    return;
 }
 
-int num_solutions (Game* currGame) {
-    int i = 0, j = 0, solCounter=0, futureValue;
+void destroyCurBoard(int** curBoard, Game* game){
+    int i;
+    for (i = 0; i < game->rows; ++i)
+        free(curBoard[i]);
+    free(curBoard);
+}
+
+int num_solutions (Game* game) {
+    int i = 0, j = 0, solCounter = 0, futureValue;
+    int** curBoard;
     int *row = &i;
     int *col = &j;
-    Stack* stack = createStack(currGame->rows * currGame->columns);
-    push(stack, deepCopyGame(currGame));
+    Stack* stack = createStack(game->rows * game->columns, game);
 
-    findFirstEmptyCell(currGame, row, col);
+    curBoard = copyBoard(game->currBoard, game->rows, game->columns);
+    push(stack, copyBoard(curBoard, game->rows, game->columns));
+    findFirstEmptyCell(game, row, col);
 
     while(1){
-        if(*row == currGame->rows){
+        /* found new solution */
+        if(*row == game->rows){
             solCounter++;
-            pop(stack);
-            free(currGame);
-            currGame=pop(stack);
-            findLastEditedCell(currGame, row, col);
+            removeFromStack(stack);
+            destroyCurBoard(curBoard, game);
+            curBoard = pop(stack);
+            findLastEditedCell(curBoard, game, row, col);
+
+            /* backtrack from first non fixed cell after exhausting all its possibilities */
+            if (*row == -1){
+                destroyCurBoard(curBoard, game);
+                destroyStack(stack);
+                return solCounter;
+            }
         }
 
-        futureValue=currGame->currBoard[*row][*col]+1;
+        futureValue = curBoard[*row][*col] + 1;
 
-        while (!(isSafe(currGame->currBoard, currGame, *row, *col, futureValue)) || futureValue > currGame->rows){
-            if (futureValue > currGame->rows){
-                free(currGame);
-                currGame=pop(stack);
-                findLastEditedCell(currGame, row, col);
+        while ( !(isSafe(curBoard, game, *row, *col, futureValue)) || futureValue > game->rows ){
+            if (futureValue > game->rows){
+                destroyCurBoard(curBoard, game);
+                curBoard = pop(stack);
+                findLastEditedCell(curBoard, game, row, col);
+
+                /* backtrack from first non fixed cell after exhausting all its possibilities */
                 if (*row == -1){
-                    free(stack);
+                    destroyCurBoard(curBoard, game);
+                    destroyStack(stack);
                     return solCounter;
                 }
-                futureValue = currGame->currBoard[*row][*col];
+                futureValue = curBoard[*row][*col];
             }
             futureValue++;
         }
-        currGame->currBoard[*row][*col]=futureValue;
+        curBoard[*row][*col] = futureValue;
 
-        push(stack, deepCopyGame(currGame));
-        findNextEmptyCell(currGame, row, col);
+        push(stack, copyBoard(curBoard, game->rows, game->columns));
+        findNextEmptyCell(game, row, col);
     }
 }
 

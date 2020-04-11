@@ -187,20 +187,23 @@ void freeBoard(int** board,int row){
     free(board);
 }
 
-int** copyBoard(int** board,int row,int col){
-    int i,j;
-    int** mat = (int**)malloc(row*sizeof(int*));
+int** copyBoard(int** board, int row, int col){
+    int i;
+    int j;
+    int** mat = (int**) malloc(row * sizeof(int*));
     if(mat == NULL){
-        printf(failedToAllocateMem,"copyBoard");
+        printf(failedToAllocateMem, "copyBoard");
         exit(EXIT_FAILURE);
     }
-    for(i = 0; i < row; i++)
-        mat[i] = calloc(col,sizeof(int));
+    for(i = 0; i < row; i++){
+        mat[i] = (int*) malloc(col * sizeof(int));
+    }
 
-    for(i = 0; i < row; i++)
-        for (j = 0; j < col; j++)
+    for(i = 0; i < row; i++) {
+        for (j = 0; j < col; j++) {
             mat[i][j] = board[i][j];
-
+        }
+    }
     return mat;
 }
 

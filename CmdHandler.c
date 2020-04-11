@@ -195,6 +195,7 @@ void resetCommand(Game* game){
 void undoCommand(Game* game){
     if(game->head->prev == NULL)
         printf(undoEmptyError);
+
     else{
         compareBoards(game->currBoard,game->head->prev->currentBoard,game->rows,game->columns);
         freeBoard(game->currBoard,game->rows);
