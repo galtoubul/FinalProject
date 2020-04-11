@@ -293,6 +293,9 @@ int isSolvable(Game* game){
     double* sol;
     EntryTable* et = createEntryTable(game);
     calcVariables(game, et);
+    if (et->variablesNum == 0)
+        return 0;
+
     sol = (double*) malloc(et->variablesNum * sizeof(double));
     if (sol == NULL) {
         printf("Error: malloc sol has failed\n");
@@ -303,6 +306,8 @@ int isSolvable(Game* game){
         free(sol);
         return 1;
     }
+
+    destroyEntryTable(et, game);
     free(sol);
     return 0;
 }
