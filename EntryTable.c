@@ -136,9 +136,9 @@ void parseSol (int** board, EntryTable* et, double* sol){
 void parseLPSol (Game* game, int** board, EntryTable* et, double* sol, double threshold){
     int i, j, k, row, col, value, variablesMatInd, greaterThanXSize;
     double sumOfProb, r, sumOfPrev;
-    double** greaterThanX = (double **) malloc (et->possibleValuesPerCell * sizeof(double));
+    double** greaterThanX = (double **) malloc (et->possibleValuesPerCell * sizeof(double*));
     for (i = 0; i < et->possibleValuesPerCell; ++i)
-        greaterThanX[i] = (double*) malloc (2 * sizeof(int));
+        greaterThanX[i] = (double*) malloc (2 * sizeof(double));
 
     i = 0;
     for (j = 1; j <= game->rows * game->columns; ++j) {

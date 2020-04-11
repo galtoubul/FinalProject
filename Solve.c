@@ -256,12 +256,13 @@ int generateILP(Game* game, int X, int Y){
 
     for (i = 0; i < 1000; i++){
         succeededToFillX = chooseAndFillX (board, game, X);
+        et = createEntryTable(game);
         if (succeededToFillX){
-            et = createEntryTable(game);
             calcVariables(game, et);
             sol = (double*) malloc(et->variablesNum * sizeof(double));
             if (sol == NULL) {
                 printf("Error: malloc sol has failed\n");
+                destroyEntryTable(et, game);
                 exit(EXIT_FAILURE);
             }
             succeededToSolveBoard = ILPSolver(game, et, sol);
@@ -277,16 +278,16 @@ int generateILP(Game* game, int X, int Y){
                 free(game->currBoard);
 
                 game->currBoard = board;
+                destroyEntryTable(et, game);
                 return 1;
             }
         }
+        destroyEntryTable(et, game);
     }
 
     for(j = 0; j < game->rows; j++)
         free(board[i]);
     free(board);
-    destroyEntryTable(et, game);
-
     return 0;
 }
 
@@ -366,7 +367,7 @@ int guessHintLP (Game* game, int x, int y){
     EntryTable* et;
     double* sol;
     int solvable;
-    int variablesMatInd = 1;
+    int variablesMatInd;
 
     et = createEntryTable(game);
     sol = (double*) malloc (et->variablesNum * sizeof(double));
@@ -384,7 +385,7 @@ int guessHintLP (Game* game, int x, int y){
                 value = variablesMatInd % et->possibleValuesPerCell;
                 if (value == 0)
                     value = et->possibleValuesPerCell;
-                printf("%d is a possible value for <%d,%d>. Its score: %f\n", value, row+1, col+1, sol[j]);
+                printf("%d is a possible value for (%d,%d). Its score: %f\n", value, row+1, col+1, sol[j]);
 
             }
         }
