@@ -96,5 +96,6 @@
 #define welcome             "Welcome to Sudoku Game!\n"
 #define inputExceedsError   "Error: the input exceeds 256 chars limit\n"
 #define gameIsSolved        "Game solved successfully\n"
+#define gameFullButNotSolved "The Solution of this board is erroneous\n"
 
 #endif

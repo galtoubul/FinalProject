@@ -29,16 +29,20 @@ void setCommand(Game* game, int col, int row, int z){
         game->currBoard[row][col] = z;
     }
 
-    if(isBoardFull(game->currBoard,game->rows,game->columns)){
-        game->solved = true;
-        game->mode = INITMODE;
-        printf(gameIsSolved);
-    }
-    updateErrorBoard(game);
     node = newNode(game);
     clearRedoNodes(game->head->next,game->rows);
     insertNode(game,node);
     printGameBoard(game);
+
+    if(game->mode == SOLVEMODE && isBoardFull(game->currBoard,game->rows,game->columns)){
+        if(isBoardErroneous(game))
+            printf(gameFullButNotSolved);
+        else{
+            game->solved = true;
+            game->mode = INITMODE;
+            printf(gameIsSolved);
+        }
+    }
 }
 
 void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){

@@ -162,13 +162,11 @@ bool isSafe(int** board, Game* game, int row, int col, int num)
 
 bool isBoardFull(int** board,int row, int col){
     int i,j;
-    for(i = 0; i < row; i++){
-        for(j = 0; j < col; j++){
-            if(board[i][j] == 0){
+    for(i = 0; i < row; i++)
+        for(j = 0; j < col; j++)
+            if(board[i][j] == 0)
                 return false;
-            }
-        }
-    }
+
     return true;
 }
 
@@ -188,8 +186,7 @@ void freeBoard(int** board,int row){
 }
 
 int** copyBoard(int** board, int row, int col){
-    int i;
-    int j;
+    int i,j;
     int** mat = (int**) malloc(row * sizeof(int*));
     if(mat == NULL){
         printf(failedToAllocateMem, "copyBoard");
@@ -198,12 +195,10 @@ int** copyBoard(int** board, int row, int col){
     for(i = 0; i < row; i++){
         mat[i] = (int*) malloc(col * sizeof(int));
     }
-
-    for(i = 0; i < row; i++) {
-        for (j = 0; j < col; j++) {
+    for(i = 0; i < row; i++)
+        for (j = 0; j < col; j++)
             mat[i][j] = board[i][j];
-        }
-    }
+
     return mat;
 }
 
