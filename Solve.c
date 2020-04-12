@@ -285,7 +285,6 @@ int generateILP(Game* game, int X, int Y){
         succeededToFillX = chooseAndFillX (board, game, X);
         if (succeededToFillX){
             et = createEntryTable(game);
-            calcVariables(game, et);
 
             /* If the board is solvable using ILP, then its solution will be at sol */
             sol = (double*) malloc(et->variablesNum * sizeof(double));
@@ -331,7 +330,6 @@ int isSolvable(Game* game){
     double* sol;
     int isSolvable;
     EntryTable* et = createEntryTable(game);
-    calcVariables(game, et);
     if (et->variablesNum == 0)
         return 0;
 
