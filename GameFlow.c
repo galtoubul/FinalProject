@@ -1,7 +1,7 @@
 
 #include "GameFlow.h"
 
-#define MAX_INPUT_SIZE 256
+#define MAX_INPUT_SIZE 257
 
 
 void runGame(){
@@ -61,10 +61,8 @@ void runGame(){
             hintOrGuessHintCommand(game,command.X,command.Y,true);
         else if(command.cmd == SAVE)
             saveCommand(game,command.fileName);
-        else if(command.cmd == MAX_ARGS_REACHED){
-              printf("%s*",input);
-              printf(inputExceedsError);
-            }
+        else if(command.cmd == MAX_ARGS_REACHED)
+              printf(inputExceedsError);      
         else if(command.cmd == EXIT){
             exitCommand(game);
             free(input);
