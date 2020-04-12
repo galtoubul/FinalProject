@@ -222,29 +222,6 @@ int numOfEmptyCells(Game* game){
     return count;
 }
 
-Game* deepCopyGame(Game* game){
-    Game* gameCopy;
-    gameCopy = (Game*)malloc(sizeof(Game));
-    if(gameCopy == NULL){
-        printf(failedToAllocateMem,"deepCopyGame");
-        exit(EXIT_FAILURE);
-    }
-    gameCopy->mode = game->mode;
-    gameCopy->mark_errors = game->mark_errors;
-    gameCopy->columns = game->columns;
-    gameCopy->rows = game->rows;
-    gameCopy->size = game->size;
-    gameCopy->boxRow = game->boxRow;
-    gameCopy->boxCol = game->boxCol;
-    gameCopy->solved = game->solved;
-    gameCopy->currBoard = copyBoard(game->currBoard,gameCopy->rows,gameCopy->columns);
-    gameCopy->solutionBoard = copyBoard(game->solutionBoard,gameCopy->rows,gameCopy->columns);
-    gameCopy->errorBoard = copyBoard(game->errorBoard,gameCopy->rows,gameCopy->columns);
-    gameCopy->fixedCellsBoard = copyBoard(game->fixedCellsBoard,gameCopy->rows,gameCopy->columns);
-    gameCopy->head = game->head;
-    return gameCopy;
-}
-
 void compareBoards(int** thisBoard,int** otherBoard,int row,int col){
     int i,j,otherNum,thisNum;
     for(i = 0; i < row; i++){
@@ -252,7 +229,7 @@ void compareBoards(int** thisBoard,int** otherBoard,int row,int col){
             thisNum = thisBoard[i][j];
             otherNum = otherBoard[i][j];
             if(thisNum != otherNum){
-                printf("cell at (%d,%d) was %d, now it's %d\n",i+1,j+1,thisNum,otherNum);
+                printf(diffMsg,i+1,j+1,thisNum,otherNum);
             }
         }
     }

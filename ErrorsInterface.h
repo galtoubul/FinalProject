@@ -97,5 +97,8 @@
 #define inputExceedsError   "Error: the input exceeds 256 chars limit\n"
 #define gameIsSolved        "Game solved successfully\n"
 #define gameFullButNotSolved "The Solution of this board is erroneous\n"
+#define boardAlreadySolved  "Board is Already Solved\n"
+#define diffMsg             "Cell at (%d,%d) was %d, now it's %d\n"
+
 
 #endif

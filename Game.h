@@ -184,13 +184,6 @@ int** copyBoard(int** board,int row,int col);
 bool isBoardErroneous(Game* game);
 
 /**
- * This function make a deep copy of the current game such that all boards and parameters are copied
- * @param game - game to copy from
- * @return a copy of the game
- */
-Game* deepCopyGame(Game* game);
-
-/**
  * This function counts the number of empty cells in the current game --> '0' represent empty cell
  * @param game - game to num of empty cells
  * @return number of empty cells

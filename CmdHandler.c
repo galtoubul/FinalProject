@@ -28,7 +28,7 @@ void setCommand(Game* game, int col, int row, int z){
         }
         game->currBoard[row][col] = z;
     }
-
+    updateErrorBoard(game);
     node = newNode(game);
     clearRedoNodes(game->head->next,game->rows);
     insertNode(game,node);
@@ -123,10 +123,10 @@ void validateCommand(Game* game){
     if(isBoardErroneous(game))
         printf(boardIsErrorneous);
     else{
-        if(isSolvable(game)){
+        if(isBoardFull(game->currBoard,game->rows,game->columns))
+            printf(boardAlreadySolved);/*Case board is not erroneous and full --> board solved*/
+        else if(isSolvable(game))
             printf(boardSolvable);
-            return;
-        }
         else
             printf(boardNotSolvable);
     }
