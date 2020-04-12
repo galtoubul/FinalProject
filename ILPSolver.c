@@ -19,7 +19,7 @@ void freeModel(int* ind, double* val, double* obj, char* vtype, GRBmodel* model,
  * Creating constraints for each variable at the model
    s.t for each variable x:   0 <= x <= 1 */
 int addConstraintsPerVariable(GRBmodel* model, int* ind, double* val, EntryTable* et, int counter){
-    int i, j, constraintSize;
+    int i, constraintSize;
     int error = 0;
     char constraintString[20];
 
@@ -30,9 +30,8 @@ int addConstraintsPerVariable(GRBmodel* model, int* ind, double* val, EntryTable
         sprintf(constraintString, "c%d", counter);
         error = GRBaddconstr(model, constraintSize, ind, val, GRB_LESS_EQUAL, 1, constraintString);
         if (error) {
-            printf("Error in gurobi library\n");
-            for (j = 0; j < constraintSize; ++j)
-                printf("ind[%d] = %d | val[%d] = %f\n", j, ind[j], j, val[j]);
+            printf("Error in gurobi library. Exiting...\n");
+            exit(EXIT_FAILURE);
         }
         counter++;
     }
@@ -44,9 +43,8 @@ int addConstraintsPerVariable(GRBmodel* model, int* ind, double* val, EntryTable
         sprintf(constraintString, "c%d", counter);
         error = GRBaddconstr(model, constraintSize, ind, val, GRB_GREATER_EQUAL, 0, constraintString);
         if (error) {
-            printf("Error in gurobi library\n");
-            for (j = 0; j < constraintSize; ++j)
-                printf("ind[%d] = %d | val[%d] = %f\n", j, ind[j], j, val[j]);
+            printf("Error in gurobi library. Exiting...\n");
+            exit(EXIT_FAILURE);
         }
         counter++;
     }
@@ -65,20 +63,17 @@ int addConstraintsPerCell(GRBmodel* model, int* ind, double* val, Game* game, En
             for (k = 0; k < et->possibleValuesPerCell; ++k) {
                 if (et->variablesMat[i][j][k] != 0){
                     ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1];
-                    printf("ind[%d] = %d\n", constraintSize, et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1]);
                     val[constraintSize] = 1.0;
                     constraintSize++;
                 }
             }
-            printf("constraintSize = %d\n", constraintSize);
             if(constraintSize != 0){
                 counter++;
                 sprintf(constraintString, "c%d", counter);
                 error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, constraintString);
                 if (error) {
-                    printf("Error in gurobi library\n");
-                    for (j = 0; j < constraintSize; ++j)
-                        printf("ind[%d] = %d | val[%d] = %f\n", j, ind[j], j, val[j]);
+                    printf("Error in gurobi library. Exiting...\n");
+                    exit(EXIT_FAILURE);
                 }
             }
         }
@@ -99,21 +94,18 @@ int addConstraintsPerRow(GRBmodel* model, int* ind, double* val, Game* game, Ent
             for (j = 0; j < game->columns; ++j) {
                 if (et->variablesMat[i][j][k] != 0){
                     ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1];
-                    printf("ind[%d] = %d\n", constraintSize, et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1]);
                     val[constraintSize] = 1.0;
                     constraintSize++;
                 }
             }
 
-            printf("constraintSize = %d\n", constraintSize);
             if(constraintSize != 0){
                 counter++;
                 sprintf(constraintString, "c%d", counter);
                 error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, constraintString);
                 if (error) {
-                    printf("Error in gurobi library\n");
-                    for (j = 0; j < constraintSize; ++j)
-                        printf("ind[%d] = %d | val[%d] = %f\n", j, ind[j], j, val[j]);
+                    printf("Error in gurobi library. Exiting...\n");
+                    exit(EXIT_FAILURE);
                 }
             }
         }
@@ -134,21 +126,18 @@ int addConstraintsPerColumn(GRBmodel* model, int* ind, double* val, Game* game, 
             for (i = 0; i < game->rows; ++i) {
                 if (et->variablesMat[i][j][k] != 0){
                     ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1];
-                    printf("ind[%d] = %d\n", constraintSize, et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1]);
                     val[constraintSize] = 1.0;
                     constraintSize++;
                 }
             }
 
-            printf("constraintSize = %d\n", constraintSize);
             if(constraintSize != 0){
                 counter++;
                 sprintf(constraintString, "c%d", counter);
                 error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, constraintString);
                 if (error) {
-                    printf("Error in gurobi library\n");
-                    for (j = 0; j < constraintSize; ++j)
-                        printf("ind[%d] = %d | val[%d] = %f\n", j, ind[j], j, val[j]);
+                    printf("Error in gurobi library. Exiting...\n");
+                    exit(EXIT_FAILURE);
                 }
             }
         }
@@ -171,25 +160,20 @@ void addConstraintsPerBlock(GRBmodel* model, int* ind, double* val, Game* game, 
                     for (c = j; c < game->boxCol + j; ++c) {
                         if (et->variablesMat[r][c][k] != 0) {
                             ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[r][c][k] - 1];
-                            printf("ind[%d] = %d\n", constraintSize,
-                                   et->variablesMatToGurobi[et->variablesMat[r][c][k] - 1]);
                             val[constraintSize] = 1.0;
                             constraintSize++;
                         }
                     }
                 }
-                printf("constraintSize = %d\n", constraintSize);
                 if (constraintSize != 0) {
                     counter++;
                     sprintf(constraintString, "c%d", counter);
                     error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, constraintString);
                     if (error) {
-                        printf("Error in gurobi library\n");
-                        for (j = 0; j < constraintSize; ++j)
-                            printf("ind[%d] = %d | val[%d] = %f\n", j, ind[j], j, val[j]);
+                        printf("Error in gurobi library. Exiting...\n");
+                        exit(EXIT_FAILURE);
                     }
                 }
-
             }
         }
     }
@@ -250,26 +234,25 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
     /* Create environment - log file is mip1.log */
     error = GRBloadenv(&env, "mip1.log");
     if (error) {
-        printf("Error in gurobi library\n");
         freeModel(ind, val, obj, vtype, model, env);
-        return 0;
+        printf("Error in gurobi library. Exiting...\n");
+        exit(EXIT_FAILURE);
     }
 
     /* Gurobi output will be available when this section is in a comment*/
     error = GRBsetintparam(env, GRB_INT_PAR_LOGTOCONSOLE, 0);
     if (error) {
-        printf("Error in gurobi library\n");
         freeModel(ind, val, obj, vtype, model, env);
-        return 0;
+        printf("Error in gurobi library. Exiting...\n");
+        exit(EXIT_FAILURE);
     }
 
     /* Create an empty model named "mip1" */
     error = GRBnewmodel(env, &model, "mip1", 0, NULL, NULL, NULL, NULL, NULL);
     if (error) {
-        printf("Error in gurobi library\n");
         freeModel(ind, val, obj, vtype, model, env);
-        return 0;
-    }
+        printf("Error in gurobi library. Exiting...\n");
+        exit(EXIT_FAILURE);    }
 
     /* Add variables */
     for (i = 0; i < et->variablesNum; ++i) {
@@ -285,91 +268,70 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
     /* Add variables to model */
     error = GRBaddvars(model, et->variablesNum, 0, NULL, NULL, NULL, obj, NULL, NULL, vtype, NULL);
     if (error) {
-        printf("Error in gurobi library\n");
         freeModel(ind, val, obj, vtype, model, env);
-        return 0;
+        printf("Error in gurobi library. Exiting...\n");
+        exit(EXIT_FAILURE);
     }
 
     /* Change objective sense to maximization */
     error = GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, GRB_MAXIMIZE);
     if (error) {
-        printf("Error in gurobi library\n");
         freeModel(ind, val, obj, vtype, model, env);
-        return 0;
-    }
+        printf("Error in gurobi library. Exiting...\n");
+        exit(EXIT_FAILURE);    }
 
     /* Update the model - to integrate new variables */
     error = GRBupdatemodel(model);
     if (error) {
-        printf("Error in gurobi library\n");
         freeModel(ind, val, obj, vtype, model, env);
-        return 0;
-    }
+        printf("Error in gurobi library. Exiting...\n");
+        exit(EXIT_FAILURE);    }
 
     addConstraints(model, ind, val, game, et, counter, varType);
 
     /* Optimize model */
     error = GRBoptimize(model);
     if (error) {
-        printf("Error in gurobi library\n");
         freeModel(ind, val, obj, vtype, model, env);
-        return 0;
-    }
+        printf("Error in gurobi library. Exiting...\n");
+        exit(EXIT_FAILURE);    }
 
     /* Write model to 'mip1.lp' - this is not necessary but very helpful */
     error = GRBwrite(model, "mip1.lp");
     if (error) {
-        printf("Error in gurobi library\n");
         freeModel(ind, val, obj, vtype, model, env);
-        return 0;
-    }
+        printf("Error in gurobi library. Exiting...\n");
+        exit(EXIT_FAILURE);    }
 
     /* Get solution information */
     error = GRBgetintattr(model, GRB_INT_ATTR_STATUS, &optimstatus);
     if (error) {
-        printf("Error in gurobi library\n");
         freeModel(ind, val, obj, vtype, model, env);
-        return 0;
-    }
+        printf("Error in gurobi library. Exiting...\n");
+        exit(EXIT_FAILURE);    }
 
     /* Get the objective -- the optimal result of the function */
     error = GRBgetdblattr(model, GRB_DBL_ATTR_OBJVAL, &objval);
     if (error) {
-        printf("Error in gurobi library\n");
         freeModel(ind, val, obj, vtype, model, env);
-        return 0;
-    }
+        printf("Error in gurobi library. Exiting...\n");
+        exit(EXIT_FAILURE);    }
 
     /* Get the solution - the assignment to each variable */
     error = GRBgetdblattrarray(model, GRB_DBL_ATTR_X, 0, et->variablesNum, sol);
     if (error) {
-        printf("Error in gurobi library\n");
         freeModel(ind, val, obj, vtype, model, env);
-        return 0;
-    }
-
-    /* Print results */
-    printf("\nOptimization complete\n");
+        printf("Error in gurobi library. Exiting...\n");
+        exit(EXIT_FAILURE);    }
 
     /* Solution found */
     if (optimstatus == GRB_OPTIMAL) {
-        printf("Optimal objective: %.4e\n", objval);
-        for (i = 0; i < et->variablesNum; i++)
-            printf("sol[%d] = %f\n", i, sol[i]);
+        freeModel(ind, val, obj, vtype, model, env);
+        return 1;
     }
         /* No solution found */
-    else if (optimstatus == GRB_INF_OR_UNBD) {
-        printf("Model is infeasible or unbounded\n");
-        freeModel(ind, val, obj, vtype, model, env);
-        return 0;
-    }
-        /* Error or calculation stopped */
     else {
-        printf("Optimization was stopped early\n");
         freeModel(ind, val, obj, vtype, model, env);
         return 0;
     }
-
-    freeModel(ind, val, obj, vtype, model, env);
-    return 1;
 }

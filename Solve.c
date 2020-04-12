@@ -337,7 +337,7 @@ void autofill (Game* game){
         for (j = 0; j < game->columns; ++j) {
             if (currBoardCopy[i][j] != game->currBoard[i][j]){
                 game->currBoard[i][j] = currBoardCopy[i][j];
-                printf("Cell <%d,%d> was filled during autofill with %d\n", i, j, currBoardCopy[i][j]);
+                printf("Cell (%d,%d) was filled during autofill with %d\n", i, j, currBoardCopy[i][j]);
             }
         }
     }
