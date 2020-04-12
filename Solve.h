@@ -21,7 +21,7 @@
  * @param game - the target game
  * @return number of possible solutions to the given game
  */
-int num_solutions(Game* game);
+int numSolutions(Game* game);
 
 void calcNextRowAndCol(Game* game, int* row, int* col);
 
@@ -47,15 +47,6 @@ void destroyCurBoard(int** curBoard, Game* game);
  * @return the actual size of the legal array after function's finish
  */
 int getLegalArray (int **board, Game* game, int x, int y, int *legalArray);
-
-/**
- * Deletes an index from legalArray
- *
- * @param legalArray - the array of legal values for the current cell
- * @param legalArraySize - the size of legalArray
- * @param index - the index of the cell which will be deleted from legalArray
- */
-void deleteIndex(int *legalArray, int legalArraySize, int index);
 
 /**
  * @param legalArraySize - the size of legalArray

@@ -66,7 +66,7 @@ void destroyCurBoard(int** curBoard, Game* game){
     free(curBoard);
 }
 
-int num_solutions (Game* game) {
+int numSolutions (Game* game) {
     int i = 0, j = 0, solCounter = 0, futureValue;
     int** curBoard;
     int *row = &i;

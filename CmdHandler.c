@@ -168,7 +168,7 @@ void numSolutionsCommand(Game* game){
     if(isBoardErroneous(game))
         printf(boardIsErrorneous);
     else
-        printf(numSolutionsMsg,num_solutions(game));
+        printf(numSolutionsMsg,numSolutions(game));
 }
 
 void autoFillCommand(Game* game){
