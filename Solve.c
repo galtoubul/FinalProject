@@ -119,13 +119,16 @@ int numSolutions (Game* game) {
     }
 }
 
-int getRand(int size){
+/* Returns a random integer between 0 and maxValue - 1 */
+int getRand(int maxValue){
     int index=0;
-    if(size!=1)
-        index = rand()%size;
+    if(maxValue != 1)
+        index = rand() % maxValue;
     return index;
 }
 
+/* Calculates the array which contains the legal values for cell (x , y)
+   Returns the actual size of the legal array */
 int getLegalArray (int **board, Game* game, int x, int y, int *legalArray){
     int i = 0, z;
     for (z = 1; z <= game->rows; z++){
@@ -137,28 +140,32 @@ int getLegalArray (int **board, Game* game, int x, int y, int *legalArray){
     return i; /* i is legalArraySize */
 }
 
+/* Deletes the given index from the given array */
 void deleteInd(int** array, int size, int index){
     int i;
-    /*shift cells from deleted cell's index*/
+    /* Shifts cells from deleted cell's index */
     for(i = index; i < size - 1; i++){
         array[i][0] = array[i+1][0];
         array[i][1] = array[i+1][1];
     }
 }
 
+/* Randomly filling X empty cells at the given board with legal values */
 int chooseAndFillX (int** board, Game* game, int X){
-    int i, j, row, col, legalArraySize, value, unChosenSize, numOfEmptyCellAtStart, ind;
+    int i, j, row, col, legalArraySize, value, unchosenSize, numOfEmptyCellsAtStart, ind;
+    int** tempBoard;
     int** unChosen;
     int* legalArray = (int*) malloc(game->rows * sizeof(int));
 
-    numOfEmptyCellAtStart = numOfEmptyCells(game);
-    unChosen = (int**) malloc (numOfEmptyCellAtStart * sizeof(int*));
-    for (i = 0; i < numOfEmptyCellAtStart; i++)
+    numOfEmptyCellsAtStart = numOfEmptyCells(game);
+    unChosen = (int**) malloc (numOfEmptyCellsAtStart * sizeof(int*));
+    for (i = 0; i < numOfEmptyCellsAtStart; i++)
         unChosen[i] = (int*) malloc(2 * sizeof(int));
 
-    unChosenSize = numOfEmptyCellAtStart;
+    unchosenSize = numOfEmptyCellsAtStart;
     ind = 0;
 
+    /* unchosen will contain the indices of all empty cells at the current board */
     for (i = 0; i < game->rows; i++){
         for (j = 0; j < game->columns; j++) {
             if (game->currBoard[i][j] == 0){
@@ -169,66 +176,81 @@ int chooseAndFillX (int** board, Game* game, int X){
         }
     }
 
+    tempBoard = copyBoard(board, game->rows, game->columns);
+
     for (i = 0; i < X; i++){
-        ind = getRand(unChosenSize);
+        ind = getRand(unchosenSize);
         row = unChosen[ind][0];
         col = unChosen[ind][1];
 
-        deleteInd(unChosen, unChosenSize, ind);
-        unChosenSize--;
+        deleteInd(unChosen, unchosenSize, ind);
+        unchosenSize--;
 
         legalArraySize = getLegalArray (board, game, row, col, legalArray);
 
+        /* There aren't any legal values for cell [row][col] */
         if (legalArraySize == 0){
             free(legalArray);
-            for (j = 0; j < numOfEmptyCellAtStart; ++j)
-                free(unChosen[i]);
+
+            for (j = 0; j < numOfEmptyCellsAtStart; j++)
+                free(unChosen[j]);
             free(unChosen);
 
+            for (j = 0; j < game->rows; j++)
+                free(tempBoard[j]);
+            free(tempBoard);
             return 0;
         }
 
         value = legalArray[getRand(legalArraySize)];
-        board[row][col] = value;
+        tempBoard[row][col] = value;
     }
 
     free(legalArray);
-    for (i = 0; i < numOfEmptyCellAtStart; ++i)
+    for (i = 0; i < numOfEmptyCellsAtStart; i++)
         free(unChosen[i]);
     free(unChosen);
+
+    for (j = 0; j < game->rows; j++)
+        free(board[j]);
+    free(board);
+    board = tempBoard;
 
     return 1;
 }
 
+/* Randomly choosing Y cells and clearing all other cells */
 void chooseYCellsAndClearTheRest(int** board, Game* game, int Y){
-    int i, j, row, col, unChosenSize, ind = 0;
-    int** unChosen;
+    int i, j, row, col, unchosenSize, ind = 0;
+    int** unchosen;
     int** chosenY = (int**) malloc (game->rows * sizeof(int*));
     for (i = 0; i < game->rows; i++)
         chosenY[i] = (int*) malloc(game->columns * sizeof(int));
 
-    unChosenSize = game->rows * game->columns;
-    unChosen = (int**) malloc (unChosenSize * sizeof(int*));
-    for (i = 0; i < unChosenSize; i++)
-        unChosen[i] = (int*) malloc(2 * sizeof(int));
+    unchosenSize = game->rows * game->columns;
+    unchosen = (int**) malloc (unchosenSize * sizeof(int*));
+    for (i = 0; i < unchosenSize; i++)
+        unchosen[i] = (int*) malloc(2 * sizeof(int));
 
+    /* unchosen will contain the indices of all non selected cells
+       chosenY[i][j] == 1 iff cell[i][j] was chosen */
     for (i = 0; i < game->rows; i++) {
         for (j = 0; j < game->rows; j++) {
             chosenY[i][j] = 0;
-            unChosen[ind][0] = i;
-            unChosen[ind][1] = j;
+            unchosen[ind][0] = i;
+            unchosen[ind][1] = j;
             ind++;
         }
     }
 
     for (i = 0; i < Y; ++i) {
-        ind = getRand(unChosenSize);
-        row = unChosen[ind][0];
-        col = unChosen[ind][1];
+        ind = getRand(unchosenSize);
+        row = unchosen[ind][0];
+        col = unchosen[ind][1];
         chosenY[row][col] = 1;
 
-        deleteInd(unChosen, unChosenSize, ind);
-        unChosenSize--;
+        deleteInd(unchosen, unchosenSize, ind);
+        unchosenSize--;
     }
 
     for (i = 0; i < game->rows; i++) {
@@ -243,8 +265,8 @@ void chooseYCellsAndClearTheRest(int** board, Game* game, int Y){
     free(chosenY);
 
     for (i = 0; i < game->rows * game->columns; ++i)
-        free(unChosen[i]);
-    free(unChosen);
+        free(unchosen[i]);
+    free(unchosen);
 }
 
 /* Generates a puzzle by randomly filling X empty cells with legal values,
@@ -265,6 +287,7 @@ int generateILP(Game* game, int X, int Y){
             et = createEntryTable(game);
             calcVariables(game, et);
 
+            /* If the board is solvable using ILP, then its solution will be at sol */
             sol = (double*) malloc(et->variablesNum * sizeof(double));
             if (sol == NULL) {
                 printf("Error: malloc sol has failed\n");
@@ -281,6 +304,8 @@ int generateILP(Game* game, int X, int Y){
             if (succeededToSolveBoard) {
                 parseSol(board, et, sol);
                 chooseYCellsAndClearTheRest(board, game, Y);
+
+                /* Updating the current board to contain the resuled board */
                 for(j = 0; j < game->rows; j++)
                     free(game->currBoard[j]);
                 free(game->currBoard);
@@ -349,7 +374,7 @@ void autofill (Game* game){
         for (j = 0; j < game->columns; ++j) {
             if (currBoardCopy[i][j] != game->currBoard[i][j]){
                 game->currBoard[i][j] = currBoardCopy[i][j];
-                printf("Cell (%d,%d) was filled during autofill with %d\n", i, j, currBoardCopy[i][j]);
+                printf("Cell (%d,%d) was filled during autofill with %d\n", i + 1, j + 1, currBoardCopy[i][j]);
             }
         }
     }
