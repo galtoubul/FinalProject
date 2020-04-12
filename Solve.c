@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "Solve.h"
 #include "Stack.h"
-#include "ILPSolver.h"
+#include "LPSolver.h"
 #define EMPTY_CELL 0
 #define LP 1
 #define ILP 0
@@ -297,6 +297,7 @@ int generateILP(Game* game, int X, int Y){
 
 int isSolvable(Game* game){
     double* sol;
+    int isSolvable;
     EntryTable* et = createEntryTable(game);
     calcVariables(game, et);
     if (et->variablesNum == 0)
@@ -307,8 +308,12 @@ int isSolvable(Game* game){
         printf("Error: malloc sol has failed\n");
         exit(EXIT_FAILURE);
     }
-    if(LPSolver(game, et, sol, ILP)){
+
+    isSolvable = LPSolver(game, et, sol, ILP);
+    if(isSolvable){
         parseSol (game->solutionBoard, et, sol);
+
+        destroyEntryTable(et, game);
         free(sol);
         return 1;
     }

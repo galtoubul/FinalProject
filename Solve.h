@@ -16,6 +16,22 @@
  */
 
 /**
+ *
+ *
+ * @param game - the target game
+ * @return number of possible solutions to the given game
+ */
+int generateILP(Game* game, int X, int Y);
+
+int isSolvable(Game* game);
+
+void autofill (Game* game);
+
+void guessLP (Game* game, double threshold);
+
+int guessHintLP (Game* game, int x, int y);
+
+/**
  * Calculates and returns the number of solutions to the given game board.
  *
  * @param game - the target game
@@ -56,12 +72,4 @@ int getRand(int legalArraySize);
 
 
 
-int generateILP(Game* game, int X, int Y);
 
-int isSolvable(Game* game);
-
-void autofill (Game* game);
-
-void guessLP (Game* game, double threshold);
-
-int guessHintLP (Game* game, int x, int y);
