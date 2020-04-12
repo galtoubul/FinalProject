@@ -20,8 +20,7 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
     command.fileName = NULL;
     strcpy(copyInput,input);
     token = strtok(input,delim);
-    if(copyInput[strlen(copyInput)-1] != '\n' && copyInput[strlen(copyInput)-1] != EOF ){
-        printf("command is%s*",copyInput);
+    if(copyInput[strlen(copyInput)-1] != '\n' && (strlen(copyInput) == 256)){
         command.cmd = MAX_ARGS_REACHED;
         clear();
     }
@@ -95,8 +94,10 @@ void autoFillFunc(char* str, Command* command,const MODE* mode){
 
 void solveAndSaveFunc(char *str, Command* command,const MODE* mode){
     char* token;
-    if(command->cmd == SAVE && *mode == INITMODE)
-        printf(saveIllegalMode);
+    if(command->cmd == SAVE && *mode == INITMODE){
+          printf(saveIllegalMode);
+          command->cmd = ERROR;
+    }
     else if(!isLegalLengthCmd(str,2)){
         printf(solveOrSaveIllegalArguments);
         command->cmd = ERROR;
