@@ -20,7 +20,8 @@ Command parseCommand(char *input, int upperBound, MODE* mode){
     command.fileName = NULL;
     strcpy(copyInput,input);
     token = strtok(input,delim);
-    if(copyInput[strlen(copyInput)-1] != '\n'){
+    if(copyInput[strlen(copyInput)-1] != '\n' && copyInput[strlen(copyInput)-1] != EOF ){
+        printf("command is%s*",copyInput);
         command.cmd = MAX_ARGS_REACHED;
         clear();
     }

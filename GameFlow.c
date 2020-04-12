@@ -61,8 +61,10 @@ void runGame(){
             hintOrGuessHintCommand(game,command.X,command.Y,true);
         else if(command.cmd == SAVE)
             saveCommand(game,command.fileName);
-        else if(command.cmd == MAX_ARGS_REACHED)
-            printf(inputExceedsError);
+        else if(command.cmd == MAX_ARGS_REACHED){
+              printf("%s*",input);
+              printf(inputExceedsError);
+            }
         else if(command.cmd == EXIT){
             exitCommand(game);
             free(input);

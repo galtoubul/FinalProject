@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-void setCommand(Game* game, int col, int row, int z){
+void setCommand(Game* game, int row, int col, int z){
 
     Node* node;
     col = col - 1; /*rows and columns are 1's based --> mat[0][0] is mat[1][1]*/
@@ -45,7 +45,7 @@ void setCommand(Game* game, int col, int row, int z){
     }
 }
 
-void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
+void hintOrGuessHintCommand(Game* game, int row, int col,bool isGuess){
     col = col - 1;
     row = row - 1;
     
@@ -141,6 +141,11 @@ void guessCommand(Game* game, float threshold){
         node = newNode(game);
         clearRedoNodes(game->head->next,game->rows);
         insertNode(game,node);
+        if(isBoardFull(game->currBoard,game->rows,game->columns)){
+            game->solved = true;
+            game->mode = INITMODE;
+            printf(gameIsSolved);
+        }
         printGameBoard(game);
     }
 }
@@ -180,6 +185,11 @@ void autoFillCommand(Game* game){
         node = newNode(game);
         clearRedoNodes(game->head->next,game->rows);
         insertNode(game,node);
+        if(isBoardFull(game->currBoard,game->rows,game->columns)){
+            game->solved = true;
+            game->mode = INITMODE;
+            printf(gameIsSolved);
+        }
         printGameBoard(game);
     }
 }
