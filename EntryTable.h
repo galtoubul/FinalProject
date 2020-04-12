@@ -10,9 +10,9 @@ typedef struct Entry_Table{
     int possibleValuesPerCell;
 }EntryTable;
 
-EntryTable* createEntryTable(Game* game);
+EntryTable* createEntryTable(int** board, Game* game);
 
-void calcVariables (Game* game, EntryTable* et);
+void calcVariables (int** board, Game* game, EntryTable* et);
 
 void printEntryTable (EntryTable* et, Game* game);
 

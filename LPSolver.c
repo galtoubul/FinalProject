@@ -175,6 +175,8 @@ void addConstraints(GRBmodel* model, int* ind, double* val, Game* game, EntryTab
         printf(GUROBI_ERROR_MESSAGE);
         exit(EXIT_FAILURE);
     }
+    free(ind);
+    free(val);
 }
 
 /* Solves a board using LP or ILP */
@@ -196,7 +198,7 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
 
     /* Allocating memory to all of the arrays */
 
-    ind = (int*) malloc(et->possibleValuesPerCell * sizeof(int));
+    ind = malloc(et->possibleValuesPerCell * sizeof(int));
     if (ind == NULL) {
         printf(MALLOC_FAILED, "ind");
         destroyEntryTable(et, game);
@@ -208,7 +210,7 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
         exit(EXIT_FAILURE);
     }
 
-    val = (double*) malloc(et->possibleValuesPerCell * sizeof(double));
+    val =  malloc(et->possibleValuesPerCell * sizeof(double));
     if (val == NULL) {
         printf(MALLOC_FAILED, "val");
         destroyEntryTable(et, game);
@@ -222,7 +224,7 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
         exit(EXIT_FAILURE);
     }
 
-    obj = (double*) malloc(et->variablesNum * sizeof(double));
+    obj =  malloc(et->variablesNum * sizeof(double));
     if (obj == NULL) {
         printf(MALLOC_FAILED, "obj");
         destroyEntryTable(et, game);
@@ -237,7 +239,7 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
         exit(EXIT_FAILURE);
     }
 
-    vtype = (char*) malloc(et->variablesNum * sizeof(char));
+    vtype = malloc(et->variablesNum * sizeof(char));
     if (vtype == NULL) {
         printf(MALLOC_FAILED, "vtype");
         destroyEntryTable(et, game);
@@ -301,51 +303,58 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
     if (error) {
         freeModel(ind, val, obj, vtype, model, env, et, game, sol);
         printf(GUROBI_ERROR_MESSAGE);
-        exit(EXIT_FAILURE);    }
+        exit(EXIT_FAILURE);
+    }
 
     /* Update the model - to integrate new variables */
     error = GRBupdatemodel(model);
     if (error) {
         freeModel(ind, val, obj, vtype, model, env, et, game, sol);
         printf(GUROBI_ERROR_MESSAGE);
-        exit(EXIT_FAILURE);    }
+        exit(EXIT_FAILURE);
+    }
 
     addConstraints(model, ind, val, game, et, varType, obj, vtype, sol, env);
 
     /* Optimize model */
     error = GRBoptimize(model);
     if (error) {
-        freeModel(ind, val, obj, vtype, model, env, et, game, sol);
+        freeModel(obj, vtype, model, env, et, game, sol);
         printf(GUROBI_ERROR_MESSAGE);
-        exit(EXIT_FAILURE);    }
+        exit(EXIT_FAILURE);
+    }
 
     /* Write model to 'mip1.lp' - this is not necessary but very helpful */
     error = GRBwrite(model, "mip1.lp");
     if (error) {
         freeModel(ind, val, obj, vtype, model, env, et, game, sol);
         printf(GUROBI_ERROR_MESSAGE);
-        exit(EXIT_FAILURE);    }
+        exit(EXIT_FAILURE);
+    }
 
     /* Get solution information */
     error = GRBgetintattr(model, GRB_INT_ATTR_STATUS, &optimstatus);
     if (error) {
         freeModel(ind, val, obj, vtype, model, env, et, game, sol);
         printf(GUROBI_ERROR_MESSAGE);
-        exit(EXIT_FAILURE);    }
+        exit(EXIT_FAILURE);
+    }
 
     /* Get the objective -- the optimal result of the function */
     error = GRBgetdblattr(model, GRB_DBL_ATTR_OBJVAL, &objval);
     if (error) {
         freeModel(ind, val, obj, vtype, model, env, et, game, sol);
         printf(GUROBI_ERROR_MESSAGE);
-        exit(EXIT_FAILURE);    }
+        exit(EXIT_FAILURE);
+    }
 
     /* Get the solution - the assignment to each variable */
     error = GRBgetdblattrarray(model, GRB_DBL_ATTR_X, 0, et->variablesNum, sol);
     if (error) {
         freeModel(ind, val, obj, vtype, model, env, et, game, sol);
         printf(GUROBI_ERROR_MESSAGE);
-        exit(EXIT_FAILURE);    }
+        exit(EXIT_FAILURE);
+    }
 
     free(ind);
     free(val);

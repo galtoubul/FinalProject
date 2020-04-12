@@ -3,9 +3,9 @@
 #include "EntryTable.h"
 #define EMPTY_CELL 0
 
-EntryTable* createEntryTable(Game* game){
+EntryTable* createEntryTable(int** board, Game* game){
     int i, j, k, row, col;
-    EntryTable* et = (EntryTable*) malloc(sizeof(EntryTable));
+    EntryTable* et = malloc(sizeof(EntryTable));
     if(et == NULL){
         printf("Error: EntryTable has failed\n");
         free(et);
@@ -15,7 +15,7 @@ EntryTable* createEntryTable(Game* game){
     et->possibleValuesPerCell = game->rows;
     et->maxVariableNum = game->rows * game->columns * et->possibleValuesPerCell;
 
-    et->variablesMat = (int***) malloc(game->rows * sizeof(int**));
+    et->variablesMat = malloc(game->rows * sizeof(int**));
     if(et->variablesMat == NULL){
         printf("Error: et->variablesMat has failed\n");
         free(et->variablesMat);
@@ -23,7 +23,7 @@ EntryTable* createEntryTable(Game* game){
     }
 
     for (i = 0; i < game->columns; i++) {
-        et->variablesMat[i] = (int **) malloc(game->columns * sizeof(int *));
+        et->variablesMat[i] = malloc(game->columns * sizeof(int *));
         if (et->variablesMat[i] == NULL) {
             printf("Error: et->variablesMat[%d] has failed\n", i);
             exit(EXIT_FAILURE);
@@ -32,7 +32,7 @@ EntryTable* createEntryTable(Game* game){
 
     for (i = 0; i < game->rows; i++) {
         for (j = 0; j < game->columns; ++j) {
-            et->variablesMat[i][j] = (int *) malloc(et->possibleValuesPerCell * sizeof(int));
+            et->variablesMat[i][j] = malloc(et->possibleValuesPerCell * sizeof(int));
             if (et->variablesMat[i][j] == NULL) {
                 printf("Error: et->variablesMat[%d][%d] has failed\n", i, j);
                 exit(EXIT_FAILURE);
@@ -48,9 +48,9 @@ EntryTable* createEntryTable(Game* game){
         }
     }
 
-    calcVariables (game, et);
+    calcVariables (board, game, et);
 
-    et->varToInd = (int**) malloc(et->maxVariableNum * sizeof(int*));
+    et->varToInd = malloc(et->maxVariableNum * sizeof(int*));
     if(et->varToInd == NULL){
         printf("Error: et->varToInd has failed\n");
         free(et->varToInd);
@@ -58,7 +58,7 @@ EntryTable* createEntryTable(Game* game){
     }
 
     for (i = 0; i < et->maxVariableNum; i++) {
-        et->varToInd[i] = (int *) malloc(2 * sizeof(int));
+        et->varToInd[i] =  malloc(2 * sizeof(int));
         if (et->varToInd[i] == NULL) {
             printf("Error: et->varToInd[%d] has failed\n", i);
             exit(EXIT_FAILURE);
@@ -79,13 +79,13 @@ EntryTable* createEntryTable(Game* game){
     return et;
 }
 
-void calcVariables (Game* game, EntryTable* et){
+void calcVariables (int** board, Game* game, EntryTable* et){
     int i, j, k, variableNum = 1, size = 0;
     for(i = 0; i < game->rows; i++){
         for (j = 0; j < game->columns; j++){
-            if (game->currBoard[i][j] == EMPTY_CELL){
+            if (board[i][j] == EMPTY_CELL){
                 for (k = 1; k <= et->possibleValuesPerCell; k++){
-                    if (isSafe(game->currBoard, game, i, j, k)){
+                    if (isSafe(board, game, i, j, k)){
                         et->variablesMat[i][j][k - 1] = variableNum;
                         size++;
                     }
@@ -97,8 +97,8 @@ void calcVariables (Game* game, EntryTable* et){
     }
     et->variablesNum = size;
 
-    et->gurobiToVariablesMat = (int*) malloc (et->variablesNum * sizeof(int));
-    et->variablesMatToGurobi = (int*) malloc (et->maxVariableNum * sizeof(int));
+    et->gurobiToVariablesMat = malloc (et->variablesNum * sizeof(int));
+    et->variablesMatToGurobi = malloc (et->maxVariableNum * sizeof(int));
     for (i = 0; i < et->maxVariableNum; ++i)
         et->variablesMatToGurobi[i] = -1;
 
@@ -136,9 +136,9 @@ void parseSol (int** board, EntryTable* et, double* sol){
 void parseLPSol (Game* game, int** board, EntryTable* et, double* sol, double threshold){
     int i, j, k, row, col, value, variablesMatInd, greaterThanXSize;
     double sumOfProb, r, sumOfPrev;
-    double** greaterThanX = (double **) malloc (et->possibleValuesPerCell * sizeof(double*));
+    double** greaterThanX = malloc (et->possibleValuesPerCell * sizeof(double*));
     for (i = 0; i < et->possibleValuesPerCell; ++i)
-        greaterThanX[i] = (double*) malloc (2 * sizeof(double));
+        greaterThanX[i] = malloc (2 * sizeof(double));
 
     i = 0;
     for (j = 1; j <= game->rows * game->columns; ++j) {

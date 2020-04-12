@@ -155,12 +155,12 @@ int chooseAndFillX (int** board, Game* game, int X){
     int i, j, row, col, legalArraySize, value, unchosenSize, numOfEmptyCellsAtStart, ind;
     int** tempBoard;
     int** unChosen;
-    int* legalArray = (int*) malloc(game->rows * sizeof(int));
+    int* legalArray = malloc(game->rows * sizeof(int));
 
     numOfEmptyCellsAtStart = numOfEmptyCells(game);
-    unChosen = (int**) malloc (numOfEmptyCellsAtStart * sizeof(int*));
+    unChosen = malloc (numOfEmptyCellsAtStart * sizeof(int*));
     for (i = 0; i < numOfEmptyCellsAtStart; i++)
-        unChosen[i] = (int*) malloc(2 * sizeof(int));
+        unChosen[i] = malloc(2 * sizeof(int));
 
     unchosenSize = numOfEmptyCellsAtStart;
     ind = 0;
@@ -223,14 +223,14 @@ int chooseAndFillX (int** board, Game* game, int X){
 void chooseYCellsAndClearTheRest(int** board, Game* game, int Y){
     int i, j, row, col, unchosenSize, ind = 0;
     int** unchosen;
-    int** chosenY = (int**) malloc (game->rows * sizeof(int*));
+    int** chosenY = malloc (game->rows * sizeof(int*));
     for (i = 0; i < game->rows; i++)
-        chosenY[i] = (int*) malloc(game->columns * sizeof(int));
+        chosenY[i] = malloc(game->columns * sizeof(int));
 
     unchosenSize = game->rows * game->columns;
-    unchosen = (int**) malloc (unchosenSize * sizeof(int*));
+    unchosen = malloc (unchosenSize * sizeof(int*));
     for (i = 0; i < unchosenSize; i++)
-        unchosen[i] = (int*) malloc(2 * sizeof(int));
+        unchosen[i] = malloc(2 * sizeof(int));
 
     /* unchosen will contain the indices of all non selected cells
        chosenY[i][j] == 1 iff cell[i][j] was chosen */
@@ -284,10 +284,10 @@ int generateILP(Game* game, int X, int Y){
     for (i = 0; i < 1000; i++){
         succeededToFillX = chooseAndFillX (board, game, X);
         if (succeededToFillX){
-            et = createEntryTable(game);
+            et = createEntryTable(board, game);
 
             /* If the board is solvable using ILP, then its solution will be at sol */
-            sol = (double*) malloc(et->variablesNum * sizeof(double));
+            sol = malloc(et->variablesNum * sizeof(double));
             if (sol == NULL) {
                 printf("Error: malloc sol has failed\n");
 
@@ -329,11 +329,11 @@ int generateILP(Game* game, int X, int Y){
 int isSolvable(Game* game){
     double* sol;
     int isSolvable;
-    EntryTable* et = createEntryTable(game);
+    EntryTable* et = createEntryTable(game->currBoard, game);
     if (et->variablesNum == 0)
         return 0;
 
-    sol = (double*) malloc(et->variablesNum * sizeof(double));
+    sol = malloc(et->variablesNum * sizeof(double));
     if (sol == NULL) {
         printf("Error: malloc sol has failed\n");
         exit(EXIT_FAILURE);
@@ -357,7 +357,7 @@ void autofill (Game* game){
     int i, j, legalArraySize;
     int* legalArray;
     int** currBoardCopy = copyBoard(game->currBoard, game->rows, game->columns);
-    legalArray = (int*) malloc (game->rows * sizeof(int));
+    legalArray = malloc (game->rows * sizeof(int));
     for (i = 0; i < game->rows; ++i) {
         for (j = 0; j < game->columns; ++j) {
             if(currBoardCopy[i][j] == EMPTY_CELL){
@@ -388,8 +388,8 @@ void guessLP(Game* game, double threshold){
     double* sol;
 
     int** guessBoard = copyBoard(game->currBoard, game->rows, game->columns);
-    et = createEntryTable(game);
-    sol = (double*) malloc (et->variablesNum * sizeof(double));
+    et = createEntryTable(game->currBoard, game);
+    sol = malloc (et->variablesNum * sizeof(double));
 
     LPSolver(game, et, sol, LP);
     parseLPSol(game, guessBoard, et, sol, threshold);
@@ -409,8 +409,8 @@ int guessHintLP (Game* game, int x, int y){
     int solvable;
     int variablesMatInd;
 
-    et = createEntryTable(game);
-    sol = (double*) malloc (et->variablesNum * sizeof(double));
+    et = createEntryTable(game->currBoard, game);
+    sol = malloc (et->variablesNum * sizeof(double));
 
     solvable = LPSolver(game, et, sol, LP);
     if(!solvable){
