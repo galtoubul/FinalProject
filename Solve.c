@@ -147,15 +147,17 @@ void deleteInd(int** array, int size, int index){
 }
 
 int chooseAndFillX (int** board, Game* game, int X){
-    int i, j, row, col, legalArraySize, value, unChosenSize, numOfEmptyCellAtStart, ind = 0;
+    int i, j, row, col, legalArraySize, value, unChosenSize, numOfEmptyCellAtStart, ind;
     int** unChosen;
     int* legalArray = (int*) malloc(game->rows * sizeof(int));
 
     numOfEmptyCellAtStart = numOfEmptyCells(game);
-    unChosenSize = numOfEmptyCellAtStart;
-    unChosen = (int**) malloc (unChosenSize * sizeof(int*));
-    for (i = 0; i < unChosenSize; i++)
+    unChosen = (int**) malloc (numOfEmptyCellAtStart * sizeof(int*));
+    for (i = 0; i < numOfEmptyCellAtStart; i++)
         unChosen[i] = (int*) malloc(2 * sizeof(int));
+
+    unChosenSize = numOfEmptyCellAtStart;
+    ind = 0;
 
     for (i = 0; i < game->rows; i++){
         for (j = 0; j < game->columns; j++) {
@@ -176,17 +178,23 @@ int chooseAndFillX (int** board, Game* game, int X){
         unChosenSize--;
 
         legalArraySize = getLegalArray (board, game, row, col, legalArray);
-        if (legalArraySize == 0)
+
+        if (legalArraySize == 0){
+            free(legalArray);
+            for (j = 0; j < numOfEmptyCellAtStart; ++j)
+                free(unChosen[i]);
+            free(unChosen);
+
             return 0;
+        }
 
         value = legalArray[getRand(legalArraySize)];
         board[row][col] = value;
     }
 
     free(legalArray);
-    for (i = 0; i < numOfEmptyCellAtStart; ++i) {
+    for (i = 0; i < numOfEmptyCellAtStart; ++i)
         free(unChosen[i]);
-    }
     free(unChosen);
 
     return 1;
@@ -239,56 +247,55 @@ void chooseYCellsAndClearTheRest(int** board, Game* game, int Y){
     free(unChosen);
 }
 
+/* Generates a puzzle by randomly filling X empty cells with legal values,
+   running ILP to solve the board and then clearing all but Y random cells */
 int generateILP(Game* game, int X, int Y){
     int i, j, succeededToFillX, succeededToSolveBoard;
     double* sol;
     int** board;
     EntryTable* et;
 
-    board = (int**) malloc (game->rows * sizeof(int*));
-    for (i = 0; i < game->rows; i++)
-        board[i] = (int*) malloc(game->columns * sizeof(int));
+    /* Saving a copy of the current board */
+    board = copyBoard(game->currBoard, game->rows, game->columns);
 
-    for (i = 0; i < game->rows; i++){
-        for (j = 0; j < game->columns; j++){
-            board[i][j] = game->currBoard[i][j];
-        }
-    }
-
+    /* Trying to make the process 1000 times */
     for (i = 0; i < 1000; i++){
         succeededToFillX = chooseAndFillX (board, game, X);
-        et = createEntryTable(game);
         if (succeededToFillX){
+            et = createEntryTable(game);
             calcVariables(game, et);
+
             sol = (double*) malloc(et->variablesNum * sizeof(double));
             if (sol == NULL) {
                 printf("Error: malloc sol has failed\n");
-                destroyEntryTable(et, game);
+
                 for(j = 0; j < game->rows; j++)
                     free(board[i]);
                 free(board);
+                destroyEntryTable(et, game);
+                destroyGame(game);
                 exit(EXIT_FAILURE);
             }
             succeededToSolveBoard = LPSolver(game, et, sol, ILP);
 
-            if (succeededToSolveBoard){
-                parseSol (board, et, sol);
-                free(sol);
-
+            if (succeededToSolveBoard) {
+                parseSol(board, et, sol);
                 chooseYCellsAndClearTheRest(board, game, Y);
-
                 for(j = 0; j < game->rows; j++)
                     free(game->currBoard[j]);
                 free(game->currBoard);
-
                 game->currBoard = board;
-                destroyEntryTable(et, game);
-                return 1;
             }
+
+            free(sol);
+            destroyEntryTable(et, game);
+
+            if (succeededToSolveBoard)
+                return 1;
         }
-        destroyEntryTable(et, game);
     }
 
+    /* After 1000 iterations -> treat as error */
     for(j = 0; j < game->rows; j++)
         free(board[i]);
     free(board);
