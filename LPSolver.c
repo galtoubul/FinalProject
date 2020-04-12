@@ -28,10 +28,8 @@ void freeModel(int* ind, double* val, double* obj, char* vtype, GRBmodel* model,
 /* Relevant only to LP
  * Creating constraints for each variable at the model
    s.t for each variable x:   0 <= x <= 1 */
-int addConstraintsPerVariable(GRBmodel* model, int* ind, double* val, EntryTable* et, int* counter, int varType){
-    int i, constraintSize;
-    int error = 0;
-    char constraintString[20];
+int addConstraintsPerVariable(GRBmodel* model, int* ind, double* val, EntryTable* et, int varType){
+    int i, constraintSize, error = 0;
 
     if (varType == ILP)
         return SUCCEEDED_TO_ADD_CONSTRAINTS;
@@ -40,32 +38,28 @@ int addConstraintsPerVariable(GRBmodel* model, int* ind, double* val, EntryTable
         constraintSize = 1;
         ind[0] = i;
         val[0] = 1.0;
-        sprintf(constraintString, "c%d", *counter);
-        error = GRBaddconstr(model, constraintSize, ind, val, GRB_LESS_EQUAL, 1, constraintString);
+        error = GRBaddconstr(model, constraintSize, ind, val, GRB_LESS_EQUAL, 1, NULL);
         if (error)
             return FAILED_TO_ADD_CONSTRAINTS;
-        counter++;
     }
 
     for (i = 0; i < et->variablesNum; ++i) {
         constraintSize = 1;
         ind[0] = i;
         val[0] = 1.0;
-        sprintf(constraintString, "c%d", *counter);
-        error = GRBaddconstr(model, constraintSize, ind, val, GRB_GREATER_EQUAL, 0, constraintString);
+
+        error = GRBaddconstr(model, constraintSize, ind, val, GRB_GREATER_EQUAL, 0, NULL);
         if (error)
             return FAILED_TO_ADD_CONSTRAINTS;
-        counter++;
     }
     return SUCCEEDED_TO_ADD_CONSTRAINTS;
 }
 
 /* Creating constraints for each cell at the board
    s.t for each cell x:   sum of values for x = 1 */
-int addConstraintsPerCell(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et, int* counter){
-    int i, j, k, constraintSize;
-    int error = 0;
-    char constraintString[20];
+int addConstraintsPerCell(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et){
+    int i, j, k, constraintSize, error = 0;
+
     for (i = 0; i < game->rows; ++i) {
         for (j = 0; j < game->columns; ++j) {
             constraintSize = 0;
@@ -77,9 +71,7 @@ int addConstraintsPerCell(GRBmodel* model, int* ind, double* val, Game* game, En
                 }
             }
             if(constraintSize != 0){
-                counter++;
-                sprintf(constraintString, "c%d", *counter);
-                error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, constraintString);
+                error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, NULL);
                 if (error)
                     return FAILED_TO_ADD_CONSTRAINTS;
             }
@@ -90,10 +82,8 @@ int addConstraintsPerCell(GRBmodel* model, int* ind, double* val, Game* game, En
 
 /* Creating constraints for each row at the board
    s.t for each row i and for each value x:   sum of x at row i = 1 */
-int addConstraintsPerRow(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et, int* counter){
-    int i, j, k, constraintSize;
-    int error = 0;
-    char constraintString[20];
+int addConstraintsPerRow(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et){
+    int i, j, k, constraintSize, error = 0;
 
     for (i = 0; i < game->rows; ++i) {
         for (k = 0; k < et->possibleValuesPerCell; ++k) {
@@ -107,9 +97,7 @@ int addConstraintsPerRow(GRBmodel* model, int* ind, double* val, Game* game, Ent
             }
 
             if(constraintSize != 0){
-                counter++;
-                sprintf(constraintString, "c%d", *counter);
-                error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, constraintString);
+                error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, NULL);
                 if (error)
                     return FAILED_TO_ADD_CONSTRAINTS;
             }
@@ -120,10 +108,8 @@ int addConstraintsPerRow(GRBmodel* model, int* ind, double* val, Game* game, Ent
 
 /* Creating constraints for each column at the board
    s.t for each column j and for each value x:   sum of x at row j = 1 */
-int addConstraintsPerColumn(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et, int* counter){
-    int i, j, k, constraintSize;
-    int error = 0;
-    char constraintString[20];
+int addConstraintsPerColumn(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et){
+    int i, j, k, constraintSize, error = 0;
 
     for (j = 0; j < game->columns; ++j) {
         for (k = 0; k < et->possibleValuesPerCell; ++k) {
@@ -137,9 +123,7 @@ int addConstraintsPerColumn(GRBmodel* model, int* ind, double* val, Game* game, 
             }
 
             if(constraintSize != 0){
-                counter++;
-                sprintf(constraintString, "c%d", *counter);
-                error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, constraintString);
+                error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, NULL);
                 if (error)
                     return FAILED_TO_ADD_CONSTRAINTS;
             }
@@ -150,10 +134,8 @@ int addConstraintsPerColumn(GRBmodel* model, int* ind, double* val, Game* game, 
 
 /* Creating constraints for each block at the board
    s.t for each block k and for each value x:   sum of x at block k = 1 */
-int addConstraintsPerBlock(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et, int* counter){
-    int i, j, k, r, c, constraintSize;
-    int error = 0;
-    char constraintString[20];
+int addConstraintsPerBlock(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et){
+    int i, j, k, r, c, constraintSize, error = 0;
 
     for (i = 0; i < game->rows; i += game->boxRow) {
         for (j = 0; j < game->columns; j += game->boxCol) {
@@ -169,9 +151,7 @@ int addConstraintsPerBlock(GRBmodel* model, int* ind, double* val, Game* game, E
                     }
                 }
                 if (constraintSize != 0) {
-                    counter++;
-                    sprintf(constraintString, "c%d", *counter);
-                    error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, constraintString);
+                    error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, NULL);
                     if (error)
                         return FAILED_TO_ADD_CONSTRAINTS;
                 }
@@ -183,13 +163,13 @@ int addConstraintsPerBlock(GRBmodel* model, int* ind, double* val, Game* game, E
 
 /* Creating constraints for each cell, row, column and block
    In LP adding also constraints per variable */
-void addConstraints(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et, int* counter, int varType,
+void addConstraints(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et, int varType,
                     double* obj, char* vtype, double* sol, GRBenv* env){
-    if( addConstraintsPerVariable(model, ind, val, et, counter, varType) ||
-        addConstraintsPerCell(model, ind, val, game, et, counter) ||
-        addConstraintsPerRow(model, ind, val, game, et, counter) ||
-        addConstraintsPerColumn(model, ind, val, game, et, counter) ||
-        addConstraintsPerBlock(model, ind, val, game, et, counter) )
+    if( addConstraintsPerVariable(model, ind, val, et, varType) ||
+        addConstraintsPerCell(model, ind, val, game, et) ||
+        addConstraintsPerRow(model, ind, val, game, et) ||
+        addConstraintsPerColumn(model, ind, val, game, et) ||
+        addConstraintsPerBlock(model, ind, val, game, et) )
     {
         freeModel(ind, val, obj, vtype, model, env, et, game, sol);
         printf(GUROBI_ERROR_MESSAGE);
@@ -207,11 +187,12 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
     char* vtype; /* the type of variables: binary/integer/float */
     int optimstatus;
     double objval;
+    int error;
+
     GRBenv* env = NULL;
     GRBmodel* model = NULL;
-    int error = 0;
-    int j = 0;
-    int* counter = &j; /* used for counting the constraints number */
+    error = 0;
+
 
     /* Allocating memory to all of the arrays */
 
@@ -329,7 +310,7 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
         printf(GUROBI_ERROR_MESSAGE);
         exit(EXIT_FAILURE);    }
 
-    addConstraints(model, ind, val, game, et, counter, varType, obj, vtype, sol, env);
+    addConstraints(model, ind, val, game, et, varType, obj, vtype, sol, env);
 
     /* Optimize model */
     error = GRBoptimize(model);
