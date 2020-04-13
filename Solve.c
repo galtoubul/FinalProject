@@ -176,7 +176,7 @@ int chooseAndFillX (int** board, Game* game, int X){
         }
     }
 
-    tempBoard = copyBoard(board, game->rows, game->columns);
+    tempBoard = copyBoard(game->currBoard, game->rows, game->columns);
 
     for (i = 0; i < X; i++){
         ind = getRand(unchosenSize);
@@ -186,7 +186,7 @@ int chooseAndFillX (int** board, Game* game, int X){
         deleteInd(unChosen, unchosenSize, ind);
         unchosenSize--;
 
-        legalArraySize = getLegalArray (board, game, row, col, legalArray);
+        legalArraySize = getLegalArray (tempBoard, game, row, col, legalArray);
 
         /* There aren't any legal values for cell [row][col] */
         if (legalArraySize == 0){
@@ -211,10 +211,15 @@ int chooseAndFillX (int** board, Game* game, int X){
         free(unChosen[i]);
     free(unChosen);
 
+    for (i = 0; i < game->rows; i++) {
+        for (j = 0; j < game->columns; j++) {
+            board[i][j] = tempBoard[i][j];
+        }
+    }
+
     for (j = 0; j < game->rows; j++)
-        free(board[j]);
-    free(board);
-    board = tempBoard;
+        free(tempBoard[j]);
+    free(tempBoard);
 
     return 1;
 }
@@ -298,13 +303,14 @@ int generateILP(Game* game, int X, int Y){
                 destroyGame(game);
                 exit(EXIT_FAILURE);
             }
+
             succeededToSolveBoard = LPSolver(game, et, sol, ILP);
 
             if (succeededToSolveBoard) {
                 parseSol(board, et, sol);
                 chooseYCellsAndClearTheRest(board, game, Y);
 
-                /* Updating the current board to contain the resuled board */
+                /* Updating the current board to contain the resulted board */
                 for(j = 0; j < game->rows; j++)
                     free(game->currBoard[j]);
                 free(game->currBoard);
@@ -321,7 +327,7 @@ int generateILP(Game* game, int X, int Y){
 
     /* After 1000 iterations -> treat as error */
     for(j = 0; j < game->rows; j++)
-        free(board[i]);
+        free(board[j]);
     free(board);
     return 0;
 }
