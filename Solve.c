@@ -386,6 +386,7 @@ void autofill (Game* game){
     for (i = 0; i < game->rows; ++i)
         free(currBoardCopy[i]);
     free(currBoardCopy);
+    free(legalArray);
 }
 
 void guessLP(Game* game, double threshold){

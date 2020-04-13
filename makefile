@@ -1,5 +1,5 @@
 CC = gcc
-OBJS = main.o ILPSolver.o EntryTable.o Game.o Solve.o Stack.o CmdHandler.o GameFlow.o Parser.o IO.o
+OBJS = main.o LPSolver.o EntryTable.o Game.o Solve.o Stack.o CmdHandler.o GameFlow.o Parser.o IO.o
  
 EXEC = myprog
 COMP_FLAGS = -ansi -O3 -Wall -Wextra -Werror -pedantic-errors
@@ -9,13 +9,13 @@ GUROBI_LIB = -L/usr/local/lib/gurobi563/lib -lgurobi56
 
 $(EXEC): $(OBJS)
 	$(CC) $(OBJS) $(GUROBI_LIB) -o $@ -lm
-all: main.o ILPSolver.o EntryTable.o Game.o MODE.o Solve.o Stack.o CmdHandler.o GameFlow.o Parser.o IO.o ErrorsInterface.o
+all: main.o LPSolver.o EntryTable.o Game.o MODE.o Solve.o Stack.o CmdHandler.o GameFlow.o Parser.o IO.o ErrorsInterface.o
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
 main.o: main.c GameFlow.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-Solve.o: Solve.h Game.h Stack.h ILPSolver.h
+Solve.o: Solve.h Game.h Stack.h LPSolver.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-ILPSolver.o: ILPSolver.h EntryTable.h
+LPSolver.o: LPSolver.h EntryTable.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
 EntryTable.o: EntryTable.h Game.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c

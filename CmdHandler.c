@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-void setCommand(Game* game, int row, int col, int z){
+void setCommand(Game* game, int col, int row, int z){
 
     Node* node;
     col = col - 1; /*rows and columns are 1's based --> mat[0][0] is mat[1][1]*/
@@ -45,7 +45,7 @@ void setCommand(Game* game, int row, int col, int z){
     }
 }
 
-void hintOrGuessHintCommand(Game* game, int row, int col,bool isGuess){
+void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
     col = col - 1;
     row = row - 1;
     
@@ -55,10 +55,16 @@ void hintOrGuessHintCommand(Game* game, int row, int col,bool isGuess){
         printf(hintFixCellError);
     else if(game->currBoard[row][col] != 0)
         printf(hintContCellError);
-    else if(!isGuess && isSolvable(game))
-        printf(hintFindHintMsg, game->solutionBoard[row][col]);
-    else if(isGuess){
-        if(!guessHintLP(game, col, row))
+    else if(!isGuess){
+            if(isSolvable(game))
+              printf(hintFindHintMsg, game->solutionBoard[row][col]);
+            else
+              printf(boardNotSolvable);
+    }
+    else{
+        if(isSolvable(game))
+          guessHintLP(game, col, row);
+        else
             printf(boardNotSolvable);
     }
 }

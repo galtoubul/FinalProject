@@ -57,7 +57,7 @@ int addConstraintsPerVariable(GRBmodel* model, int* ind, double* val, EntryTable
 /* Creating constraints for each cell at the board
    s.t for each cell x:   sum of values for x = 1 */
 int addConstraintsPerCell(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et){
-    int i, j, k, l, constraintSize, error = 0;
+    int i, j,k, constraintSize, error = 0;
 
     for (i = 0; i < game->rows; ++i) {
         for (j = 0; j < game->columns; ++j) {
@@ -82,7 +82,7 @@ int addConstraintsPerCell(GRBmodel* model, int* ind, double* val, Game* game, En
 /* Creating constraints for each row at the board
    s.t for each row i and for each value x:   sum of x at row i = 1 */
 int addConstraintsPerRow(GRBmodel* model, int* ind, double* val, Game* game, EntryTable* et){
-    int i, j, k, l, constraintSize, error = 0;
+    int i, j, k, constraintSize, error = 0;
 
     for (i = 0; i < game->rows; ++i) {
         for (k = 0; k < et->possibleValuesPerCell; ++k) {
