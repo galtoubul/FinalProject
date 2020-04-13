@@ -5,8 +5,8 @@
 #define EMPTY_CELL 0
 #define LP 1
 #define ILP 0
-#define FAILED_TO_ADD_CONSTRAINTS 1;
-#define SUCCEEDED_TO_ADD_CONSTRAINTS 0;
+#define FAILED_TO_ADD_CONSTRAINTS 1
+#define SUCCEEDED_TO_ADD_CONSTRAINTS 0
 #define GUROBI_ERROR_MESSAGE "Error in Gurobi library. Exiting...\n"
 #define MALLOC_FAILED "Error: malloc %s has failed\n"
 
@@ -158,7 +158,7 @@ int addConstraintsPerBlock(GRBmodel* model, int* ind, double* val, Game* game, E
             }
         }
     }
-    return SUCCEEDED_TO_ADD_CONSTRAINTS
+    return SUCCEEDED_TO_ADD_CONSTRAINTS;
 }
 
 /* Creating constraints for each cell, row, column and block
@@ -340,20 +340,25 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
         exit(EXIT_FAILURE);
     }
 
-    /* Get the objective -- the optimal result of the function */
-    error = GRBgetdblattr(model, GRB_DBL_ATTR_OBJVAL, &objval);
-    if (error) {
-        freeModel(ind, val, obj, vtype, model, env, et, game, sol);
-        printf(GUROBI_ERROR_MESSAGE);
-        exit(EXIT_FAILURE);
+    if (varType == LP) {
+        /* Get the objective -- the optimal result of the function */
+        error = GRBgetdblattr(model, GRB_DBL_ATTR_OBJVAL, &objval);
+        if (error) {
+            freeModel(ind, val, obj, vtype, model, env, et, game, sol);
+            printf(GUROBI_ERROR_MESSAGE);
+            exit(EXIT_FAILURE);
+        }
     }
 
-    /* Get the solution - the assignment to each variable */
-    error = GRBgetdblattrarray(model, GRB_DBL_ATTR_X, 0, et->variablesNum, sol);
-    if (error) {
-        freeModel(ind, val, obj, vtype, model, env, et, game, sol);
-        printf(GUROBI_ERROR_MESSAGE);
-        exit(EXIT_FAILURE);
+    /* Solution found */
+    if (optimstatus == GRB_OPTIMAL) {
+        /* Get the solution - the assignment to each variable */
+        error = GRBgetdblattrarray(model, GRB_DBL_ATTR_X, 0, et->variablesNum, sol);
+        if (error) {
+            freeModel(ind, val, obj, vtype, model, env, et, game, sol);
+            printf(GUROBI_ERROR_MESSAGE);
+            exit(EXIT_FAILURE);
+        }
     }
 
     free(ind);
