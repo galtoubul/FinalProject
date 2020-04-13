@@ -319,7 +319,7 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
     /* Optimize model */
     error = GRBoptimize(model);
     if (error) {
-        freeModel(obj, vtype, model, env, et, game, sol);
+        freeModel(ind, val, obj, vtype, model, env, et, game, sol);
         printf(GUROBI_ERROR_MESSAGE);
         exit(EXIT_FAILURE);
     }
