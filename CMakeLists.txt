@@ -8,7 +8,7 @@ add_executable(Sudoku main.c Game.c Game.h Parser.c Parser.h Solve.c Solve.h Sta
         CmdHandler.c CmdHandler.h GameFlow.c GameFlow.h ErrorsInterface.h MODE.h
          EntryTable.c EntryTable.h LPSolver.h LPSolver.c)
 
-include_directories( C:/gurobi801/win64/include )
+include_directories(C:/gurobi801/win64/include)
 find_package (C:/gurobi801/win64/lib/gurobi80.lib)
 
     include(CMakePackageConfigHelpers)
