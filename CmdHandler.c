@@ -48,19 +48,19 @@ void setCommand(Game* game, int col, int row, int z){
 void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
     col = col - 1;
     row = row - 1;
-    
+
     if(isBoardErroneous(game))
         printf(boardIsErrorneous);
-    else if(!isSolvable(game))
-        printf(boardNotSolvable);
     else if(game->fixedCellsBoard[row][col] == 1)
         printf(hintFixCellError);
     else if(game->currBoard[row][col] != 0)
         printf(hintContCellError);
-    else if(!isGuess)
+    else if(!isGuess && isSolvable(game))
         printf(hintFindHintMsg, game->solutionBoard[row][col]);
-    else
-        guessHintLP(game, col, row);
+    else if(isGuess){
+        if(!guessHintLP(game, col, row))
+            printf(boardNotSolvable);
+    }
 }
 
 void solveCommand(Game** game, char* filePath){
