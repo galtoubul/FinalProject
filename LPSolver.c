@@ -340,7 +340,9 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
         exit(EXIT_FAILURE);
     }
 
-    if (varType == LP) {
+    /* Solution found */
+    if (optimstatus == GRB_OPTIMAL) {
+
         /* Get the objective -- the optimal result of the function */
         error = GRBgetdblattr(model, GRB_DBL_ATTR_OBJVAL, &objval);
         if (error) {
@@ -348,10 +350,7 @@ int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
             printf(GUROBI_ERROR_MESSAGE);
             exit(EXIT_FAILURE);
         }
-    }
 
-    /* Solution found */
-    if (optimstatus == GRB_OPTIMAL) {
         /* Get the solution - the assignment to each variable */
         error = GRBgetdblattrarray(model, GRB_DBL_ATTR_X, 0, et->variablesNum, sol);
         if (error) {
