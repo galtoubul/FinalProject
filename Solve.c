@@ -8,11 +8,11 @@
 #define ILP 0
 
 void calcNextRowAndCol(Game* game, int* row, int* col){
-    if (*col < game->columns-1)
-        *col = *col+1;
+    if (*col < game->columns - 1)
+        *col = *col + 1;
     else{
-        *row = *row+1;
-        *col=0;
+        *row = *row + 1;
+        *col = 0;
     }
 }
 
@@ -23,7 +23,7 @@ void findFirstEmptyCell (Game* game, int* row, int* col){
         else
             calcNextRowAndCol(game, row, col);
     }
-    /*all cells are non empty*/
+    /* all cells are non empty */
     *row = -1;
 }
 
@@ -332,10 +332,13 @@ int generateILP(Game* game, int X, int Y){
     return 0;
 }
 
+/* Validates the current board using ILP, ensuring it is solvable */
 int isSolvable(Game* game){
     double* sol;
     int isSolvable;
     EntryTable* et = createEntryTable(game->currBoard, game);
+
+    /* 0 options for values for all cell -> not solvable */
     if (et->variablesNum == 0)
         return 0;
 
@@ -364,16 +367,19 @@ void autofill (Game* game){
     int* legalArray;
     int** currBoardCopy = copyBoard(game->currBoard, game->rows, game->columns);
     legalArray = malloc (game->rows * sizeof(int));
+
     for (i = 0; i < game->rows; ++i) {
         for (j = 0; j < game->columns; ++j) {
             if(currBoardCopy[i][j] == EMPTY_CELL){
                 legalArraySize = getLegalArray(game->currBoard, game, i, j, legalArray);
+                /* single legal value for (i , j) -> autofill it */
                 if (legalArraySize == 1)
                     currBoardCopy[i][j] = legalArray[0];
             }
         }
     }
 
+    /* copying autofilled values and printing a proper message */
     for (i = 0; i < game->rows; i++){
         for (j = 0; j < game->columns; ++j) {
             if (currBoardCopy[i][j] != game->currBoard[i][j]){
@@ -389,6 +395,7 @@ void autofill (Game* game){
     free(legalArray);
 }
 
+/* Guesses a solution to the current board using LP */
 void guessLP(Game* game, double threshold){
     int j;
     EntryTable* et;
@@ -406,9 +413,11 @@ void guessLP(Game* game, double threshold){
         free(game->currBoard[j]);
     free(game->currBoard);
     destroyEntryTable(et, game);
+
     game->currBoard = guessBoard;
 }
 
+/* Giving a hint to the user by showing the solution of a single cell */
 int guessHintLP (Game* game, int x, int y){
     int j, row, col, value;
     EntryTable* et;
@@ -429,14 +438,16 @@ int guessHintLP (Game* game, int x, int y){
     for (j = 0; j < et->variablesNum; ++j) {
         if (sol[j] > 0){
             variablesMatInd = et->gurobiToVariablesMat[j];
+
             row = et->varToInd[variablesMatInd - 1][0];
             col = et->varToInd[variablesMatInd - 1][1];
+
+            /* there is posistivr score for the given cell -> print it */
             if(row == x && col == y){
                 value = variablesMatInd % et->possibleValuesPerCell;
                 if (value == 0)
                     value = et->possibleValuesPerCell;
                 printf("%d is a possible value for (%d,%d). Its score: %f\n", value, row+1, col+1, sol[j]);
-
             }
         }
     }

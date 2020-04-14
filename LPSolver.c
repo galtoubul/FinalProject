@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "gurobi_c.h"
 #include "LPSolver.h"
 #define EMPTY_CELL 0
 #define LP 1
@@ -183,18 +182,17 @@ void addConstraints(GRBmodel* model, int* ind, double* val, Game* game, EntryTab
 int LPSolver(Game* game, EntryTable* et, double* sol, int varType)
 {
     int i;
-    int* ind; /* variables for constraint */
-    double* val; /* and their coefficient */
+    int* ind;    /* variables for constraint */
+    double* val; /* their coefficients */
     double* obj; /* coefficients for the variables at the objective function */
     char* vtype; /* the type of variables: binary/integer/float */
-    int optimstatus;
-    double objval;
+    int optimstatus; /* optimstatus == GRB_OPTIMAL iff Solution found. Otherwise, it's infeasible or unbounded */
+    double objval; /* the value of the objective function */
     int error;
 
     GRBenv* env = NULL;
     GRBmodel* model = NULL;
     error = 0;
-
 
     /* Allocating memory to all of the arrays */
 
