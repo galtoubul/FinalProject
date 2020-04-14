@@ -145,7 +145,7 @@ void parseSol (int** board, EntryTable* et, double* sol){
 
 /* Used for parsing the solution of ILP */
 void parseLPSol (Game* game, int** board, EntryTable* et, double* sol, double threshold){
-    int i, j, k, row, col, value, variablesMatInd, greaterThanXSize;
+    int i, j, k, row = 0, col = 0, value, variablesMatInd, greaterThanXSize;
     double sumOfProb, r, sumOfPrev;
 
     /* greaterThanX will contain all scores for values of a given cell */
