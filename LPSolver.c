@@ -33,6 +33,7 @@ int addConstraintsPerVariable(GRBmodel* model, int* ind, double* val, EntryTable
     if (varType == ILP)
         return SUCCEEDED_TO_ADD_CONSTRAINTS;
 
+    /* x <= 1 */
     for (i = 0; i < et->variablesNum; ++i) {
         constraintSize = 1;
         ind[0] = i;
@@ -42,6 +43,7 @@ int addConstraintsPerVariable(GRBmodel* model, int* ind, double* val, EntryTable
             return FAILED_TO_ADD_CONSTRAINTS;
     }
 
+    /* x >= 0 */
     for (i = 0; i < et->variablesNum; ++i) {
         constraintSize = 1;
         ind[0] = i;
@@ -62,6 +64,8 @@ int addConstraintsPerCell(GRBmodel* model, int* ind, double* val, Game* game, En
         for (j = 0; j < game->columns; ++j) {
             constraintSize = 0;
             for (k = 0; k < et->possibleValuesPerCell; ++k) {
+
+                /* variablesMat[i][j][k] != 0 iff (k+1) is a legal value for (i, j) */
                 if (et->variablesMat[i][j][k] != 0){
                     ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1];
                     val[constraintSize] = 1.0;
@@ -87,6 +91,8 @@ int addConstraintsPerRow(GRBmodel* model, int* ind, double* val, Game* game, Ent
         for (k = 0; k < et->possibleValuesPerCell; ++k) {
             constraintSize = 0;
             for (j = 0; j < game->columns; ++j) {
+
+                /* variablesMat[i][j][k] != 0 iff (k+1) is a legal value for (i, j) */
                 if (et->variablesMat[i][j][k] != 0){
                     ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1];
                     val[constraintSize] = 1.0;
@@ -113,6 +119,8 @@ int addConstraintsPerColumn(GRBmodel* model, int* ind, double* val, Game* game, 
         for (k = 0; k < et->possibleValuesPerCell; ++k) {
             constraintSize = 0;
             for (i = 0; i < game->rows; ++i) {
+
+                /* variablesMat[i][j][k] != 0 iff (k+1) is a legal value for (i, j) */
                 if (et->variablesMat[i][j][k] != 0){
                     ind[constraintSize] = et->variablesMatToGurobi[et->variablesMat[i][j][k] - 1];
                     val[constraintSize] = 1.0;
@@ -124,7 +132,6 @@ int addConstraintsPerColumn(GRBmodel* model, int* ind, double* val, Game* game, 
                 error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, NULL);
                 if (error)
                     return FAILED_TO_ADD_CONSTRAINTS;
-
             }
         }
     }
@@ -153,7 +160,6 @@ int addConstraintsPerBlock(GRBmodel* model, int* ind, double* val, Game* game, E
                     error = GRBaddconstr(model, constraintSize, ind, val, GRB_EQUAL, 1, NULL);
                     if (error)
                         return FAILED_TO_ADD_CONSTRAINTS;
-
                 }
             }
         }
