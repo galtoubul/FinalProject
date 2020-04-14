@@ -1,7 +1,7 @@
 CC = gcc
-OBJS = main.o LPSolver.o EntryTable.o Game.o Solve.o Stack.o CmdHandler.o GameFlow.o Parser.o IO.o
+OBJS = main.o Solve.o LPSolver.o EntryTable.o Game.o Stack.o CmdHandler.o IO.o GameFlow.o Parser.o
  
-EXEC = myprog
+EXEC = sudoku-console
 COMP_FLAGS = -ansi -O3 -Wall -Wextra -Werror -pedantic-errors
 
 GUROBI_COMP = -I/usr/local/lib/gurobi563/include
@@ -9,28 +9,27 @@ GUROBI_LIB = -L/usr/local/lib/gurobi563/lib -lgurobi56
 
 $(EXEC): $(OBJS)
 	$(CC) $(OBJS) $(GUROBI_LIB) -o $@ -lm
-all: main.o LPSolver.o EntryTable.o Game.o MODE.o Solve.o Stack.o CmdHandler.o GameFlow.o Parser.o IO.o ErrorsInterface.o
+all: main.o Solve.o LPSolver.o EntryTable.o Game.o Stack.o CmdHandler.o IO.o GameFlow.o Parser.o
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
 main.o: main.c GameFlow.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-Solve.o: Solve.h Game.h Stack.h LPSolver.h
+Solve.o: Solve.c Solve.h Game.h Stack.h LPSolver.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-LPSolver.o: LPSolver.h EntryTable.h
+LPSolver.o: LPSolver.c LPSolver.h EntryTable.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-EntryTable.o: EntryTable.h Game.h
+EntryTable.o: EntryTable.c EntryTable.h Game.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-Game.o: Game.h MODE.h 
+Game.o: Game.c Game.h MODE.h ErrorsInterface.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-Stack.o: Stack.h Solve.h
+Stack.o: Stack.c Stack.h Solve.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-CmdHandler.o: CmdHandler.h Solve.h Game.h IO.h MODE.h Solve.h ErrorsInterface.h
+CmdHandler.o: CmdHandler.c CmdHandler.h Solve.h Game.h IO.h MODE.h Solve.h ErrorsInterface.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-IO.o: IO.h Game.h Parser.h
+IO.o: IO.c IO.h Game.h Parser.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-GameFlow.o: GameFlow.h Parser.h Game.h CmdHandler.h MODE.h
+GameFlow.o: GameFlow.c GameFlow.h Parser.h Game.h CmdHandler.h MODE.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-Parser.o: Parser.h MODE.h ErrorsInterface.h
- 
- 
+Parser.o: Parser.c Parser.h MODE.h ErrorsInterface.h
+	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
 clean:
 	rm -f *.o $(EXEC)
