@@ -55,9 +55,13 @@ void hintOrGuessHintCommand(Game* game, int col, int row,bool isGuess){
         printf(hintFixCellError);
     else if(game->currBoard[row][col] != 0)
         printf(hintContCellError);
-    else if(!isGuess && isSolvable(game))
-        printf(hintFindHintMsg, game->solutionBoard[row][col]);
-    else if(isGuess){
+    else if(!isGuess){
+        if(isSolvable(game))
+          printf(hintFindHintMsg, game->solutionBoard[row][col]);
+        else
+          printf(boardNotSolvable);
+    }
+    else{
         if(!guessHintLP(game, col, row))
             printf(boardNotSolvable);
     }

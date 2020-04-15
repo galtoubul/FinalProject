@@ -81,8 +81,10 @@ int loadSudoku(char* filePath, Game** game,bool editMode){
         free(line);
         return 0;
     }
+
     else if(counter == newGame->size && !isError){
         /*Successfully loaded the game and all parameters are legal*/
+        newGame->mark_errors = (*game)->mark_errors;
         updateErrorBoard(newGame);
         node = newNode(newGame);
         freeNode(newGame->head,newGame->rows);
