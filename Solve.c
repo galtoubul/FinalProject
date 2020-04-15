@@ -157,7 +157,7 @@ int chooseAndFillX (int** board, Game* game, int X){
     int** unChosen;
     int* legalArray = malloc(game->rows * sizeof(int));
 
-    numOfEmptyCellsAtStart = numOfEmptyCells(game);
+    numOfEmptyCellsAtStart = numOfEmptyCells(game, game->currBoard);
     unChosen = malloc (numOfEmptyCellsAtStart * sizeof(int*));
     for (i = 0; i < numOfEmptyCellsAtStart; i++)
         unChosen[i] = malloc(2 * sizeof(int));
@@ -277,7 +277,7 @@ void chooseYCellsAndClearTheRest(int** board, Game* game, int Y){
 /* Generates a puzzle by randomly filling X empty cells with legal values,
    running ILP to solve the board and then clearing all but Y random cells */
 int generateILP(Game* game, int X, int Y){
-    int i, j, succeededToFillX, succeededToSolveBoard;
+    int i, j, succeededToFillX, succeededToSolveBoard, returnValue = 0;
     double* sol;
     int** board;
     EntryTable* et;
@@ -308,19 +308,24 @@ int generateILP(Game* game, int X, int Y){
 
             if (succeededToSolveBoard) {
                 parseSol(board, et, sol);
-                chooseYCellsAndClearTheRest(board, game, Y);
 
-                /* Updating the current board to contain the resulted board */
-                for(j = 0; j < game->rows; j++)
-                    free(game->currBoard[j]);
-                free(game->currBoard);
-                game->currBoard = board;
+                /* check if there are cells that didn't get constraints for the ILP -> board isn't full */
+                if(numOfEmptyCells(game, board) == 0){
+                    returnValue = 1;
+                    chooseYCellsAndClearTheRest(board, game, Y);
+
+                    /* Updating the current board to contain the resulted board */
+                    for(j = 0; j < game->rows; j++)
+                        free(game->currBoard[j]);
+                    free(game->currBoard);
+                    game->currBoard = board;
+                }
             }
 
             free(sol);
             destroyEntryTable(et, game);
 
-            if (succeededToSolveBoard)
+            if (returnValue == 1)
                 return 1;
         }
     }

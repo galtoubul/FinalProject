@@ -212,11 +212,11 @@ bool isBoardErroneous(Game* game){
     return false;
 }
 
-int numOfEmptyCells(Game* game){
+int numOfEmptyCells(Game* game, int** board){
     int i,j,count = 0;
     for(i = 0; i < game->rows; i++)
         for(j = 0; j < game->columns; j++)
-            if(game->currBoard[i][j] == 0)
+            if(board[i][j] == 0)
                 count++;
 
     return count;

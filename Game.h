@@ -185,10 +185,11 @@ bool isBoardErroneous(Game* game);
 
 /**
  * This function counts the number of empty cells in the current game --> '0' represent empty cell
- * @param game - game to num of empty cells
+ * @param game - contains the board which we are trying to num of empty cells
+ * @param board - the board we are trying to num of empty cells
  * @return number of empty cells
  */
-int numOfEmptyCells(Game* game);
+int numOfEmptyCells(Game* game, int** board);
 
 /**
  * This function creates a newNode, such it allocates memory to the 2 boards it saves
