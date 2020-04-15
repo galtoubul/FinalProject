@@ -83,6 +83,10 @@ void saveCommand(Game* game, char* filePath){
             printf(saveErrorneousBoardCantSave);
             return;
         }
+        if(isBoardFull(game->currBoard,game->rows,game->columns)){
+           saveSudoku(filePath, game, true);
+           return;
+           }
         if(!isSolvable(game)){
             printf(saveErrorNotSolvable);
             return;
@@ -142,6 +146,7 @@ void guessCommand(Game* game, float threshold){
         printf(boardIsErrorneous);
     else{
         guessLP(game, threshold);
+        updateErrorBoard(game);
         node = newNode(game);
         clearRedoNodes(game->head->next,game->rows);
         insertNode(game,node);
@@ -168,6 +173,7 @@ void generateCommand(Game* game, Command* command){
             printf(generatePuzzleError);
             return;
         }
+        updateErrorBoard(game);
         node = newNode(game);
         clearRedoNodes(game->head->next,game->rows);
         insertNode(game,node);
@@ -176,8 +182,12 @@ void generateCommand(Game* game, Command* command){
 }
 
 void numSolutionsCommand(Game* game){
-    if(isBoardErroneous(game))
+    if(isBoardErroneous(game)){
         printf(boardIsErrorneous);
+        return;
+    }
+    if(isBoardFull(game->currBoard,game->rows,game->columns))
+        printf(numSolutionsMsg,0);
     else
         printf(numSolutionsMsg,numSolutions(game));
 }
@@ -188,6 +198,7 @@ void autoFillCommand(Game* game){
         printf(boardIsErrorneous);
     else{
         autofill(game);
+        updateErrorBoard(game);
         node = newNode(game);
         clearRedoNodes(game->head->next,game->rows);
         insertNode(game,node);
