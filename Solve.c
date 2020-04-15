@@ -447,7 +447,7 @@ int guessHintLP (Game* game, int x, int y){
             row = et->varToInd[variablesMatInd - 1][0];
             col = et->varToInd[variablesMatInd - 1][1];
 
-            /* there is posistivr score for the given cell -> print it */
+            /* there is positive score for the given cell -> print it */
             if(row == x && col == y){
                 value = variablesMatInd % et->possibleValuesPerCell;
                 if (value == 0)
