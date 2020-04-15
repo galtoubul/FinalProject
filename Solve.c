@@ -340,7 +340,8 @@ int generateILP(Game* game, int X, int Y){
 /* Validates the current board using ILP, ensuring it is solvable */
 int isSolvable(Game* game){
     double* sol;
-    int isSolvable;
+    int i, isSolvable;
+    int** tempBoard;
     EntryTable* et = createEntryTable(game->currBoard, game);
 
     /* 0 options for values for all cell -> not solvable */
@@ -355,13 +356,22 @@ int isSolvable(Game* game){
 
     isSolvable = LPSolver(game, et, sol, ILP);
     if(isSolvable){
-        parseSol (game->solutionBoard, et, sol);
+        tempBoard = copyBoard(game->currBoard, game->rows, game->columns);
+        parseSol (tempBoard, et, sol);
 
-        destroyEntryTable(et, game);
-        free(sol);
-        return 1;
+        if(numOfEmptyCells(game, tempBoard) == 0)
+        {
+            for (i = 0; i < game->rows; ++i)
+                free(game->solutionBoard[i]);
+            free(game->solutionBoard);
+
+            game->solutionBoard = tempBoard;
+
+            destroyEntryTable(et, game);
+            free(sol);
+            return 1;
+        }
     }
-
     destroyEntryTable(et, game);
     free(sol);
     return 0;
