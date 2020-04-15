@@ -354,9 +354,9 @@ int isSolvable(Game* game){
         exit(EXIT_FAILURE);
     }
 
+    tempBoard = copyBoard(game->currBoard, game->rows, game->columns);
     isSolvable = LPSolver(game, et, sol, ILP);
     if(isSolvable){
-        tempBoard = copyBoard(game->currBoard, game->rows, game->columns);
         parseSol (tempBoard, et, sol);
 
         if(numOfEmptyCells(game, tempBoard) == 0)
@@ -372,6 +372,10 @@ int isSolvable(Game* game){
             return 1;
         }
     }
+    for (i = 0; i < game->rows; ++i)
+        free(tempBoard[i]);
+    free(tempBoard);
+    
     destroyEntryTable(et, game);
     free(sol);
     return 0;
