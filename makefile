@@ -9,8 +9,6 @@ GUROBI_LIB = -L/usr/local/lib/gurobi563/lib -lgurobi56
 
 $(EXEC): $(OBJS)
 	$(CC) $(OBJS) $(GUROBI_LIB) -o $@ -lm
-all: main.o Solve.o LPSolver.o EntryTable.o Game.o Stack.o CmdHandler.o IO.o GameFlow.o Parser.o
-	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
 main.o: main.c GameFlow.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
 Solve.o: Solve.c Solve.h Game.h Stack.h LPSolver.h
@@ -33,3 +31,4 @@ Parser.o: Parser.c Parser.h MODE.h ErrorsInterface.h
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
 clean:
 	rm -f *.o $(EXEC)
+all: $(EXEC)
